@@ -11,9 +11,9 @@
 <?import javafx.scene.text.Font?>
 
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shop.shop.systemLogin">
    <children>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+      <AnchorPane fx:id="main_form" prefHeight="200.0" prefWidth="200.0">
          <children>
             <AnchorPane layoutY="8.0" prefHeight="400.0" prefWidth="300.0" styleClass="left-form" stylesheets="@loginDesign.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="0.0">
                <children>
@@ -38,10 +38,9 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="46.0" layoutY="161.0" prefHeight="30.0" prefWidth="220.0" promptText="username" styleClass="textField" stylesheets="@loginDesign.css" />
-                  <PasswordField layoutX="47.0" layoutY="211.0" prefHeight="30.0" prefWidth="220.0" promptText="password" styleClass="textField" stylesheets="@loginDesign.css" />
-                  <Button layoutX="47.0" layoutY="284.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="220.0" styleClass="login-button" stylesheets="@loginDesign.css" text="Login" />
-                  <Button layoutX="234.0" layoutY="14.0" mnemonicParsing="false" styleClass="close" stylesheets="@loginDesign.css" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0" />
+                  <TextField fx:id="username" layoutX="46.0" layoutY="161.0" prefHeight="30.0" prefWidth="220.0" promptText="username" styleClass="textField" stylesheets="@loginDesign.css" />
+                  <PasswordField fx:id="password" layoutX="47.0" layoutY="211.0" prefHeight="30.0" prefWidth="220.0" promptText="password" styleClass="textField" stylesheets="@loginDesign.css" />
+                  <Button fx:id="loginButton" layoutX="47.0" layoutY="284.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="220.0" styleClass="login-button" stylesheets="@loginDesign.css" text="Login" />
                </children>
             </AnchorPane>
          </children>
