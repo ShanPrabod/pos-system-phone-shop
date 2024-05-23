@@ -191,6 +191,9 @@ public class system {
     private TextField phoneBill_warranty;
 
     @FXML
+    private TextField phoneBillTotalAmount;
+
+    @FXML
     private TextField accessoryBill_brandName;
 
     @FXML
@@ -207,6 +210,8 @@ public class system {
 
     @FXML
     private TextField accessoryBill_warranty;
+    @FXML
+    private TextField accessoryBillTotalAmount;
 
     @FXML
     private TableView<billPhoneData> phoneBill_printData_Table;
@@ -598,14 +603,10 @@ public class system {
                     prepare.setString(9, total_);
 
                     prepare.executeUpdate();
-                    alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Information Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Successfully Added!");
-                    alert.showAndWait();
-                    phoneBillClear();
 
+                    phoneBillClear();
                     phoneBillShowData();
+                    calculateTotalPhoneBill();
 
                 } catch (NumberFormatException e) {
                     // Show error alert for non-numeric price or quantity
@@ -678,6 +679,7 @@ public class system {
                 statement.executeUpdate("DELETE FROM temp_bill_addphones");
                 phoneBillClear(); // call phoneBillClear method to clear all input fields
                 phoneBillShowData();
+                calculateTotalPhoneBill();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -685,10 +687,12 @@ public class system {
     }
     public void phoneBillDrop(){
         try {
+            Connection connect = DatabaseConnection.connectDb();
             Statement statement = connect.createStatement();
             statement.executeUpdate("DELETE FROM temp_bill_addphones");
-            phoneBillClear(); // call phoneBillClear method to clear all input fields
-            phoneBillShowData();
+            statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
+            connect.close();
+            calculateTotalPhoneBill();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -727,24 +731,38 @@ public class system {
                 int rowsAffected = statement.executeUpdate();
 
                 if (rowsAffected > 0) {
-                    // Success message
-                    alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Information Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Successfully Deleted!");
-                    alert.showAndWait();
-
                     // Refresh table data (assuming phoneBillShowData() does this)
                     phoneBillShowData();
+                    calculateTotalPhoneBill();
                 } else {
                     // Error message if no rows deleted
                     System.out.println("Deletion failed! No rows affected." );
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                // Handle database exceptions appropriately (e.g., show error message)
             }
         }
+    }
+    public void calculateTotalPhoneBill() {
+        double totalAmount = 0.0;
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+        }
+
+        String query = "SELECT SUM(Total) AS totalAmount FROM temp_bill_addphones";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                totalAmount = rs.getDouble("totalAmount");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        phoneBillTotalAmount.setText(String.valueOf(totalAmount));
     }
 
 
@@ -894,16 +912,10 @@ public class system {
                         prepare.setString(7, total_);
 
                         prepare.executeUpdate();
-                        alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Information Message");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Successfully Added!");
-                        alert.showAndWait();
+
                         accessoryBillClear();
-
                         accessoryBillShowData();
-
-
+                        calculateTotalAccessoryBill();
 
                     } catch (NumberFormatException e) {
                         // Show error alert for non-numeric price or quantity
@@ -975,6 +987,7 @@ public class system {
                 statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
                 accessoryBillClear(); // call phoneBillClear method to clear all input fields
                 accessoryBillShowData();
+                calculateTotalAccessoryBill();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -982,13 +995,81 @@ public class system {
     }
     public void accessoryBillDrop(){
         try {
+            Connection connect = DatabaseConnection.connectDb();
             Statement statement = connect.createStatement();
             statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
-            accessoryBillClear(); // call phoneBillClear method to clear all input fields
-            accessoryBillShowData();
+            connect.close();
+            calculateTotalAccessoryBill();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    public void deleteAccessoryBillItem() {
+        // Get the selected item from the table
+        billAccessoryData accessoryData = accessoryBill_printData_Table.getSelectionModel().getSelectedItem();
+
+        // Check if a valid item is selected
+        if (accessoryData == null) {
+            // Show an error message or dialog indicating no item selected
+            System.out.println("Please select a phone bill item to delete.");
+            return;
+        }
+
+        // Confirmation dialog for deletion
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Message");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to DELETE item : " + accessoryData.getModelName() + "?");
+        Optional<ButtonType> option = alert.showAndWait();
+
+        if (option.get().equals(ButtonType.OK)) {
+            // Connect to the database
+            Connection connect = DatabaseConnection.connectDb();
+
+            try {
+                // Prepared statement to prevent SQL injection
+                String sql = "DELETE FROM `temp_bill_addaccessory` WHERE `modelName` = ? AND `brandName` = ? ";
+                assert connect != null;
+                PreparedStatement statement = connect.prepareStatement(sql);
+                statement.setString(1, accessoryData.getModelName());
+                statement.setString(2,accessoryData.getBrandName());
+
+                // Execute the deletion query
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    // Refresh table data
+                    accessoryBillShowData();
+                    calculateTotalAccessoryBill();
+                } else {
+                    // Error message if no rows deleted
+                    System.out.println("Deletion failed! No rows affected." );
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void calculateTotalAccessoryBill() {
+        double totalAmount = 0.0;
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+        }
+
+        String query = "SELECT SUM(total) AS totalAmount FROM temp_bill_addaccessory";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                totalAmount = rs.getDouble("totalAmount");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        accessoryBillTotalAmount.setText(String.valueOf(totalAmount));
     }
 
 

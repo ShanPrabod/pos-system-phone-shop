@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
-<?import de.jensd.fx.glyphs.fontawesome.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1925.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shop.shop.system">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1925.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shop.shop.system">
    <left>
       <VBox prefHeight="896.0" prefWidth="328.0" styleClass="nav-form" stylesheets="@dashboarddesign.css" BorderPane.alignment="CENTER">
          <children>
@@ -187,7 +200,7 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="656.0" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane fx:id="dashBoardForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
+            <AnchorPane fx:id="dashBoardForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -565,7 +578,7 @@
                               <TableColumn fx:id="phoneBill_printData_Table_total" prefWidth="220.0" text="Total " />
                            </columns>
                         </TableView>
-                        <TextField editable="false" layoutX="100.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <TextField fx:id="phoneBillTotalAmount" editable="false" layoutX="100.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="39.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Total :">
                            <font>
                               <Font size="15.0" />
@@ -640,7 +653,7 @@
                   <Button layoutX="139.0" layoutY="112.0" mnemonicParsing="false" text="settingsForm" />
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="billForm_accessory" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
+            <AnchorPane fx:id="billForm_accessory" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -729,7 +742,7 @@
                               <TableColumn fx:id="accessoryBill_printData_Table_total" prefWidth="252.0" text="Total " />
                            </columns>
                         </TableView>
-                        <TextField editable="false" focusTraversable="false" layoutX="100.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <TextField fx:id="accessoryBillTotalAmount" editable="false" focusTraversable="false" layoutX="100.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="39.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Total :">
                            <font>
                               <Font size="15.0" />
@@ -756,7 +769,7 @@
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <Button layoutX="1004.0" layoutY="418.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
+                        <Button layoutX="1004.0" layoutY="418.0" mnemonicParsing="false" onAction="#deleteAccessoryBillItem" prefHeight="26.0" prefWidth="70.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
                      </children>
                   </AnchorPane>
                </children>
