@@ -1,23 +1,42 @@
 package shop.shop;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class dashboard  implements common {
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("dashboard.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("JAY Mobile");
-        stage.setScene(scene);
-        stage.show();
+    public void dashboard(ActionEvent event) {
+        common.super.dashboard(event);
     }
 
-    public static void main(String[] args) {
-        launch();
+    @Override
+    public void bill(ActionEvent event) {
+        common.super.bill(event);
+    }
+
+    @Override
+    public void inventory(ActionEvent event) {
+        common.super.inventory(event);
+    }
+
+    @Override
+    public void reports(ActionEvent event) {
+        common.super.reports(event);
+    }
+
+    @Override
+    public void contacts(ActionEvent event) {
+        common.super.contacts(event);
+    }
+
+    @Override
+    public void settings(ActionEvent event) {
+        common.super.settings(event);
     }
 }

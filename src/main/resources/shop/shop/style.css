@@ -1,0 +1,78 @@
+.button:hover {
+  -fx-background-color: #00802b; /* Change background color on hover (optional) */
+  -fx-border-color: white; /* Add a border on hover (optional) */
+  -fx-border-width: 0px 0px 0px 5px; /* Set border width (optional) */
+}
+
+.label{
+  -fx-background-radius: 40; /* border radius */
+  -fx-padding: 5; /* padding */
+  -fx-border-width: 1; /* border width */
+}
+
+.rounded-label{
+    -fx-background-radius: 10; /* Set the corner radius */
+    -fx-background-color: #4CAF50; /* Set the background color */
+    -fx-text-fill: BLACK; /* Set the text color */
+    -fx-padding: 5px; /* Set the padding */
+}
+.rounded-label-{
+    -fx-background-radius: 10; /* Set the corner radius */
+    -fx-background-color: #dc143c; /* Set the background color */
+    -fx-text-fill: BLACK; /* Set the text color */
+    -fx-padding: 5px; /* Set the padding */
+}
+.pane{
+   -fx-background-color: #b0c4de;
+   -fx-background-radius: 20;
+   -fx-padding: 5px 10px;
+   -fx-margin-top: 5;
+     -fx-margin-right: 10;
+     -fx-margin-bottom: 5;
+     -fx-margin-left: 10;
+
+}
+
+.JFX-button-inventory {
+    -fx-background-color: #6495ed; /* Set the background color */
+    -fx-text-fill: white; /* Set the text color */
+    -fx-padding: 5px 10px; /* Set the padding */
+    -fx-background-radius: 25;
+}
+
+.JFX-button-inventory:hover {
+    -fx-background-color: #00008b; /* Set the hover background color */
+    -fx-border-color: #b0c4de; /* Add a border on hover (optional) */
+    -fx-border-width: 0px 0px 0px 0px;
+}
+.back-button-inventory:hover {
+    -fx-background-color: #6495ed; /* Set the hover background color */
+    -fx-border-color: #b0c4de; /* Add a border on hover (optional) */
+    -fx-border-width: 0px 0px 0px 0px;
+}
+.back-button-inventory {
+    -fx-background-color: #6495ed; /* Set the background color */
+    -fx-text-fill: white; /* Set the text color */
+    -fx-padding: 5px 10px; /* Set the padding */
+    -fx-background-radius: 25;
+}
+.addButton{
+    -fx-background-color: #8fd400; /* Set the background color */
+    -fx-text-fill: white; /* Set the text color */
+    -fx-padding: 5px 10px; /* Set the padding */
+    -fx-background-radius: 25;
+}
+.addButton:hover {
+    -fx-background-color: #3cd070;
+    -fx-border-width: 0px 0px 0px 0px;
+}
+.clearButton{
+    -fx-background-color: #e4717a; /* Set the background color */
+    -fx-text-fill: white; /* Set the text color */
+    -fx-padding: 5px 10px; /* Set the padding */
+    -fx-background-radius: 25;
+}
+.clearButton:hover {
+    -fx-background-color: #ff0000;
+    -fx-border-width: 0px 0px 0px 0px;
+}

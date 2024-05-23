@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
-<?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import com.jfoenix.controls.*?>
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1925.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shop.shop.inventory">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1925.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shop.shop.system">
    <left>
       <VBox prefHeight="896.0" prefWidth="328.0" styleClass="nav-form" stylesheets="@dashboarddesign.css" BorderPane.alignment="CENTER">
          <children>
@@ -67,7 +60,12 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton fx:id="billButton" alignment="TOP_LEFT" focusTraversable="false" graphicTextGap="60.0" layoutX="10.0" layoutY="280.0" onAction="#switchForm" prefHeight="70.0" prefWidth="328.0" styleClass="nav-btn" stylesheets="@dashboarddesign.css" text="BILL" textFill="WHITE">
+            <MenuButton fx:id="billButton" focusTraversable="false" graphicTextGap="60.0" layoutX="10.0" layoutY="280.0" mnemonicParsing="false" popupSide="RIGHT" prefHeight="70.0" prefWidth="328.0" styleClass="menu-btn" stylesheets="@dashboarddesign.css" text="BILL" textFill="WHITE">
+              <items>
+                <MenuItem fx:id="menuItemPhone" mnemonicParsing="false" onAction="#switchForm" styleClass="menu" text="PHONE" />
+                <MenuItem fx:id="menuItemAccessory" mnemonicParsing="false" onAction="#switchForm" styleClass="menu" text="ACCESSORY" />
+                  <MenuItem fx:id="menuItemRepair" mnemonicParsing="false" onAction="#switchForm" styleClass="menu" text="REPAIR" />
+              </items>
                <graphic>
                   <ImageView fitHeight="41.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -75,16 +73,16 @@
                      </image>
                   </ImageView>
                </graphic>
-               <font>
-                  <Font name="Leelawadee Bold" size="17.0" />
-               </font>
                <padding>
-                  <Insets left="69.0" top="14.0" />
+                  <Insets left="58.0" top="14.0" />
                </padding>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
-            </JFXButton>
+               <font>
+                  <Font name="Leelawadee" size="17.0" />
+               </font>
+            </MenuButton>
             <JFXButton fx:id="inventoryButton" alignment="TOP_LEFT" focusTraversable="false" graphicTextGap="60.0" layoutX="10.0" layoutY="350.0" onAction="#switchForm" prefHeight="70.0" prefWidth="328.0" styleClass="nav-btn" stylesheets="@dashboarddesign.css" text="INVENTORY" textFill="WHITE">
                <graphic>
                   <ImageView fitHeight="41.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
@@ -189,7 +187,7 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="656.0" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane fx:id="dashBoardForm" layoutX="14.0" layoutY="13.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="13.0">
+            <AnchorPane fx:id="dashBoardForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -198,10 +196,129 @@
                   <String fx:value="white-bg" />
                </styleClass>
                <children>
-                  <Button layoutX="139.0" layoutY="112.0" mnemonicParsing="false" text="dashBoardForm" />
+                  <AnchorPane fx:id="cardsNumbers" layoutX="32.0" layoutY="14.0" prefHeight="222.0" prefWidth="1515.0" stylesheets="@dashboarddesign.css">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="gray-bg" />
+                     </styleClass>
+                     <children>
+                        <AnchorPane layoutX="67.0" layoutY="11.0" prefHeight="200.0" prefWidth="400.0" stylesheets="@dashboarddesign.css">
+                           <styleClass>
+                              <String fx:value="shadow" />
+                              <String fx:value="card" />
+                           </styleClass>
+                           <children>
+                              <FontAwesomeIcon fill="WHITE" glyphName="MOBILE" layoutX="32.0" layoutY="96.0" size="8em" />
+                              <Label layoutX="123.0" layoutY="141.0" prefHeight="38.0" prefWidth="154.0" text="PHONES SOLD" textFill="WHITE">
+                                 <font>
+                                    <Font size="23.0" />
+                                 </font>
+                              </Label>
+                              <Label alignment="TOP_RIGHT" layoutX="232.0" layoutY="14.0" prefHeight="38.0" prefWidth="154.0" text="0" textFill="#bc9758">
+                                 <font>
+                                    <Font size="58.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutX="574.0" layoutY="11.0" prefHeight="200.0" prefWidth="400.0" stylesheets="@dashboarddesign.css">
+                           <styleClass>
+                              <String fx:value="shadow" />
+                              <String fx:value="card" />
+                           </styleClass>
+                           <children>
+                              <FontAwesomeIcon fill="WHITE" glyphName="HEADPHONES" layoutX="32.0" layoutY="96.0" size="8em" />
+                              <Label layoutX="98.0" layoutY="141.0" prefHeight="38.0" prefWidth="205.0" text="ACCESSORIES SOLD" textFill="WHITE">
+                                 <font>
+                                    <Font size="23.0" />
+                                 </font>
+                              </Label>
+                              <Label alignment="TOP_RIGHT" layoutX="232.0" layoutY="14.0" prefHeight="38.0" prefWidth="154.0" text="0" textFill="#bc9758">
+                                 <font>
+                                    <Font size="58.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutX="1068.0" layoutY="11.0" prefHeight="200.0" prefWidth="400.0" stylesheets="@dashboarddesign.css">
+                           <styleClass>
+                              <String fx:value="shadow" />
+                              <String fx:value="card" />
+                           </styleClass>
+                           <children>
+                              <FontAwesomeIcon fill="WHITE" glyphName="WRENCH" layoutX="32.0" layoutY="96.0" size="8em" />
+                              <Label layoutX="155.0" layoutY="142.0" prefHeight="38.0" prefWidth="91.0" text="REPAIRS" textFill="WHITE">
+                                 <font>
+                                    <Font size="23.0" />
+                                 </font>
+                              </Label>
+                              <Label alignment="TOP_RIGHT" layoutX="232.0" layoutY="14.0" prefHeight="38.0" prefWidth="154.0" text="0" textFill="#bc9758">
+                                 <font>
+                                    <Font size="58.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="cardsNumbers1" layoutX="32.0" layoutY="270.0" prefHeight="690.0" prefWidth="531.0" stylesheets="@dashboarddesign.css">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="gray-bg" />
+                     </styleClass>
+                     <children>
+                        <AnchorPane layoutX="66.0" layoutY="56.0" prefHeight="223.0" prefWidth="400.0" stylesheets="@dashboarddesign.css">
+                           <styleClass>
+                              <String fx:value="shadow" />
+                              <String fx:value="card-cash" />
+                           </styleClass>
+                           <children>
+                              <FontAwesomeIcon fill="WHITE" glyphName="USD" layoutX="32.0" layoutY="96.0" size="8em" />
+                              <Label layoutX="163.0" layoutY="164.0" prefHeight="45.0" prefWidth="74.0" text="SALE" textFill="WHITE">
+                                 <font>
+                                    <Font size="30.0" />
+                                 </font>
+                              </Label>
+                              <Label alignment="TOP_RIGHT" layoutX="158.0" layoutY="14.0" prefHeight="85.0" prefWidth="228.0" text="0" textFill="#bc9758">
+                                 <font>
+                                    <Font size="58.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutX="66.0" layoutY="387.0" prefHeight="223.0" prefWidth="400.0" stylesheets="@dashboarddesign.css">
+                           <styleClass>
+                              <String fx:value="shadow" />
+                              <String fx:value="card-cash" />
+                           </styleClass>
+                           <children>
+                              <FontAwesomeIcon fill="WHITE" glyphName="USD" layoutX="32.0" layoutY="96.0" size="8em" />
+                              <Label layoutX="151.0" layoutY="164.0" prefHeight="45.0" prefWidth="98.0" text="PROFIT" textFill="WHITE">
+                                 <font>
+                                    <Font size="30.0" />
+                                 </font>
+                              </Label>
+                              <Label alignment="TOP_RIGHT" layoutX="158.0" layoutY="14.0" prefHeight="85.0" prefWidth="228.0" text="0" textFill="#bc9758">
+                                 <font>
+                                    <Font size="58.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="607.0" layoutY="270.0" prefHeight="690.0" prefWidth="946.0" stylesheets="@dashboarddesign.css">
+                     <styleClass>
+                        <String fx:value="gray-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <PieChart layoutX="94.0" layoutY="77.0" prefHeight="537.0" prefWidth="758.0" title="Today Revenue" />
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="inventoryForm" layoutX="16.0" layoutY="5.0" prefHeight="1005.0" prefWidth="1580.0" stylesheets="@dashboarddesign.css" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
+            <AnchorPane fx:id="inventoryForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
                <styleClass>
                   <String fx:value="shadow" />
                   <String fx:value="white-bg" />
@@ -213,15 +330,15 @@
                         <String fx:value="white-bg" />
                      </styleClass>
                      <children>
-                        <TextField fx:id="searchBarPhone" focusTraversable="false" layoutX="137.0" layoutY="15.0" promptText="search" />
+                        <TextField fx:id="searchBarPhone" focusTraversable="false" layoutX="138.0" layoutY="15.0" onInputMethodTextChanged="#phoneSearch" promptText="search" styleClass="search" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="66.0" layoutY="17.0" text="PHONES">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
                         </Label>
                         <FontAwesomeIcon glyphName="MOBILE" layoutX="24.0" layoutY="45.0" size="4em" />
-                        <FontAwesomeIcon glyphName="SEARCH" layoutX="267.0" layoutY="32.0" />
-                        <TableView fx:id="phoneTable" layoutX="14.0" layoutY="52.0" onMouseClicked="#phoneSelect" prefHeight="263.0" prefWidth="1552.0">
+                        <FontAwesomeIcon glyphName="SEARCH" layoutX="297.0" layoutY="28.0" />
+                        <TableView fx:id="phoneTable" layoutX="14.0" layoutY="52.0" onMouseClicked="#phoneSelect" prefHeight="263.0" prefWidth="1552.0" stylesheets="@dashboarddesign.css">
                           <columns>
                             <TableColumn fx:id="phoneTableId" prefWidth="90.0" text="ID" />
                             <TableColumn fx:id="phoneTableBrandName" prefWidth="240.0" text="Brand Name" />
@@ -246,7 +363,7 @@
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="modelNamePhone" focusTraversable="false" layoutX="137.0" layoutY="391.0" prefHeight="25.0" prefWidth="180.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                  <TextField fx:id="modelNamePhone" focusTraversable="false" layoutX="137.0" layoutY="392.0" prefHeight="25.0" prefWidth="180.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                   <Label layoutX="798.0" layoutY="355.0" text="Cost Price :">
                      <font>
                         <Font size="15.0" />
@@ -278,8 +395,8 @@
                   </Label>
                   <TextField fx:id="sellingPricePhone" focusTraversable="false" layoutX="921.0" layoutY="391.0" prefHeight="25.0" prefWidth="180.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                   <Button fx:id="addButtonPhone" focusTraversable="false" layoutX="1444.0" layoutY="391.0" mnemonicParsing="false" onAction="#addPhones" prefHeight="26.0" prefWidth="60.0" styleClass="add-btn" stylesheets="@dashboarddesign.css" text="Add" />
-                  <Button fx:id="updateButtonPhone" focusTraversable="false" layoutX="1375.0" layoutY="391.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="60.0" styleClass="update-btn" stylesheets="@dashboarddesign.css" text="Update" />
-                  <Button fx:id="deleteButtonPhone" focusTraversable="false" layoutX="1272.0" layoutY="391.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="60.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
+                  <Button fx:id="updateButtonPhone" focusTraversable="false" layoutX="1375.0" layoutY="391.0" mnemonicParsing="false" onAction="#phoneUpdate" prefHeight="26.0" prefWidth="60.0" styleClass="update-btn" stylesheets="@dashboarddesign.css" text="Update" />
+                  <Button fx:id="deleteButtonPhone" focusTraversable="false" layoutX="1272.0" layoutY="391.0" mnemonicParsing="false" onAction="#phoneDelete" prefHeight="26.0" prefWidth="60.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
                   <Button fx:id="clearButtonPhone" focusTraversable="false" layoutX="1201.0" layoutY="391.0" mnemonicParsing="false" onAction="#phoneDataReset" prefHeight="26.0" prefWidth="60.0" styleClass="clear-btn" stylesheets="@dashboarddesign.css" text="Clear" />
                   <AnchorPane layoutX="3.0" layoutY="458.0" prefHeight="413.0" prefWidth="1571.0" stylesheets="@dashboarddesign.css">
                      <styleClass>
@@ -287,15 +404,15 @@
                         <String fx:value="white-bg" />
                      </styleClass>
                      <children>
-                        <TextField fx:id="searchBarAccessory" focusTraversable="false" layoutX="182.0" layoutY="15.0" promptText="search" />
+                        <TextField fx:id="searchBarAccessory" focusTraversable="false" layoutX="182.0" layoutY="15.0" onInputMethodTextChanged="#accessorySearch" promptText="search" styleClass="search" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="66.0" layoutY="17.0" text="ACCESSORIES">
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
                         </Label>
                         <FontAwesomeIcon glyphName="HEADPHONES" layoutX="14.0" layoutY="40.0" size="3em" />
-                        <FontAwesomeIcon glyphName="SEARCH" layoutX="310.0" layoutY="32.0" />
-                        <TableView fx:id="accessoryTable" layoutX="14.0" layoutY="52.0" onMouseClicked="#phoneSelect" prefHeight="354.0" prefWidth="1550.0">
+                        <FontAwesomeIcon glyphName="SEARCH" layoutX="341.0" layoutY="28.0" />
+                        <TableView fx:id="accessoryTable" layoutX="14.0" layoutY="52.0" onMouseClicked="#accessorySelect" prefHeight="354.0" prefWidth="1550.0" stylesheets="@dashboarddesign.css">
                            <columns>
                               <TableColumn fx:id="accessoryTableId" prefWidth="100.0" text="ID" />
                               <TableColumn fx:id="accessoryTableBrandName" prefWidth="330.0" text="Brand Name" />
@@ -338,12 +455,12 @@
                   </Label>
                   <TextField fx:id="sellingPriceAccessory" focusTraversable="false" layoutX="522.0" layoutY="935.0" prefHeight="25.0" prefWidth="180.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                   <Button fx:id="addButtonAccessory" focusTraversable="false" layoutX="1444.0" layoutY="892.0" mnemonicParsing="false" onAction="#addAccessories" prefHeight="26.0" prefWidth="60.0" styleClass="add-btn" stylesheets="@dashboarddesign.css" text="Add" />
-                  <Button fx:id="updateButtonAccessory" focusTraversable="false" layoutX="1375.0" layoutY="892.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="60.0" styleClass="update-btn" stylesheets="@dashboarddesign.css" text="Update" />
-                  <Button fx:id="deleteButtonAccessory" focusTraversable="false" layoutX="1272.0" layoutY="892.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="60.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
+                  <Button fx:id="updateButtonAccessory" focusTraversable="false" layoutX="1375.0" layoutY="892.0" mnemonicParsing="false" onAction="#accessoryUpdate" prefHeight="26.0" prefWidth="60.0" styleClass="update-btn" stylesheets="@dashboarddesign.css" text="Update" />
+                  <Button fx:id="deleteButtonAccessory" focusTraversable="false" layoutX="1272.0" layoutY="892.0" mnemonicParsing="false" onAction="#accessoryDelete" prefHeight="26.0" prefWidth="60.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
                   <Button fx:id="clearButtonAccessory" focusTraversable="false" layoutX="1201.0" layoutY="892.0" mnemonicParsing="false" onAction="#accessoryDataReset" prefHeight="26.0" prefWidth="60.0" styleClass="clear-btn" stylesheets="@dashboarddesign.css" text="Clear" />
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="billForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
+            <AnchorPane fx:id="billForm_phone" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -352,7 +469,132 @@
                   <String fx:value="white-bg" />
                </styleClass>
                <children>
-                  <Button layoutX="139.0" layoutY="112.0" mnemonicParsing="false" text="billForm" />
+                  <AnchorPane fx:id="spinner_quantity" layoutX="14.0" layoutY="14.0" prefHeight="478.0" prefWidth="1540.0" stylesheets="@dashboarddesign.css">
+                     <styleClass>
+                        <String fx:value="white-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <FontAwesomeIcon glyphName="MOBILE" layoutX="14.0" layoutY="55.0" size="4em" />
+                        <TextField fx:id="searchBarPhoneBill" focusTraversable="false" layoutX="259.0" layoutY="29.0" onInputMethodTextChanged="#phoneBillSearch" promptText="search" styleClass="search" stylesheets="@dashboarddesign.css" />
+                        <FontAwesomeIcon glyphName="SEARCH" layoutX="420.0" layoutY="42.0" />
+                        <TableView fx:id="phoneBill_showData_Table" layoutX="7.0" layoutY="73.0" onMouseClicked="#phoneBillSelect" prefHeight="401.0" prefWidth="968.0">
+                          <columns>
+                              <TableColumn fx:id="phoneBill_showData_Table_ID" prefWidth="53.0" text="ID" />
+                            <TableColumn fx:id="phoneBill_showData_Table_BrandName" prefWidth="153.0" text="Brand Name" />
+                            <TableColumn fx:id="phoneBill_showData_Table_ModelName" prefWidth="207.0" text="Model Name" />
+                              <TableColumn fx:id="phoneBill_showData_Table_Memory" prefWidth="125.0" text="Memory" />
+                              <TableColumn fx:id="phoneBill_showData_Table_Color" prefWidth="148.0" text="Color" />
+                              <TableColumn fx:id="phoneBill_showData_Table_Price" prefWidth="164.0" text="Price" />
+                              <TableColumn fx:id="phoneBill_showData_Table_Quantity" prefWidth="117.0" text="Quantity" />
+                          </columns>
+                        </TableView>
+                        <TextField fx:id="phoneBill_BrandName" editable="false" layoutX="1091.0" layoutY="88.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="992.0" layoutY="89.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Brand Name :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="phoneBill_modelName" editable="false" layoutX="1376.0" layoutY="86.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1271.0" layoutY="89.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Model Name :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="phoneBill_memory" editable="false" layoutX="1091.0" layoutY="138.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="992.0" layoutY="139.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Memory :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="phoneBill_color" editable="false" layoutX="1376.0" layoutY="136.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1271.0" layoutY="139.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Color :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="phoneBill_price" layoutX="1091.0" layoutY="187.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="992.0" layoutY="188.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Price :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="1271.0" layoutY="188.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Quantity :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="1338.0" layoutY="330.0" mnemonicParsing="false" onAction="#phoneBillClear" prefHeight="26.0" prefWidth="70.0" styleClass="clear-btn" stylesheets="@dashboarddesign.css" text="Clear" />
+                        <Button layoutX="1447.0" layoutY="330.0" mnemonicParsing="false" onAction="#temp_bill_addPhones" prefHeight="26.0" prefWidth="70.0" styleClass="add-btn" stylesheets="@dashboarddesign.css" text="Add" />
+                        <TextField fx:id="phoneBill_discount" layoutX="1091.0" layoutY="239.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="992.0" layoutY="240.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Discount :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="phoneBill_warranty" layoutX="1376.0" layoutY="237.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1271.0" layoutY="240.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Warrenty :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="phoneBill_quantity" layoutX="1376.0" layoutY="187.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="66.0" layoutY="18.0" text="Phone - Bill">
+                           <font>
+                              <Font name="System Bold" size="28.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="14.0" layoutY="516.0" prefHeight="456.0" prefWidth="1540.0" stylesheets="@dashboarddesign.css">
+                     <styleClass>
+                        <String fx:value="white-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <TableView fx:id="phoneBill_printData_Table" layoutX="7.0" layoutY="24.0" prefHeight="334.0" prefWidth="1521.0">
+                           <columns>
+                              <TableColumn fx:id="phoneBill_printData_Table_brandName" prefWidth="167.0" text="Brand Name" />
+                              <TableColumn fx:id="phoneBill_printData_Table_modelName" prefWidth="237.0" text="Model Name" />
+                              <TableColumn fx:id="phoneBill_printData_Table_memory" prefWidth="101.0" text="Memory" />
+                              <TableColumn fx:id="phoneBill_printData_Table_color" prefWidth="149.0" text="Color" />
+                              <TableColumn fx:id="phoneBill_printData_Table_unitPrice" prefWidth="175.0" text="Unit Price" />
+                              <TableColumn fx:id="phoneBill_printData_Table_units" prefWidth="107.0" text="Units" />
+                              <TableColumn fx:id="phoneBill_printData_Table_discount" prefWidth="172.0" text="Discount" />
+                              <TableColumn fx:id="phoneBill_printData_Table_warranty" prefWidth="191.0" text="Warranty" />
+                              <TableColumn fx:id="phoneBill_printData_Table_total" prefWidth="220.0" text="Total " />
+                           </columns>
+                        </TableView>
+                        <TextField editable="false" layoutX="100.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="39.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Total :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField layoutX="391.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="330.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cash :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField editable="false" layoutX="735.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="640.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Balance :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="1112.0" layoutY="418.0" mnemonicParsing="false" onAction="#phoneBillCancel" prefHeight="26.0" prefWidth="70.0" styleClass="cancel-btn" stylesheets="@dashboarddesign.css" text="Cancel" />
+                        <Button layoutX="1250.0" layoutY="395.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="116.0" styleClass="pdf-btn" stylesheets="@dashboarddesign.css" text="PDF" />
+                        <Button layoutX="1396.0" layoutY="395.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="116.0" styleClass="print-btn" stylesheets="@dashboarddesign.css" text="Print" />
+                        <TextField layoutX="100.0" layoutY="376.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="39.0" layoutY="378.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cashier :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="1013.0" layoutY="418.0" mnemonicParsing="false" onAction="#deletePhoneBillItem" prefHeight="26.0" prefWidth="70.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
             <AnchorPane fx:id="reportForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
@@ -364,10 +606,17 @@
                   <String fx:value="white-bg" />
                </styleClass>
                <children>
-                  <Button layoutX="139.0" layoutY="112.0" mnemonicParsing="false" text="reportForm" />
+                  <BarChart fx:id="phonesChart" layoutX="34.0" layoutY="42.0" prefHeight="400.0" prefWidth="1521.0" title="phones">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis side="LEFT" />
+                    </yAxis>
+                  </BarChart>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="contactsForm" layoutX="11.0" layoutY="6.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
+            <AnchorPane fx:id="contactsForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -379,7 +628,7 @@
                   <Button layoutX="139.0" layoutY="112.0" mnemonicParsing="false" text="contactsForm" />
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="settingsForm" layoutX="14.0" layoutY="8.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
+            <AnchorPane fx:id="settingsForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -389,6 +638,259 @@
                </styleClass>
                <children>
                   <Button layoutX="139.0" layoutY="112.0" mnemonicParsing="false" text="settingsForm" />
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="billForm_accessory" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
+               <padding>
+                  <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+               </padding>
+               <styleClass>
+                  <String fx:value="shadow" />
+                  <String fx:value="white-bg" />
+               </styleClass>
+               <children>
+                  <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="478.0" prefWidth="1540.0" stylesheets="@dashboarddesign.css">
+                     <styleClass>
+                        <String fx:value="white-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <FontAwesomeIcon glyphName="HEADPHONES" layoutX="14.0" layoutY="55.0" size="4em" />
+                        <TextField fx:id="searchBarAccessoryBill" focusTraversable="false" layoutX="304.0" layoutY="29.0" onAction="#accessoryBillSearch" promptText="search" styleClass="search" stylesheets="@dashboarddesign.css" />
+                        <FontAwesomeIcon glyphName="SEARCH" layoutX="465.0" layoutY="42.0" />
+                        <TableView fx:id="accessoryBill_showData_Table" layoutX="7.0" layoutY="73.0" onMouseClicked="#accessoryBillSelect" prefHeight="401.0" prefWidth="968.0">
+                           <columns>
+                              <TableColumn fx:id="accessoryBill_showData_Table_ID" prefWidth="77.0" text="ID" />
+                              <TableColumn fx:id="accessoryBill_showData_Table_brandName" prefWidth="273.0" text="Brand Name" />
+                              <TableColumn fx:id="accessoryBill_showData_Table_modelName" prefWidth="284.0" text="Model Name" />
+                              <TableColumn fx:id="accessoryBill_showData_Table_price" prefWidth="226.0" text="Price" />
+                              <TableColumn fx:id="accessoryBill_showData_Table_quantity" prefWidth="107.0" text="Quantity" />
+                           </columns>
+                        </TableView>
+                        <TextField fx:id="accessoryBill_brandName" editable="false" focusTraversable="false" layoutX="1091.0" layoutY="88.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="992.0" layoutY="89.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Brand Name :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="accessoryBill_modelName" editable="false" focusTraversable="false" layoutX="1376.0" layoutY="86.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1271.0" layoutY="89.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Model Name :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="accessoryBill_price" focusTraversable="false" layoutX="1091.0" layoutY="137.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="992.0" layoutY="138.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Price :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="accessoryBill_quantity" focusTraversable="false" layoutX="1376.0" layoutY="135.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1271.0" layoutY="138.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Quantity :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="1340.0" layoutY="261.0" mnemonicParsing="false" onAction="#accessoryBillClear" prefHeight="26.0" prefWidth="70.0" styleClass="clear-btn" stylesheets="@dashboarddesign.css" text="Clear" />
+                        <Button layoutX="1449.0" layoutY="261.0" mnemonicParsing="false" onAction="#temp_bill_addAccessory" prefHeight="26.0" prefWidth="70.0" styleClass="add-btn" stylesheets="@dashboarddesign.css" text="Add" />
+                        <TextField fx:id="accessoryBill_discount" focusTraversable="false" layoutX="1091.0" layoutY="189.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="992.0" layoutY="190.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Discount :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="accessoryBill_warranty" focusTraversable="false" layoutX="1376.0" layoutY="187.0" prefHeight="25.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1271.0" layoutY="190.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Warrenty :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="85.0" layoutY="19.0" text="Accessory - Bill">
+                           <font>
+                              <Font name="System Bold" size="26.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="14.0" layoutY="516.0" prefHeight="456.0" prefWidth="1540.0" stylesheets="@dashboarddesign.css">
+                     <styleClass>
+                        <String fx:value="white-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <TableView fx:id="accessoryBill_printData_Table" layoutX="7.0" layoutY="24.0" prefHeight="334.0" prefWidth="1521.0">
+                           <columns>
+                              <TableColumn fx:id="accessoryBill_printData_Table_brandName" prefWidth="232.0" text="Brand Name" />
+                              <TableColumn fx:id="accessoryBill_printData_Table_modelName" prefWidth="264.0" text="Model Name" />
+                              <TableColumn fx:id="accessoryBill_printData_Table_unitPrice" prefWidth="177.0" text="Unit Price" />
+                              <TableColumn fx:id="accessoryBill_printData_Table_units" prefWidth="162.0" text="Units" />
+                              <TableColumn fx:id="accessoryBill_printData_Table_discount" prefWidth="201.0" text="Discount" />
+                              <TableColumn fx:id="accessoryBill_printData_Table_warranty" prefWidth="232.0" text="Warrenty" />
+                              <TableColumn fx:id="accessoryBill_printData_Table_total" prefWidth="252.0" text="Total " />
+                           </columns>
+                        </TableView>
+                        <TextField editable="false" focusTraversable="false" layoutX="100.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="39.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Total :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField focusTraversable="false" layoutX="391.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="330.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cash :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField editable="false" focusTraversable="false" layoutX="735.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="640.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Balance :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="1112.0" layoutY="418.0" mnemonicParsing="false" onAction="#accessoryBillCancel" prefHeight="26.0" prefWidth="70.0" styleClass="cancel-btn" stylesheets="@dashboarddesign.css" text="Cancel" />
+                        <Button layoutX="1250.0" layoutY="395.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="116.0" styleClass="pdf-btn" stylesheets="@dashboarddesign.css" text="PDF" />
+                        <Button layoutX="1396.0" layoutY="395.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="116.0" styleClass="print-btn" stylesheets="@dashboarddesign.css" text="Print" />
+                        <TextField focusTraversable="false" layoutX="100.0" layoutY="376.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="39.0" layoutY="378.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cashier :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="1004.0" layoutY="418.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="billForm_repair" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
+               <padding>
+                  <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+               </padding>
+               <styleClass>
+                  <String fx:value="shadow" />
+                  <String fx:value="white-bg" />
+               </styleClass>
+               <children>
+                  <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="332.0" prefWidth="1540.0" stylesheets="@dashboarddesign.css">
+                     <styleClass>
+                        <String fx:value="white-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <FontAwesomeIcon glyphName="WRENCH" layoutX="22.0" layoutY="55.0" size="4em" />
+                        <TextField focusTraversable="false" layoutX="165.0" layoutY="102.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="22.0" layoutY="100.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Brand Name :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField focusTraversable="false" layoutX="515.0" layoutY="99.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="410.0" layoutY="102.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Model Name :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField focusTraversable="false" layoutX="165.0" layoutY="152.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="22.0" layoutY="150.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="IMEI :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField focusTraversable="false" layoutX="515.0" layoutY="149.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="410.0" layoutY="152.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Warrenty :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="644.0" layoutY="260.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="add-btn" stylesheets="@dashboarddesign.css" text="Add" />
+                        <Label layoutX="100.0" layoutY="18.0" prefHeight="40.0" prefWidth="168.0" text="Repairs - Bill">
+                           <font>
+                              <Font name="System Bold" size="28.0" />
+                           </font>
+                        </Label>
+                        <TextField focusTraversable="false" layoutX="164.0" layoutY="197.0" prefHeight="25.0" prefWidth="550.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="22.0" layoutY="203.0" prefHeight="21.0" prefWidth="143.0" stylesheets="@dashboarddesign.css" text="Description of issue:">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField focusTraversable="false" layoutX="987.0" layoutY="98.0" prefHeight="25.0" prefWidth="532.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="891.0" layoutY="102.0" prefHeight="21.0" prefWidth="76.0" stylesheets="@dashboarddesign.css" text="Parts :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField focusTraversable="false" layoutX="987.0" layoutY="197.0" prefHeight="25.0" prefWidth="532.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="891.0" layoutY="203.0" prefHeight="21.0" prefWidth="75.0" stylesheets="@dashboarddesign.css" text="Price :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="1334.0" layoutY="260.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
+                        <Button layoutX="1449.0" layoutY="260.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="add-btn" stylesheets="@dashboarddesign.css" text="Add" />
+                        <Button layoutX="1218.0" layoutY="260.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="clear-btn" stylesheets="@dashboarddesign.css" text="Clear" />
+                        <TextField focusTraversable="false" layoutX="990.0" layoutY="150.0" prefHeight="25.0" prefWidth="532.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="891.0" layoutY="154.0" prefHeight="21.0" prefWidth="91.0" stylesheets="@dashboarddesign.css" text="No of Parts :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="14.0" layoutY="378.0" prefHeight="456.0" prefWidth="1540.0" stylesheets="@dashboarddesign.css">
+                     <styleClass>
+                        <String fx:value="white-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <TableView layoutX="7.0" layoutY="24.0" prefHeight="334.0" prefWidth="1521.0">
+                           <columns>
+                              <TableColumn prefWidth="54.0" text="NO" />
+                              <TableColumn prefWidth="140.0" text="Brand Name" />
+                              <TableColumn prefWidth="141.0" text="Model Name" />
+                              <TableColumn prefWidth="196.0" text="IMEI" />
+                              <TableColumn prefWidth="243.0" text="Issue" />
+                              <TableColumn prefWidth="126.0" text="Warrenty" />
+                              <TableColumn prefWidth="255.0" text="Parts" />
+                              <TableColumn prefWidth="78.0" text="No of Parts " />
+                              <TableColumn prefWidth="140.0" text="Unit Price" />
+                              <TableColumn prefWidth="151.0" text="Total " />
+                           </columns>
+                        </TableView>
+                        <TextField editable="false" focusTraversable="false" layoutX="100.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="39.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Total :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField focusTraversable="false" layoutX="391.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="330.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cash :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField editable="false" focusTraversable="false" layoutX="735.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="640.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Balance :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="1250.0" layoutY="395.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="116.0" styleClass="pdf-btn" stylesheets="@dashboarddesign.css" text="PDF" />
+                        <Button layoutX="1396.0" layoutY="395.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="116.0" styleClass="print-btn" stylesheets="@dashboarddesign.css" text="Print" />
+                        <TextField focusTraversable="false" layoutX="100.0" layoutY="376.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="39.0" layoutY="378.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cashier :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField focusTraversable="false" layoutX="391.0" layoutY="376.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="330.0" layoutY="378.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Profit :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <FontAwesomeIcon fill="RED" glyphName="STAR" layoutX="572.0" layoutY="397.0" size="2em" />
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
          </children>
