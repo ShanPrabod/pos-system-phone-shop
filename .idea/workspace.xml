@@ -5,38 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f317328d-adc6-463c-958d-47dd49580fdc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/DatabaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/DatabaseConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/accessoryData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/accessoryData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/bill.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/bill.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/billAccessoryData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/billAccessoryData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/billPhoneData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/billPhoneData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/common.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/common.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/contacts.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/contacts.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/dashboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/dashboard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/phoneData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/phoneData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/reports.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/reports.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/settings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/shop.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/shop.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/bill.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/common.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/contacts.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/dashboard.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/reports.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/settings.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/system.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/system.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/shop/shop/systemLogin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/shop/shop/systemLogin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/bill.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/contacts.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/dashboard.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/dashboarddesign.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/shop/shop/dashboarddesign.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/images/contacts.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/inventory _add_accessories.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/inventory.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/loginDesign.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/shop/shop/loginDesign.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/loginSystem.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/shop/shop/loginSystem.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/reports.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/settings.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/shop/shop/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/system.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/shop/shop/system.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/shop/shop/systemLogin.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/shop/shop/systemLogin.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +65,7 @@
     "Application.HelloApplication.executor": "Run",
     "Application.dashboard.executor": "Run",
     "Application.loginSystem.executor": "Run",
-    "Application.shop.executor": "Debug",
+    "Application.shop.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",

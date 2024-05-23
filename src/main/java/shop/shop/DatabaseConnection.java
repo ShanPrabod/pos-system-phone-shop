@@ -2,7 +2,6 @@ package shop.shop;
 
 import java.sql.*;
 public class DatabaseConnection {
-    private static DatabaseConnection instance;
     private Connection connection;
     public static Connection connectDb(){
         String url = "jdbc:mysql://localhost:3306/phoneShop";
