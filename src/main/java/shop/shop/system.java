@@ -9,7 +9,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -192,6 +197,14 @@ public class system {
 
     @FXML
     private TextField phoneBillTotalAmount;
+    @FXML
+    private RadioButton radioButton_cash;
+    @FXML
+    private RadioButton radioButton_credit;
+    @FXML
+    private ToggleGroup paymentMethod;
+    @FXML
+    private Button phoneBillPrint_OKButton;
 
     @FXML
     private TextField accessoryBill_brandName;
@@ -210,8 +223,16 @@ public class system {
 
     @FXML
     private TextField accessoryBill_warranty;
+
     @FXML
     private TextField accessoryBillTotalAmount;
+
+    @FXML
+    private TextField phoneBillBalance;
+
+    @FXML
+    private TextField phoneBillCash;
+
 
     @FXML
     private TableView<billPhoneData> phoneBill_printData_Table;
@@ -734,6 +755,8 @@ public class system {
                     // Refresh table data (assuming phoneBillShowData() does this)
                     phoneBillShowData();
                     calculateTotalPhoneBill();
+                    phoneBillBalance.clear();
+                    phoneBillCash.clear();
                 } else {
                     // Error message if no rows deleted
                     System.out.println("Deletion failed! No rows affected." );
@@ -763,6 +786,27 @@ public class system {
         }
 
         phoneBillTotalAmount.setText(String.valueOf(totalAmount));
+    }
+
+    public void updateBalancePhone() {
+        try {
+            double totalAmount = Double.parseDouble(phoneBillTotalAmount.getText());
+            double cashAmount = Double.parseDouble(phoneBillCash.getText());
+            double balanceAmount = cashAmount - totalAmount;
+            phoneBillBalance.setText(String.valueOf(balanceAmount));
+            if(cashAmount < totalAmount && radioButton_cash.isSelected()){
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText("Insufficient Cash");
+                alert.setContentText("The cash provided is less than the total bill amount. Please enter sufficient cash.");
+                alert.showAndWait();
+            }
+        } catch (NumberFormatException e) {
+            phoneBillBalance.setText("0.0");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Input Error");
+            alert.setContentText("Please enter valid numbers only.");
+            alert.showAndWait();
+        }
     }
 
 
@@ -926,7 +970,6 @@ public class system {
                         alert.showAndWait();
                     }
                 }
-
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -998,6 +1041,7 @@ public class system {
             Connection connect = DatabaseConnection.connectDb();
             Statement statement = connect.createStatement();
             statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
+            statement.executeUpdate("DELETE FROM temp_bill_addphones");
             connect.close();
             calculateTotalAccessoryBill();
         } catch (SQLException e) {

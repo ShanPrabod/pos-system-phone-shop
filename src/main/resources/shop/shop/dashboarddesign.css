@@ -158,6 +158,17 @@
     -fx-background-color:#3357a4;
 }
 
+.OK-btn{
+    -fx-background-color: #0099cc;
+    -fx-background-radius:8px;
+    -fx-text-fill:#fff;
+    -fx-font-family:"Arial";
+    -fx-cursor:hand;
+}
+.OK-btn:hover{
+    -fx-background-color:#1ac6ff;
+}
+
 .update-btn{
     -fx-background-color:#327252;
     -fx-background-radius:8px;
