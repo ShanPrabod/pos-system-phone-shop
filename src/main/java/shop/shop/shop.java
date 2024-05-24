@@ -15,9 +15,9 @@ public class shop extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(shop.class.getResource("loginSystem.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
 
+
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/logo.png")));
         stage.getIcons().add(image);
-
         stage.setTitle("J Mobile");
         stage.setScene(scene);
         stage.setResizable(false);
