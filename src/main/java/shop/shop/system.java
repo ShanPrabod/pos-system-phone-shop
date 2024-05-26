@@ -198,13 +198,27 @@ public class system {
     @FXML
     private TextField phoneBillTotalAmount;
     @FXML
-    private RadioButton radioButton_cash;
+    private RadioButton radioButton_cash_phone;
     @FXML
-    private RadioButton radioButton_credit;
+    private RadioButton radioButton_credit_phone;
     @FXML
-    private ToggleGroup paymentMethod;
+    private ToggleGroup paymentMethodPhone;
     @FXML
     private Button phoneBillPrint_OKButton;
+
+    @FXML
+    private TextField accessoryBillBalance;
+    @FXML
+    private TextField accessoryBillCash;
+
+    @FXML
+    private RadioButton radioButton_cash_accessory;
+    @FXML
+    private RadioButton radioButton_credit_accessory;
+    @FXML
+    private ToggleGroup paymentMethodAccessory;
+    @FXML
+    private Button accessoryBillPrint_OKButton;
 
     @FXML
     private TextField accessoryBill_brandName;
@@ -794,7 +808,7 @@ public class system {
             double cashAmount = Double.parseDouble(phoneBillCash.getText());
             double balanceAmount = cashAmount - totalAmount;
             phoneBillBalance.setText(String.valueOf(balanceAmount));
-            if(cashAmount < totalAmount && radioButton_cash.isSelected()){
+            if(cashAmount < totalAmount && radioButton_cash_phone.isSelected()){
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setHeaderText("Insufficient Cash");
                 alert.setContentText("The cash provided is less than the total bill amount. Please enter sufficient cash.");
@@ -802,6 +816,26 @@ public class system {
             }
         } catch (NumberFormatException e) {
             phoneBillBalance.setText("0.0");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Input Error");
+            alert.setContentText("Please enter valid numbers only.");
+            alert.showAndWait();
+        }
+    }
+    public void updateBalanceAccessory() {
+        try {
+            double totalAmount = Double.parseDouble(accessoryBillTotalAmount.getText());
+            double cashAmount = Double.parseDouble(accessoryBillCash.getText());
+            double balanceAmount = cashAmount - totalAmount;
+            accessoryBillBalance.setText(String.valueOf(balanceAmount));
+            if(cashAmount < totalAmount && radioButton_cash_accessory.isSelected()){
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText("Insufficient Cash");
+                alert.setContentText("The cash provided is less than the total bill amount. Please enter sufficient cash.");
+                alert.showAndWait();
+            }
+        } catch (NumberFormatException e) {
+            accessoryBillCash.setText("0.0");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Input Error");
             alert.setContentText("Please enter valid numbers only.");
