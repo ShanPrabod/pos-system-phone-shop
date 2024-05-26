@@ -477,6 +477,8 @@ public class system {
 
 
 
+
+
     private ObservableList<phoneData> phoneBill_show;
     private void phoneBill_showData_Table(){
         phoneBill_show = phonesListData();
@@ -715,6 +717,8 @@ public class system {
                 phoneBillClear(); // call phoneBillClear method to clear all input fields
                 phoneBillShowData();
                 calculateTotalPhoneBill();
+                phoneBillCash.clear();
+                phoneBillBalance.clear();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -1066,6 +1070,8 @@ public class system {
                 accessoryBillClear(); // call phoneBillClear method to clear all input fields
                 accessoryBillShowData();
                 calculateTotalAccessoryBill();
+                accessoryBillCash.clear();
+                accessoryBillBalance.clear();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -1120,6 +1126,8 @@ public class system {
                     // Refresh table data
                     accessoryBillShowData();
                     calculateTotalAccessoryBill();
+                    accessoryBillBalance.clear();
+                    accessoryBillCash.clear();
                 } else {
                     // Error message if no rows deleted
                     System.out.println("Deletion failed! No rows affected." );
