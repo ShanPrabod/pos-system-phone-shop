@@ -1,6 +1,5 @@
 package shop.shop;
 
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -9,18 +8,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-
 public class system {
     @FXML
     private TableView<accessoryData> accessoryTable;
@@ -600,6 +591,12 @@ public class system {
                 }
                 else {
                     try {
+                        // Check the quantity in the database table
+                        String brandName = phoneBill_BrandName.getText();
+                        int quantity = Integer.parseInt(phoneBill_quantity.getText());
+                        if (!checkQuantityPhone(modelName, brandName, quantity)) {
+                            return;
+                        }
 
                     double discount;
                     String warranty;
@@ -656,6 +653,37 @@ public class system {
 
             }
         }catch (Exception e){e.printStackTrace();
+        }
+    }
+    public boolean checkQuantityPhone(String modelName, String brandName, int quantity) {
+        String checkSql = "SELECT `quantityPhone` FROM `phones` WHERE `modelNamePhone` = ? AND `brandNamePhone` = ?";
+        try {
+            PreparedStatement prepare = connect.prepareStatement(checkSql);
+            prepare.setString(1, modelName);
+            prepare.setString(2, brandName);
+            ResultSet resultSet = prepare.executeQuery();
+            if (resultSet.next()) {
+                int unitsInDatabase = resultSet.getInt("quantityPhone");
+                if (unitsInDatabase < quantity) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("The quantity is not sufficient!");
+                    alert.showAndWait();
+                    return false;
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The model name and brand name are not in the database!");
+                alert.showAndWait();
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
     public ObservableList<billPhoneData> phoneBillListData(){
@@ -729,7 +757,6 @@ public class system {
             Connection connect = DatabaseConnection.connectDb();
             Statement statement = connect.createStatement();
             statement.executeUpdate("DELETE FROM temp_bill_addphones");
-            statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
             connect.close();
             calculateTotalPhoneBill();
         } catch (SQLException e) {
@@ -805,6 +832,9 @@ public class system {
 
         phoneBillTotalAmount.setText(String.valueOf(totalAmount));
     }
+
+
+
 
     public void updateBalancePhone() {
         try {
@@ -956,7 +986,12 @@ public class system {
                     alert.setContentText("The model name already exists in the bill!");
                     alert.showAndWait();
                 }else {
-                    try {
+                    try {// Check the quantity in the database table
+                        String brandName = accessoryBill_brandName.getText();
+                        int quantity = Integer.parseInt(accessoryBill_quantity.getText());
+                        if (!checkQuantityAccessory(modelName, brandName, quantity)) {
+                            return;
+                        }
 
                         double discount;
                         String warranty;
@@ -1014,6 +1049,38 @@ public class system {
             e.printStackTrace();
         }
     }
+    public boolean checkQuantityAccessory(String modelName, String brandName, int quantity) {
+        String checkSql = "SELECT `quantityAccessory` FROM `accessories` WHERE `modelNameAccessory` = ? AND `brandNameAccessory` = ?";
+        try {
+            PreparedStatement prepare = connect.prepareStatement(checkSql);
+            prepare.setString(1, modelName);
+            prepare.setString(2, brandName);
+            ResultSet resultSet = prepare.executeQuery();
+            if (resultSet.next()) {
+                int unitsInDatabase = resultSet.getInt("quantityAccessory");
+                if (unitsInDatabase < quantity) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("The quantity is not sufficient!");
+                    alert.showAndWait();
+                    return false;
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The model name and brand name are not in the database!");
+                alert.showAndWait();
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public ObservableList<billAccessoryData> accessoryBillListData(){
         ObservableList<billAccessoryData> listData = FXCollections.observableArrayList();
         String sql = "SELECT * FROM temp_bill_addaccessory";
@@ -1082,7 +1149,6 @@ public class system {
             Connection connect = DatabaseConnection.connectDb();
             Statement statement = connect.createStatement();
             statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
-            statement.executeUpdate("DELETE FROM temp_bill_addphones");
             connect.close();
             calculateTotalAccessoryBill();
         } catch (SQLException e) {
@@ -1641,6 +1707,7 @@ public class system {
 
 
 
+
     public void switchForm(ActionEvent event){
         if (event.getSource() == dashboardButton){
             dashBoardForm.setVisible(true);
@@ -1661,6 +1728,8 @@ public class system {
 
             phoneBillDrop();
             accessoryBillDrop();
+            accessoryBillShowData();
+            phoneBillShowData();
 
         } else if (event.getSource() == menuItemPhone) {
             dashBoardForm.setVisible(false);
@@ -1683,6 +1752,8 @@ public class system {
             phoneBillSearch();
             phoneBillDrop();
             accessoryBillDrop();
+            accessoryBillShowData();
+            phoneBillShowData();
 
         } else if (event.getSource() == menuItemAccessory) {
             dashBoardForm.setVisible(false);
@@ -1705,6 +1776,8 @@ public class system {
             accessoryBillSearch();
             phoneBillDrop();
             accessoryBillDrop();
+            accessoryBillShowData();
+            phoneBillShowData();
 
         } else if (event.getSource() == menuItemRepair) {
             dashBoardForm.setVisible(false);
@@ -1725,6 +1798,8 @@ public class system {
 
             phoneBillDrop();
             accessoryBillDrop();
+            accessoryBillShowData();
+            phoneBillShowData();
 
         }else if (event.getSource() == inventoryButton) {
             dashBoardForm.setVisible(false);
@@ -1749,6 +1824,8 @@ public class system {
             accessorySearch();
             phoneBillDrop();
             accessoryBillDrop();
+            accessoryBillShowData();
+            phoneBillShowData();
 
         }else if (event.getSource() == reportsButton) {
             dashBoardForm.setVisible(false);
@@ -1769,6 +1846,8 @@ public class system {
 
             phoneBillDrop();
             accessoryBillDrop();
+            accessoryBillShowData();
+            phoneBillShowData();
 
         }else if (event.getSource() == contactsButton) {
             dashBoardForm.setVisible(false);
@@ -1789,6 +1868,8 @@ public class system {
 
             phoneBillDrop();
             accessoryBillDrop();
+            accessoryBillShowData();
+            phoneBillShowData();
 
         }else if (event.getSource() == settingsButton) {
             dashBoardForm.setVisible(false);
@@ -1808,6 +1889,8 @@ public class system {
             reportsButton.setStyle("-fx-background-color:transparent");
             phoneBillDrop();
             accessoryBillDrop();
+            accessoryBillShowData();
+            phoneBillShowData();
 
         }
     }
