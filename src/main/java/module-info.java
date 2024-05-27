@@ -4,6 +4,9 @@ module shop.shop {
     requires java.sql;
     requires javafx.graphics;
     requires javafx.base;
+    requires kernel;
+    requires layout;
+    requires io;
 
 
     opens shop.shop to javafx.fxml;
