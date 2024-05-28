@@ -1,5 +1,11 @@
 package shop.shop;
 
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -10,7 +16,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 public class system {
     @FXML
@@ -831,6 +843,78 @@ public class system {
         }
 
         phoneBillTotalAmount.setText(String.valueOf(totalAmount));
+    }
+    public void phoneBillPDF() {
+        try {
+            // Get the desktop path
+            Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
+
+            // Create the Bills folder if it does not exist
+            Path billsPath = desktopPath.resolve("Bills");
+            if (!Files.exists(billsPath)) {
+                Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
+            }
+
+            System.out.println("PDFs will be saved in: " + billsPath.toAbsolutePath().toString());
+
+
+
+            // Get the current date
+            LocalDate date = LocalDate.now();
+
+            // Get the number of PDF files in the Bills folder
+            int fileNumber = (int) Files.list(billsPath)
+                    .filter(Files::isRegularFile)
+                    .map(Path::getFileName)
+                    .filter(path -> path.toString().endsWith(".pdf"))
+                    .count();
+
+            // Create the PDF file name with the current date and a unique auto-incrementing number
+            String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + (fileNumber + 1) + ".pdf";
+
+            // Create the PDF file
+            String path = billsPath.resolve(fileName).toString();
+            PdfWriter pdfWriter = new PdfWriter(path);
+            PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+            pdfDocument.setDefaultPageSize(PageSize.A4);
+            Document document = new Document(pdfDocument);
+
+            // Add content to the PDF file
+            document.add(new Paragraph("Phone Bill"));
+
+            // Add a table to the PDF file
+            float[] columnWidths = {1, 2, 2};
+            Table table = new Table(columnWidths);
+            table.addCell("Date");
+            table.addCell("Description");
+            table.addCell("Amount");
+
+            // Add data to the table
+            table.addCell(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            table.addCell("Phone bill");
+            table.addCell("$100.00");
+
+            document.add(table);
+
+            // Close the PDF file
+            document.close();
+
+            // Show a success message
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success Message");
+            alert.setHeaderText(null);
+            alert.setContentText("The PDF file has been created successfully!");
+            alert.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            // Show an error message
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("An error occurred while creating the PDF file!");
+            alert.showAndWait();
+        }
     }
 
 
