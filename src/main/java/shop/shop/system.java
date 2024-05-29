@@ -1,11 +1,14 @@
 package shop.shop;
 
 import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -16,12 +19,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 public class system {
@@ -844,13 +849,16 @@ public class system {
 
         phoneBillTotalAmount.setText(String.valueOf(totalAmount));
     }
+
+
+
     public void phoneBillPDF() {
         try {
             // Get the desktop path
             Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
 
             // Create the Bills folder if it does not exist
-            Path billsPath = desktopPath.resolve("Bills");
+            Path billsPath = desktopPath.resolve("Phone Invoices");
             if (!Files.exists(billsPath)) {
                 Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
             }
@@ -861,6 +869,8 @@ public class system {
 
             // Get the current date
             LocalDate date = LocalDate.now();
+            LocalDateTime time = LocalDateTime.now();
+
 
             // Get the number of PDF files in the Bills folder
             int fileNumber = (int) Files.list(billsPath)
@@ -870,13 +880,13 @@ public class system {
                     .count();
 
             // Create the PDF file name with the current date and a unique auto-incrementing number
-            String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + (fileNumber + 1) + ".pdf";
+            String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
 
             // Create the PDF file
             String path = billsPath.resolve(fileName).toString();
             PdfWriter pdfWriter = new PdfWriter(path);
             PdfDocument pdfDocument = new PdfDocument(pdfWriter);
-            pdfDocument.setDefaultPageSize(PageSize.A4);
+            pdfDocument.setDefaultPageSize((PageSize) new Rectangle(Float.parseFloat(String.valueOf(UnitValue.createPointValue(72))), pdfDocument.getDefaultPageSize().getHeight()));
             Document document = new Document(pdfDocument);
 
             // Add content to the PDF file
@@ -916,6 +926,76 @@ public class system {
             alert.showAndWait();
         }
     }
+    public void accessoryBillPDF() {
+        PdfDocument pdfDocument = null;
+        PdfDocument tempPdfDocument = null;
+        try {
+            // Get the documents path
+            Path documentsPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
+
+            // Create the Accessory Invoice folder if it does not exist
+            Path accessoryInvoicePath = documentsPath.resolve("Accessory Invoice");
+            if (!Files.exists(accessoryInvoicePath)) {
+                Files.createDirectories(accessoryInvoicePath);
+            }
+
+            System.out.println("PDFs will be saved in: " + accessoryInvoicePath.toAbsolutePath().toString());
+
+            // Get the current date and time
+            LocalDate date = LocalDate.now();
+            LocalDateTime time = LocalDateTime.now();
+
+            // Create the PDF file name with the current date and time
+            String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
+
+            // Create the PDF file path
+            String path = accessoryInvoicePath.resolve(fileName).toString();
+            PdfWriter pdfWriter = new PdfWriter(path);
+            pdfDocument = new PdfDocument(pdfWriter);
+            Document document = new Document(pdfDocument);
+
+            // Convert mm to points (1 mm = 2.83465 points)
+            float width = 72 * 2.83465f; // 72mm in points
+            float margin = 36f; // 36 points = 0.5 inch margin
+
+            // Create a temporary document to measure the content height
+            tempPdfDocument = new PdfDocument(new PdfWriter(new File("temp.pdf")));
+            Document tempDocument = new Document(tempPdfDocument, new PageSize(width, 1000)); // Set an initial large height
+
+            // Add content to the temporary document
+            tempDocument.add(new Paragraph("Phone Bill"));
+
+            // Set explicit widths for the table columns
+            float[] columnWidths = {1 * width / 5, 2 * width / 5, 2 * width / 5};
+
+
+            // Measure the height of the content
+            float contentHeight = tempPdfDocument.getLastPage().getPageSize().getHeight();
+
+            tempDocument.close();
+
+            // Set height with some margin
+            float height = contentHeight + margin;
+
+            // Now create the actual document with the measured height
+            Rectangle billPageSize = new Rectangle(width, height);
+            pdfDocument.setDefaultPageSize(new PageSize(billPageSize));
+
+            // Add the same content to the final document
+            document.add(new Paragraph("Phone Bill").setTextAlignment(TextAlignment.CENTER));
+
+            // Close the temporary PDF document
+            tempPdfDocument.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            // Show an error message
+            System.err.println("An error occurred while creating the PDF file!");
+        }
+    }
+
+
 
 
 
@@ -1978,4 +2058,7 @@ public class system {
 
         }
     }
+
+
+    
 }
