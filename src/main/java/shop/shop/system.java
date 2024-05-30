@@ -1,12 +1,17 @@
 package shop.shop;
 
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Canvas;
+import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import javafx.collections.FXCollections;
@@ -20,6 +25,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,6 +34,8 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 public class system {
     @FXML
@@ -886,25 +894,15 @@ public class system {
             String path = billsPath.resolve(fileName).toString();
             PdfWriter pdfWriter = new PdfWriter(path);
             PdfDocument pdfDocument = new PdfDocument(pdfWriter);
-            pdfDocument.setDefaultPageSize((PageSize) new Rectangle(Float.parseFloat(String.valueOf(UnitValue.createPointValue(72))), pdfDocument.getDefaultPageSize().getHeight()));
-            Document document = new Document(pdfDocument);
+            float widthInPoints = 72 * 2.83465f;
+            float heightInPoints = 80 * 2.83465f;
+            PageSize pageSize = new PageSize(widthInPoints, heightInPoints);
+            Document document = new Document(pdfDocument, pageSize);
 
             // Add content to the PDF file
             document.add(new Paragraph("Phone Bill"));
 
-            // Add a table to the PDF file
-            float[] columnWidths = {1, 2, 2};
-            Table table = new Table(columnWidths);
-            table.addCell("Date");
-            table.addCell("Description");
-            table.addCell("Amount");
 
-            // Add data to the table
-            table.addCell(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            table.addCell("Phone bill");
-            table.addCell("$100.00");
-
-            document.add(table);
 
             // Close the PDF file
             document.close();
@@ -2060,5 +2058,268 @@ public class system {
     }
 
 
-    
+    public void phoneBillPDF_() {
+        try {
+            // Get the desktop path
+            Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
+
+            // Create the Bills folder if it does not exist
+            Path billsPath = desktopPath.resolve("Phone Invoices");
+            if (!Files.exists(billsPath)) {
+                Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
+            }
+
+            System.out.println("PDFs will be saved in: " + billsPath.toAbsolutePath().toString());
+
+            // Get the current date
+            LocalDate date = LocalDate.now();
+            LocalDateTime time = LocalDateTime.now();
+
+            // Create the PDF file name with the current date and a unique auto-incrementing number
+            String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
+
+            // Create the PDF file
+            String path = billsPath.resolve(fileName).toString();
+            PdfWriter pdfWriter = new PdfWriter(path);
+            PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+
+            //Database table row count
+            connect = DatabaseConnection.connectDb();
+            String query = "SELECT COUNT(*) FROM temp_bill_addphones" ;
+            Statement stmt = connect.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();
+            int rowCount;
+            if (rs.getInt(1) == 0){
+                rowCount = 1;
+            }else {
+                 rowCount = rs.getInt(1) *9;
+            }
+
+            rs.close();
+            System.out.println(rowCount);
+
+            // Define the page width with the specified width and add margins
+            float widthInPoints = 80 * 2.83465f; // 80mm to points
+            float marginInPoints = 4 * 2.83465f; // 4mm to points
+            PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight(fetchBillingItems(),rowCount));
+            pdfDocument.setDefaultPageSize(pageSize);
+            Document document = new Document(pdfDocument, pageSize);
+            document.setMargins(0, marginInPoints, 0, marginInPoints);
+
+            // Fetch data from the database
+            List<BillingItem> items = fetchBillingItems();
+
+            //Add logo
+            String imagePath = "images\\logo.png";
+            ImageData imageData = ImageDataFactory.create(imagePath);
+            Image image = new Image(imageData);
+            image.setHeight(50);
+            image.setWidth(50);
+            image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            document.add(image);
+
+            // Add title to the document
+            document.add(new Paragraph("J Mobiles\n").setBold().setTextAlignment(TextAlignment.CENTER));
+
+            // Add table rows
+            for (BillingItem item : items) {
+                addHeaderLine(document, "Brand Name");
+                addLine(document, "\t    " + item.getBrandName());
+                addHeaderLine(document, "Model Name");
+                addLine(document, "\t    " + item.getModelName());
+                addHeaderLine(document, "Memory");
+                addLine(document, "\t    " + String.valueOf(item.getMemory()));
+                addHeaderLine(document, "Color");
+                addLine(document, "\t    " + item.getColor());
+                addHeaderLine(document, "Unit Price");
+                addLine(document, "\t    " + String.valueOf(item.getUnitPrice()));
+                addHeaderLine(document, "Units");
+                addLine(document, "\t    " + String.valueOf(item.getUnits()));
+                addHeaderLine(document, "Discount");
+                addLine(document, "\t    " + String.valueOf(item.getDiscount()));
+                addHeaderLine(document, "Warranty");
+                addLine(document, "\t    " + item.getWarranty());
+                addHeaderLine(document, "Total");
+                addLine(document, "\t    " + String.valueOf(item.getTotal()));
+            }
+
+            // Add total at the bottom
+            Paragraph totalParagraph = new Paragraph("Total: " + calculateTotal(items));
+            document.add(totalParagraph);
+
+            // Close the PDF file
+            document.close();
+
+            // Show a success message
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success Message");
+            alert.setHeaderText(null);
+            alert.setContentText("The PDF file has been created successfully!");
+            alert.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            // Show an error message
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("An error occurred while creating the PDF file!");
+            alert.showAndWait();
+        }
+    }
+
+    // Helper method to fetch billing items from the database
+    private List<BillingItem> fetchBillingItems() throws SQLException {
+        List<BillingItem> items = new ArrayList<>();
+        connect = DatabaseConnection.connectDb();
+        String query = "SELECT * FROM temp_bill_addphones";
+        Statement stmt = connect.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+
+        while (rs.next()) {
+            BillingItem item = new BillingItem();
+            item.setBrandName(rs.getString("Brand Name"));
+            item.setModelName(rs.getString("Model Name"));
+            item.setMemory(rs.getInt("Memory"));
+            item.setColor(rs.getString("Color"));
+            item.setUnitPrice(rs.getDouble("Unit Price"));
+            item.setUnits(rs.getInt("Units"));
+            item.setDiscount(rs.getDouble("Discount"));
+            item.setWarranty(rs.getString("Warranty"));
+            item.setTotal(rs.getDouble("Total"));
+
+            items.add(item);
+        }
+
+        rs.close();
+        stmt.close();
+        connect.close();
+
+        return items;
+    }
+
+    // Helper method to add table headers
+    private void addHeaderLine(Document document, String header) {
+        document.add(new Paragraph(header).setBold().setBackgroundColor(ColorConstants.WHITE).setFontSize(11));
+    }
+
+    // Helper method to add a line to the document
+    private void addLine(Document document, String content) {
+        document.add(new Paragraph(content).setFontSize(10));
+    }
+
+    // Helper method to calculate the total amount
+    private double calculateTotal(List<BillingItem> items) {
+        return items.stream().mapToDouble(BillingItem::getTotal).sum();
+    }
+
+    // BillingItem class to represent each item in the billing details
+    public static class BillingItem {
+        private String brandName;
+        private String modelName;
+        private int memory;
+        private String color;
+        private double unitPrice;
+        private int units;
+        private double discount;
+        private String warranty;
+        private double total;
+
+        // Getters and setters for BillingItem properties
+
+        public String getBrandName() {
+            return brandName;
+        }
+
+        public void setBrandName(String brandName) {
+            this.brandName = brandName;
+        }
+
+        public String getModelName() {
+            return modelName;
+        }
+
+        public void setModelName(String modelName) {
+            this.modelName = modelName;
+        }
+
+        public int getMemory() {
+            return memory;
+        }
+
+        public void setMemory(int memory) {
+            this.memory = memory;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public double getUnitPrice() {
+            return unitPrice;
+        }
+
+        public void setUnitPrice(double unitPrice) {
+            this.unitPrice = unitPrice;
+        }
+
+        public int getUnits() {
+            return units;
+        }
+
+        public void setUnits(int units) {
+            this.units = units;
+        }
+
+        public double getDiscount() {
+            return discount;
+        }
+
+        public void setDiscount(double discount) {
+            this.discount = discount;
+        }
+
+        public String getWarranty() {
+            return warranty;
+        }
+
+        public void setWarranty(String warranty) {
+            this.warranty = warranty;
+        }
+
+        public double getTotal() {
+            return total;
+        }
+
+        public void setTotal(double total) {
+            this.total = total;
+        }
+    }
+    private float calculatePageHeight(List<BillingItem> items , int rowCount) {
+        // Calculate the height of the content
+        float contentHeight = (items.size() + 4 ) * 10 * rowCount ; // Assuming each line takes up 10 points
+        return contentHeight;
+    }
+
+    /*private float calculatePageHeight(List<BillingItem> items) {
+        // Height of each row in points
+       float rowHeight = 12;
+        // Calculate the number of rows that can fit on a page
+        int rowsPerPage = Math.round((PageSize.A4.getHeight() - 2 * 2.83465f) / rowHeight);
+
+// Calculate the total number of rows
+        int totalRows = items.size() * 9 + 1;
+
+// Calculate the number of pages needed
+        int numPages = (int) Math.ceil(totalRows / (float) rowsPerPage);
+
+// Calculate the total height of all pages
+        float totalHeight = numPages * PageSize.A4.getHeight();
+
+        return totalHeight; }*/
 }
