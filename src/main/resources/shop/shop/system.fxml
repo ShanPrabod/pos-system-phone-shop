@@ -476,7 +476,7 @@
                   <Button fx:id="clearButtonAccessory" focusTraversable="false" layoutX="1201.0" layoutY="892.0" mnemonicParsing="false" onAction="#accessoryDataReset" prefHeight="26.0" prefWidth="60.0" styleClass="clear-btn" stylesheets="@dashboarddesign.css" text="Clear" />
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="billForm_phone" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
+            <AnchorPane fx:id="billForm_phone" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -627,7 +627,7 @@
                            </font>
                         </Label>
                         <Button layoutX="1059.0" layoutY="419.0" mnemonicParsing="false" onAction="#phoneBillCancel" prefHeight="26.0" prefWidth="70.0" styleClass="cancel-btn" stylesheets="@dashboarddesign.css" text="Cancel" />
-                        <Button layoutX="1239.0" layoutY="397.0" mnemonicParsing="false" onAction="#phoneBillPDF" prefHeight="48.0" prefWidth="116.0" styleClass="pdf-btn" stylesheets="@dashboarddesign.css" text="PDF" />
+                        <Button layoutX="1239.0" layoutY="397.0" mnemonicParsing="false" onAction="#phoneBillPDF_" prefHeight="48.0" prefWidth="116.0" styleClass="pdf-btn" stylesheets="@dashboarddesign.css" text="PDF" />
                         <Button layoutX="1396.0" layoutY="395.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="116.0" styleClass="print-btn" stylesheets="@dashboarddesign.css" text="Print" />
                         <Button layoutX="951.0" layoutY="419.0" mnemonicParsing="false" onAction="#deletePhoneBillItem" prefHeight="26.0" prefWidth="70.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
                      </children>
@@ -677,7 +677,7 @@
                   <Button layoutX="139.0" layoutY="112.0" mnemonicParsing="false" text="settingsForm" />
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="billForm_accessory" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css">
+            <AnchorPane fx:id="billForm_accessory" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
