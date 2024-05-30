@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 public class system {
     @FXML
@@ -262,6 +263,8 @@ public class system {
 
     @FXML
     private TextField phoneBillCash;
+    @FXML
+    private TextField phoneBillCashier;
 
 
     @FXML
@@ -2102,13 +2105,13 @@ public class system {
             // Define the page width with the specified width and add margins
             float widthInPoints = 80 * 2.83465f; // 80mm to points
             float marginInPoints = 4 * 2.83465f; // 4mm to points
-            PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight(fetchBillingItems(),rowCount));
+            PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight_phones(fetchBillingItems_phones(),rowCount));
             pdfDocument.setDefaultPageSize(pageSize);
             Document document = new Document(pdfDocument, pageSize);
             document.setMargins(0, marginInPoints, 0, marginInPoints);
 
             // Fetch data from the database
-            List<BillingItem> items = fetchBillingItems();
+            List<BillingItem_phones> items = fetchBillingItems_phones();
 
             //Add logo
             String imagePath = "images\\logo.png";
@@ -2120,33 +2123,37 @@ public class system {
             document.add(image);
 
             // Add title to the document
-            document.add(new Paragraph("J Mobiles\n").setBold().setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("J Mobiles\nNO.  ,\nAnuradhapura Rd,\nDambulla.\n074-1558571\n--------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
+            String cashier = "J Mobile";
+            if (!Objects.equals(phoneBillCashier.getText(), "")){
+                cashier = phoneBillCashier.getText();
+            }
+            document.add(new Paragraph("Cashier : " + cashier + "             " + LocalDate.now()).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
 
             // Add table rows
-            for (BillingItem item : items) {
-                addHeaderLine(document, "Brand Name");
-                addLine(document, "\t    " + item.getBrandName());
-                addHeaderLine(document, "Model Name");
-                addLine(document, "\t    " + item.getModelName());
-                addHeaderLine(document, "Memory");
-                addLine(document, "\t    " + String.valueOf(item.getMemory()));
-                addHeaderLine(document, "Color");
-                addLine(document, "\t    " + item.getColor());
-                addHeaderLine(document, "Unit Price");
-                addLine(document, "\t    " + String.valueOf(item.getUnitPrice()));
-                addHeaderLine(document, "Units");
-                addLine(document, "\t    " + String.valueOf(item.getUnits()));
-                addHeaderLine(document, "Discount");
-                addLine(document, "\t    " + String.valueOf(item.getDiscount()));
-                addHeaderLine(document, "Warranty");
-                addLine(document, "\t    " + item.getWarranty());
-                addHeaderLine(document, "Total");
-                addLine(document, "\t    " + String.valueOf(item.getTotal()));
+            for (BillingItem_phones item : items) {
+                addHeaderLine_phones(document, "Brand Name", item.getBrandName());
+                addHeaderLine_phones(document, "Model Name",item.getModelName());
+                addHeaderLine_phones(document, "Memory", String.valueOf(item.getMemory()) + " GB");
+                addHeaderLine_phones(document, "Color",item.getColor());
+                addHeaderLine_phones(document, "Unit Price", String.valueOf(item.getUnitPrice()));
+                addHeaderLine_phones(document, "Units", String.valueOf(item.getUnits()));
+                addHeaderLine_phones(document, "Discount", String.valueOf(item.getDiscount()));
+                addHeaderLine_phones(document, "Warranty",item.getWarranty());
+                document.add(new Paragraph("-----------------------------------------------------------\n").setFontSize(10));
             }
 
             // Add total at the bottom
-            Paragraph totalParagraph = new Paragraph("Total: " + calculateTotal(items));
+            document.add(new Paragraph("Cash:  RS. " + phoneBillCash.getText() + ".00").setFontSize(10));
+            document.add(new Paragraph("Balance:  RS. " + phoneBillBalance.getText() + "0").setFontSize(10));
+            document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+            Paragraph totalParagraph = new Paragraph("Total:  RS. " + calculateTotal_phones(items) + "0").setFontSize(10);
             document.add(totalParagraph);
+            document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+            document.add(new Paragraph("*** Thank You, Come Again ! ***").setFontSize(10).setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+            document.add(new Paragraph("NXTGen Solutions\nshanprabodh@icloud.com\nWhatsapp : 071-2823447").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
 
             // Close the PDF file
             document.close();
@@ -2157,6 +2164,7 @@ public class system {
             alert.setHeaderText(null);
             alert.setContentText("The PDF file has been created successfully!");
             alert.showAndWait();
+            System.out.println(items.size());
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -2170,15 +2178,15 @@ public class system {
     }
 
     // Helper method to fetch billing items from the database
-    private List<BillingItem> fetchBillingItems() throws SQLException {
-        List<BillingItem> items = new ArrayList<>();
+    private List<BillingItem_phones> fetchBillingItems_phones() throws SQLException {
+        List<BillingItem_phones> items = new ArrayList<>();
         connect = DatabaseConnection.connectDb();
         String query = "SELECT * FROM temp_bill_addphones";
         Statement stmt = connect.createStatement();
         ResultSet rs = stmt.executeQuery(query);
 
         while (rs.next()) {
-            BillingItem item = new BillingItem();
+            BillingItem_phones item = new BillingItem_phones();
             item.setBrandName(rs.getString("Brand Name"));
             item.setModelName(rs.getString("Model Name"));
             item.setMemory(rs.getInt("Memory"));
@@ -2194,28 +2202,24 @@ public class system {
 
         rs.close();
         stmt.close();
-        connect.close();
 
         return items;
     }
 
     // Helper method to add table headers
-    private void addHeaderLine(Document document, String header) {
-        document.add(new Paragraph(header).setBold().setBackgroundColor(ColorConstants.WHITE).setFontSize(11));
-    }
-
-    // Helper method to add a line to the document
-    private void addLine(Document document, String content) {
-        document.add(new Paragraph(content).setFontSize(10));
+    private void addHeaderLine_phones(Document document, String header, String content) {
+        Paragraph headerParagraph = new Paragraph();
+        headerParagraph.add(new Text(header +"  :  " ).setBold().setFontSize(10)).add(content).setFontSize(10);
+        document.add(headerParagraph);
     }
 
     // Helper method to calculate the total amount
-    private double calculateTotal(List<BillingItem> items) {
-        return items.stream().mapToDouble(BillingItem::getTotal).sum();
+    private double calculateTotal_phones(List<BillingItem_phones> items) {
+        return items.stream().mapToDouble(BillingItem_phones::getTotal).sum();
     }
 
     // BillingItem class to represent each item in the billing details
-    public static class BillingItem {
+    public static class BillingItem_phones {
         private String brandName;
         private String modelName;
         private int memory;
@@ -2300,11 +2304,12 @@ public class system {
             this.total = total;
         }
     }
-    private float calculatePageHeight(List<BillingItem> items , int rowCount) {
+    private float calculatePageHeight_phones(List<BillingItem_phones> items , int rowCount) {
         // Calculate the height of the content
-        float contentHeight = (items.size() + 4 ) * 10 * rowCount ; // Assuming each line takes up 10 points
+        float contentHeight = 25 * (rowCount + 15) ; // Assuming each line takes up 10 points
         return contentHeight;
     }
+
 
     /*private float calculatePageHeight(List<BillingItem> items) {
         // Height of each row in points
