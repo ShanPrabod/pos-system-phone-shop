@@ -224,9 +224,20 @@ public class system {
     private Button phoneBillPrint_OKButton;
 
     @FXML
+    private TextField phoneBillCustomer;
+    @FXML
+    private TextField phoneBillCustomerMobile;
+
+    @FXML
     private TextField accessoryBillBalance;
     @FXML
     private TextField accessoryBillCash;
+    @FXML
+    private TextField accessoryBillCustomer;
+    @FXML
+    private TextField accessoryBillCustomerMobile;
+    @FXML
+    private TextField accessoryBillCashier;
 
     @FXML
     private RadioButton radioButton_cash_accessory;
@@ -775,6 +786,8 @@ public class system {
                 calculateTotalPhoneBill();
                 phoneBillCash.clear();
                 phoneBillBalance.clear();
+                phoneBillCustomer.clear();
+                phoneBillCustomerMobile.clear();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -1304,6 +1317,8 @@ public class system {
                 calculateTotalAccessoryBill();
                 accessoryBillCash.clear();
                 accessoryBillBalance.clear();
+                accessoryBillCustomer.clear();
+                accessoryBillCustomerMobile.clear();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -1873,6 +1888,380 @@ public class system {
 
 
 
+
+
+
+    public void phoneBillPDF_() {
+        if (Objects.equals(phoneBillCash.getText(), "")){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Enter the Cash !");
+            alert.showAndWait();
+        } else if (Double.parseDouble(phoneBillCash.getText()) != Double.parseDouble(phoneBillTotalAmount.getText()) + Double.parseDouble(phoneBillBalance.getText())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Enter the Cash Correctly!");
+            alert.showAndWait();
+        } else {
+            try {
+                List<BillingItem_phones> items_ = fetchBillingItems_phones();
+                String revenueProfit = generateReport_phones(items_);
+                phoneBill_showData_Table();
+
+                // Get the desktop path
+                Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
+
+                // Create the Bills folder if it does not exist
+                Path billsPath = desktopPath.resolve("Phone Invoices");
+                if (!Files.exists(billsPath)) {
+                    Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
+                }
+
+                // Get the current date
+                LocalDate date = LocalDate.now();
+                LocalDateTime time = LocalDateTime.now();
+
+                // Create the PDF file name with the current date and a unique auto-incrementing number
+                String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
+
+                // Create the PDF file
+                String path = billsPath.resolve(fileName).toString();
+                PdfWriter pdfWriter = new PdfWriter(path);
+                PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+
+                //Database table row count
+                connect = DatabaseConnection.connectDb();
+                String query = "SELECT COUNT(*) FROM temp_bill_addphones" ;
+                Statement stmt = connect.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                rs.next();
+                int rowCount;
+                if (rs.getInt(1) == 0){
+                    rowCount = 1;
+                }else {
+                    rowCount = rs.getInt(1) *9;
+                }
+
+                rs.close();
+
+                // Define the page width with the specified width and add margins
+                float widthInPoints = 80 * 2.83465f; // 80mm to points
+                float marginInPoints = 4 * 2.83465f; // 4mm to points
+                PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight_phones(rowCount));
+                pdfDocument.setDefaultPageSize(pageSize);
+                Document document = new Document(pdfDocument, pageSize);
+                document.setMargins(0, marginInPoints, 0, marginInPoints);
+
+                // Fetch data from the database
+                List<BillingItem_phones> items = fetchBillingItems_phones();
+
+                //Add logo
+                String imagePath = "images\\logo.png";
+                ImageData imageData = ImageDataFactory.create(imagePath);
+                Image image = new Image(imageData);
+                image.setHeight(50);
+                image.setWidth(50);
+                image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                document.add(image);
+
+                // Add title to the document
+                document.add(new Paragraph("J Mobiles\nNO.  ,\nAnuradhapura Rd,\nDambulla.\n074-1558571\n--------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
+                String cashier = "J Mobile";
+                if (!Objects.equals(phoneBillCashier.getText(), "")){
+                    cashier = phoneBillCashier.getText();
+                }
+                document.add(new Paragraph("Cashier : " + cashier + "             " + LocalDate.now()).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
+                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+
+                if (!Objects.equals(phoneBillCustomer.getText(), "") || !Objects.equals(phoneBillCustomerMobile.getText(),"")){
+                    String customer = "-" , customerMobile = "-";
+                    if(!Objects.equals(phoneBillCustomer.getText(), "")) {
+                        customer = phoneBillCustomer.getText();}
+                    if(!Objects.equals(phoneBillCustomerMobile.getText(), "")) {
+                        customerMobile = phoneBillCustomerMobile.getText();}
+                    document.add(new Paragraph("Customer : " + customer + "              Mobile : " + customerMobile).setFontSize(8));
+                    document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                }
+
+                // Add table rows
+                for (BillingItem_phones item : items) {
+                    addHeaderLine_phones(document, "Brand Name", item.getBrandName());
+                    addHeaderLine_phones(document, "Model Name",item.getModelName());
+                    addHeaderLine_phones(document, "Memory", String.valueOf(item.getMemory()) + " GB");
+                    addHeaderLine_phones(document, "Color",item.getColor());
+                    addHeaderLine_phones(document, "Unit Price", String.valueOf(item.getUnitPrice()));
+                    addHeaderLine_phones(document, "Units", String.valueOf(item.getUnits()));
+                    addHeaderLine_phones(document, "Discount", String.valueOf(item.getDiscount()));
+                    addHeaderLine_phones(document, "Warranty",item.getWarranty());
+                    document.add(new Paragraph("-----------------------------------------------------------\n").setFontSize(10));
+                }
+
+                // Add total at the bottom
+                document.add(new Paragraph("Cash:  Rs. " + phoneBillCash.getText() + ".00").setFontSize(10));
+                document.add(new Paragraph("Balance:  Rs. " + phoneBillBalance.getText() + "0").setFontSize(10));
+                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                Paragraph totalParagraph = new Paragraph("Total:  Rs. " + calculateTotal_phones(items) + "0").setFontSize(10);
+                document.add(totalParagraph);
+                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                document.add(new Paragraph("*** Thank You, Come Again ! ***").setFontSize(10).setTextAlignment(TextAlignment.CENTER));
+                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                document.add(new Paragraph("NXTGen Solutions\nshanprabodh@icloud.com\nWhatsapp : 071-2823447").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
+
+                // Close the PDF file
+                document.close();
+
+                // Show a success message
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The PDF file has been created successfully!\n" + billsPath.toAbsolutePath().toString() + "\n" + revenueProfit);
+                alert.showAndWait();
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                // Show an error message
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("An error occurred while creating the PDF file!");
+                alert.showAndWait();
+            }
+        }
+
+    }
+
+    // Helper method to fetch billing items from the database
+    private List<BillingItem_phones> fetchBillingItems_phones() throws SQLException {
+        List<BillingItem_phones> items = new ArrayList<>();
+        connect = DatabaseConnection.connectDb();
+        String query = "SELECT * FROM temp_bill_addphones";
+        Statement stmt = connect.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+
+        while (rs.next()) {
+            BillingItem_phones item = new BillingItem_phones();
+            item.setBrandName(rs.getString("Brand Name"));
+            item.setModelName(rs.getString("Model Name"));
+            item.setMemory(rs.getInt("Memory"));
+            item.setColor(rs.getString("Color"));
+            item.setUnitPrice(rs.getDouble("Unit Price"));
+            item.setUnits(rs.getInt("Units"));
+            item.setDiscount(rs.getDouble("Discount"));
+            item.setWarranty(rs.getString("Warranty"));
+            item.setTotal(rs.getDouble("Total"));
+
+            items.add(item);
+        }
+
+        rs.close();
+        stmt.close();
+
+        return items;
+    }
+
+    // Helper method to add table headers
+    private void addHeaderLine_phones(Document document, String header, String content) {
+        Paragraph headerParagraph = new Paragraph();
+        headerParagraph.add(new Text(header +"  :  " ).setBold().setFontSize(10)).add(content).setFontSize(10);
+        document.add(headerParagraph);
+    }
+
+    // Helper method to calculate the total amount
+    private double calculateTotal_phones(List<BillingItem_phones> items) {
+        return items.stream().mapToDouble(BillingItem_phones::getTotal).sum();
+    }
+
+    // BillingItem class to represent each item in the billing details
+    public static class BillingItem_phones {
+        private String brandName;
+        private String modelName;
+        private int memory;
+        private String color;
+        private double unitPrice;
+        private int units;
+        private double discount;
+        private String warranty;
+        private double total;
+
+        // Getters and setters for BillingItem properties
+
+        public String getBrandName() {
+            return brandName;
+        }
+
+        public void setBrandName(String brandName) {
+            this.brandName = brandName;
+        }
+
+        public String getModelName() {
+            return modelName;
+        }
+
+        public void setModelName(String modelName) {
+            this.modelName = modelName;
+        }
+
+        public int getMemory() {
+            return memory;
+        }
+
+        public void setMemory(int memory) {
+            this.memory = memory;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public double getUnitPrice() {
+            return unitPrice;
+        }
+
+        public void setUnitPrice(double unitPrice) {
+            this.unitPrice = unitPrice;
+        }
+
+        public int getUnits() {
+            return units;
+        }
+
+        public void setUnits(int units) {
+            this.units = units;
+        }
+
+        public double getDiscount() {
+            return discount;
+        }
+
+        public void setDiscount(double discount) {
+            this.discount = discount;
+        }
+
+        public String getWarranty() {
+            return warranty;
+        }
+
+        public void setWarranty(String warranty) {
+            this.warranty = warranty;
+        }
+
+        public double getTotal() {
+            return total;
+        }
+
+        public void setTotal(double total) {
+            this.total = total;
+        }
+    }
+    private float calculatePageHeight_phones(int rowCount) {
+        // Calculate the height of the content
+        float contentHeight = 25 * (rowCount + 15) ; // Assuming each line takes up 10 points
+        if(!Objects.equals(phoneBillCustomer.getText(), "") || !Objects.equals(phoneBillCustomerMobile.getText(),"")){
+            contentHeight = 25 * (rowCount + 17) ;
+        }
+        return contentHeight;
+    }
+
+    private String generateReport_phones(List<BillingItem_phones> items) throws SQLException {
+        connect = DatabaseConnection.connectDb();
+        String query = "SELECT * FROM temp_bill_addphones";
+        Statement stmt = connect.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+
+        double totalRevenue;
+        if (!phoneBillTotalAmount.getText().isEmpty()) {
+            totalRevenue = Double.parseDouble(phoneBillTotalAmount.getText());
+        } else {
+            totalRevenue = 0;
+        }
+
+        int totalQuantity = 0;
+        double totalDiscount = 0;
+
+        while (rs.next()) {
+            String brandName = rs.getString("Brand Name");
+            String modelName = rs.getString("Model Name");
+            int memory = rs.getInt("Memory");
+            String color = rs.getString("Color");
+            double unitPrice = rs.getDouble("Unit Price");
+            int units = rs.getInt("Units");
+            double discount = rs.getDouble("Discount");
+
+
+            // Update quantity in phones table
+            updateQuantity_phones(brandName, modelName, memory, color, units);
+
+            totalQuantity += units;
+            totalDiscount += discount * units;
+        }
+
+        rs.close();
+        stmt.close();
+
+        double totalProfit = 0;
+        for (BillingItem_phones item : items) {
+            String brandName = item.getBrandName();
+            String modelName = item.getModelName();
+            int memory = item.getMemory();
+            String color = item.getColor();
+            double unitPrice = item.getUnitPrice();
+            int units = item.getUnits();
+
+            // Get the cost price from the phones table
+            double costPrice = getCostPrice_phones(brandName, modelName, memory, color);
+
+            // Calculate the profit for this item
+            double profit = (unitPrice - costPrice) * units;
+
+            // Add the profit to the total profit
+            totalProfit += profit;
+        }
+
+
+        totalProfit -= totalDiscount;
+
+        return "Revenue : Rs." + totalRevenue + "\nProfit : Rs." + totalProfit + "\nQuantity : "+ totalQuantity;
+    }
+    private double getCostPrice_phones(String brandName, String modelName, int memory, String color) throws SQLException {
+        connect = DatabaseConnection.connectDb();
+        String query = "SELECT costPricePhone FROM phones WHERE brandNamePhone = '" + brandName + "' AND modelNamePhone = '" + modelName + "' AND memoryPhone = " + memory + " AND colorPhone = '" + color + "'";
+        Statement stmt = connect.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+
+        double costPrice = 0;
+        if (rs.next()) {
+            costPrice = rs.getDouble("costPricePhone");
+        }
+
+        rs.close();
+        stmt.close();
+        connect.close();
+
+        return costPrice;
+    }
+
+    // Helper method to update the quantity in the phones table
+    private void updateQuantity_phones(String brandName, String modelName, int memory, String color, int units) throws SQLException {
+        connect = DatabaseConnection.connectDb();
+        String query = "UPDATE phones SET quantityPhone = quantityPhone - " + units + " WHERE brandNamePhone = '" + brandName + "' AND modelNamePhone = '" + modelName + "' AND memoryPhone = " + memory + " AND colorPhone = '" + color + "'";
+        Statement stmt = connect.createStatement();
+        stmt.executeUpdate(query);
+
+        stmt.close();
+    }
+
+
+
+
+
+
+
     public void switchForm(ActionEvent event){
         if (event.getSource() == dashboardButton){
             dashBoardForm.setVisible(true);
@@ -2060,271 +2449,4 @@ public class system {
         }
     }
 
-
-    public void phoneBillPDF_() {
-        try {
-            // Get the desktop path
-            Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
-
-            // Create the Bills folder if it does not exist
-            Path billsPath = desktopPath.resolve("Phone Invoices");
-            if (!Files.exists(billsPath)) {
-                Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
-            }
-
-            System.out.println("PDFs will be saved in: " + billsPath.toAbsolutePath().toString());
-
-            // Get the current date
-            LocalDate date = LocalDate.now();
-            LocalDateTime time = LocalDateTime.now();
-
-            // Create the PDF file name with the current date and a unique auto-incrementing number
-            String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
-
-            // Create the PDF file
-            String path = billsPath.resolve(fileName).toString();
-            PdfWriter pdfWriter = new PdfWriter(path);
-            PdfDocument pdfDocument = new PdfDocument(pdfWriter);
-
-            //Database table row count
-            connect = DatabaseConnection.connectDb();
-            String query = "SELECT COUNT(*) FROM temp_bill_addphones" ;
-            Statement stmt = connect.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            rs.next();
-            int rowCount;
-            if (rs.getInt(1) == 0){
-                rowCount = 1;
-            }else {
-                 rowCount = rs.getInt(1) *9;
-            }
-
-            rs.close();
-            System.out.println(rowCount);
-
-            // Define the page width with the specified width and add margins
-            float widthInPoints = 80 * 2.83465f; // 80mm to points
-            float marginInPoints = 4 * 2.83465f; // 4mm to points
-            PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight_phones(fetchBillingItems_phones(),rowCount));
-            pdfDocument.setDefaultPageSize(pageSize);
-            Document document = new Document(pdfDocument, pageSize);
-            document.setMargins(0, marginInPoints, 0, marginInPoints);
-
-            // Fetch data from the database
-            List<BillingItem_phones> items = fetchBillingItems_phones();
-
-            //Add logo
-            String imagePath = "images\\logo.png";
-            ImageData imageData = ImageDataFactory.create(imagePath);
-            Image image = new Image(imageData);
-            image.setHeight(50);
-            image.setWidth(50);
-            image.setHorizontalAlignment(HorizontalAlignment.CENTER);
-            document.add(image);
-
-            // Add title to the document
-            document.add(new Paragraph("J Mobiles\nNO.  ,\nAnuradhapura Rd,\nDambulla.\n074-1558571\n--------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
-            String cashier = "J Mobile";
-            if (!Objects.equals(phoneBillCashier.getText(), "")){
-                cashier = phoneBillCashier.getText();
-            }
-            document.add(new Paragraph("Cashier : " + cashier + "             " + LocalDate.now()).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
-            document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-
-            // Add table rows
-            for (BillingItem_phones item : items) {
-                addHeaderLine_phones(document, "Brand Name", item.getBrandName());
-                addHeaderLine_phones(document, "Model Name",item.getModelName());
-                addHeaderLine_phones(document, "Memory", String.valueOf(item.getMemory()) + " GB");
-                addHeaderLine_phones(document, "Color",item.getColor());
-                addHeaderLine_phones(document, "Unit Price", String.valueOf(item.getUnitPrice()));
-                addHeaderLine_phones(document, "Units", String.valueOf(item.getUnits()));
-                addHeaderLine_phones(document, "Discount", String.valueOf(item.getDiscount()));
-                addHeaderLine_phones(document, "Warranty",item.getWarranty());
-                document.add(new Paragraph("-----------------------------------------------------------\n").setFontSize(10));
-            }
-
-            // Add total at the bottom
-            document.add(new Paragraph("Cash:  RS. " + phoneBillCash.getText() + ".00").setFontSize(10));
-            document.add(new Paragraph("Balance:  RS. " + phoneBillBalance.getText() + "0").setFontSize(10));
-            document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-            Paragraph totalParagraph = new Paragraph("Total:  RS. " + calculateTotal_phones(items) + "0").setFontSize(10);
-            document.add(totalParagraph);
-            document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-            document.add(new Paragraph("*** Thank You, Come Again ! ***").setFontSize(10).setTextAlignment(TextAlignment.CENTER));
-            document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-            document.add(new Paragraph("NXTGen Solutions\nshanprabodh@icloud.com\nWhatsapp : 071-2823447").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
-
-            // Close the PDF file
-            document.close();
-
-            // Show a success message
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success Message");
-            alert.setHeaderText(null);
-            alert.setContentText("The PDF file has been created successfully!");
-            alert.showAndWait();
-            System.out.println(items.size());
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // Show an error message
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Message");
-            alert.setHeaderText(null);
-            alert.setContentText("An error occurred while creating the PDF file!");
-            alert.showAndWait();
-        }
-    }
-
-    // Helper method to fetch billing items from the database
-    private List<BillingItem_phones> fetchBillingItems_phones() throws SQLException {
-        List<BillingItem_phones> items = new ArrayList<>();
-        connect = DatabaseConnection.connectDb();
-        String query = "SELECT * FROM temp_bill_addphones";
-        Statement stmt = connect.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
-
-        while (rs.next()) {
-            BillingItem_phones item = new BillingItem_phones();
-            item.setBrandName(rs.getString("Brand Name"));
-            item.setModelName(rs.getString("Model Name"));
-            item.setMemory(rs.getInt("Memory"));
-            item.setColor(rs.getString("Color"));
-            item.setUnitPrice(rs.getDouble("Unit Price"));
-            item.setUnits(rs.getInt("Units"));
-            item.setDiscount(rs.getDouble("Discount"));
-            item.setWarranty(rs.getString("Warranty"));
-            item.setTotal(rs.getDouble("Total"));
-
-            items.add(item);
-        }
-
-        rs.close();
-        stmt.close();
-
-        return items;
-    }
-
-    // Helper method to add table headers
-    private void addHeaderLine_phones(Document document, String header, String content) {
-        Paragraph headerParagraph = new Paragraph();
-        headerParagraph.add(new Text(header +"  :  " ).setBold().setFontSize(10)).add(content).setFontSize(10);
-        document.add(headerParagraph);
-    }
-
-    // Helper method to calculate the total amount
-    private double calculateTotal_phones(List<BillingItem_phones> items) {
-        return items.stream().mapToDouble(BillingItem_phones::getTotal).sum();
-    }
-
-    // BillingItem class to represent each item in the billing details
-    public static class BillingItem_phones {
-        private String brandName;
-        private String modelName;
-        private int memory;
-        private String color;
-        private double unitPrice;
-        private int units;
-        private double discount;
-        private String warranty;
-        private double total;
-
-        // Getters and setters for BillingItem properties
-
-        public String getBrandName() {
-            return brandName;
-        }
-
-        public void setBrandName(String brandName) {
-            this.brandName = brandName;
-        }
-
-        public String getModelName() {
-            return modelName;
-        }
-
-        public void setModelName(String modelName) {
-            this.modelName = modelName;
-        }
-
-        public int getMemory() {
-            return memory;
-        }
-
-        public void setMemory(int memory) {
-            this.memory = memory;
-        }
-
-        public String getColor() {
-            return color;
-        }
-
-        public void setColor(String color) {
-            this.color = color;
-        }
-
-        public double getUnitPrice() {
-            return unitPrice;
-        }
-
-        public void setUnitPrice(double unitPrice) {
-            this.unitPrice = unitPrice;
-        }
-
-        public int getUnits() {
-            return units;
-        }
-
-        public void setUnits(int units) {
-            this.units = units;
-        }
-
-        public double getDiscount() {
-            return discount;
-        }
-
-        public void setDiscount(double discount) {
-            this.discount = discount;
-        }
-
-        public String getWarranty() {
-            return warranty;
-        }
-
-        public void setWarranty(String warranty) {
-            this.warranty = warranty;
-        }
-
-        public double getTotal() {
-            return total;
-        }
-
-        public void setTotal(double total) {
-            this.total = total;
-        }
-    }
-    private float calculatePageHeight_phones(List<BillingItem_phones> items , int rowCount) {
-        // Calculate the height of the content
-        float contentHeight = 25 * (rowCount + 15) ; // Assuming each line takes up 10 points
-        return contentHeight;
-    }
-
-
-    /*private float calculatePageHeight(List<BillingItem> items) {
-        // Height of each row in points
-       float rowHeight = 12;
-        // Calculate the number of rows that can fit on a page
-        int rowsPerPage = Math.round((PageSize.A4.getHeight() - 2 * 2.83465f) / rowHeight);
-
-// Calculate the total number of rows
-        int totalRows = items.size() * 9 + 1;
-
-// Calculate the number of pages needed
-        int numPages = (int) Math.ceil(totalRows / (float) rowsPerPage);
-
-// Calculate the total height of all pages
-        float totalHeight = numPages * PageSize.A4.getHeight();
-
-        return totalHeight; }*/
 }
