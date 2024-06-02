@@ -24,8 +24,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -582,12 +585,25 @@ public class system {
         sortList.comparatorProperty().bind(phoneBill_showData_Table.comparatorProperty());
         phoneBill_showData_Table.setItems(sortList);
     }
-    public void temp_bill_addPhones(){
+    public void temp_bill_addPhones() throws SQLException {
         String sql = "INSERT INTO temp_bill_addphones " +
                 "(`Brand Name`, `Model Name`, Memory, Color, `Unit Price`, Units, Discount, Warranty, Total) " +
                 "VALUES (?,?,?,?,?,?,?,?,?)";
-
         connect = DatabaseConnection.connectDb();
+
+        String query = "SELECT `quantityPhone` FROM `phones` WHERE `brandNamePhone` =? AND `modelNamePhone` =?";
+        assert connect != null;
+        PreparedStatement pstmt = connect.prepareStatement(query);
+        pstmt.setString(1, phoneBill_BrandName.getText());
+        pstmt.setString(2, phoneBill_modelName.getText());
+        ResultSet rs = pstmt.executeQuery();
+        int availableQuantity = 0;
+        if (rs.next()) {
+            availableQuantity = rs.getInt("quantityPhone");
+        }
+        rs.close();
+        pstmt.close();
+
         try {
             Alert alert;
             if (phoneBill_price.getText().isEmpty() ){
@@ -614,7 +630,19 @@ public class system {
                 alert.setHeaderText(null);
                 alert.setContentText("Quantity is less than 0 !");
                 alert.showAndWait();
-            }  else {
+            } else if (availableQuantity < 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The selected item is out of stock!");
+                alert.showAndWait();
+            } else if (availableQuantity < Integer.parseInt(phoneBill_quantity.getText())) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The selected item is not available in the required quantity!");
+                alert.showAndWait();
+            }else {
                 String modelName = phoneBill_modelName.getText();
                 String checkSql = "SELECT * FROM `temp_bill_addphones` WHERE `Model Name` = ?";
                 prepare = connect.prepareStatement(checkSql);
@@ -875,145 +903,6 @@ public class system {
     }
 
 
-
-    public void phoneBillPDF() {
-        try {
-            // Get the desktop path
-            Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
-
-            // Create the Bills folder if it does not exist
-            Path billsPath = desktopPath.resolve("Phone Invoices");
-            if (!Files.exists(billsPath)) {
-                Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
-            }
-
-            System.out.println("PDFs will be saved in: " + billsPath.toAbsolutePath().toString());
-
-
-
-            // Get the current date
-            LocalDate date = LocalDate.now();
-            LocalDateTime time = LocalDateTime.now();
-
-
-            // Get the number of PDF files in the Bills folder
-            int fileNumber = (int) Files.list(billsPath)
-                    .filter(Files::isRegularFile)
-                    .map(Path::getFileName)
-                    .filter(path -> path.toString().endsWith(".pdf"))
-                    .count();
-
-            // Create the PDF file name with the current date and a unique auto-incrementing number
-            String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
-
-            // Create the PDF file
-            String path = billsPath.resolve(fileName).toString();
-            PdfWriter pdfWriter = new PdfWriter(path);
-            PdfDocument pdfDocument = new PdfDocument(pdfWriter);
-            float widthInPoints = 72 * 2.83465f;
-            float heightInPoints = 80 * 2.83465f;
-            PageSize pageSize = new PageSize(widthInPoints, heightInPoints);
-            Document document = new Document(pdfDocument, pageSize);
-
-            // Add content to the PDF file
-            document.add(new Paragraph("Phone Bill"));
-
-
-
-            // Close the PDF file
-            document.close();
-
-            // Show a success message
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success Message");
-            alert.setHeaderText(null);
-            alert.setContentText("The PDF file has been created successfully!");
-            alert.showAndWait();
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // Show an error message
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Message");
-            alert.setHeaderText(null);
-            alert.setContentText("An error occurred while creating the PDF file!");
-            alert.showAndWait();
-        }
-    }
-    public void accessoryBillPDF() {
-        PdfDocument pdfDocument = null;
-        PdfDocument tempPdfDocument = null;
-        try {
-            // Get the documents path
-            Path documentsPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
-
-            // Create the Accessory Invoice folder if it does not exist
-            Path accessoryInvoicePath = documentsPath.resolve("Accessory Invoice");
-            if (!Files.exists(accessoryInvoicePath)) {
-                Files.createDirectories(accessoryInvoicePath);
-            }
-
-            System.out.println("PDFs will be saved in: " + accessoryInvoicePath.toAbsolutePath().toString());
-
-            // Get the current date and time
-            LocalDate date = LocalDate.now();
-            LocalDateTime time = LocalDateTime.now();
-
-            // Create the PDF file name with the current date and time
-            String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
-
-            // Create the PDF file path
-            String path = accessoryInvoicePath.resolve(fileName).toString();
-            PdfWriter pdfWriter = new PdfWriter(path);
-            pdfDocument = new PdfDocument(pdfWriter);
-            Document document = new Document(pdfDocument);
-
-            // Convert mm to points (1 mm = 2.83465 points)
-            float width = 72 * 2.83465f; // 72mm in points
-            float margin = 36f; // 36 points = 0.5 inch margin
-
-            // Create a temporary document to measure the content height
-            tempPdfDocument = new PdfDocument(new PdfWriter(new File("temp.pdf")));
-            Document tempDocument = new Document(tempPdfDocument, new PageSize(width, 1000)); // Set an initial large height
-
-            // Add content to the temporary document
-            tempDocument.add(new Paragraph("Phone Bill"));
-
-            // Set explicit widths for the table columns
-            float[] columnWidths = {1 * width / 5, 2 * width / 5, 2 * width / 5};
-
-
-            // Measure the height of the content
-            float contentHeight = tempPdfDocument.getLastPage().getPageSize().getHeight();
-
-            tempDocument.close();
-
-            // Set height with some margin
-            float height = contentHeight + margin;
-
-            // Now create the actual document with the measured height
-            Rectangle billPageSize = new Rectangle(width, height);
-            pdfDocument.setDefaultPageSize(new PageSize(billPageSize));
-
-            // Add the same content to the final document
-            document.add(new Paragraph("Phone Bill").setTextAlignment(TextAlignment.CENTER));
-
-            // Close the temporary PDF document
-            tempPdfDocument.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // Show an error message
-            System.err.println("An error occurred while creating the PDF file!");
-        }
-    }
-
-
-
-
-
-
     public void updateBalancePhone() {
         try {
             double totalAmount = Double.parseDouble(phoneBillTotalAmount.getText());
@@ -1054,9 +943,6 @@ public class system {
             alert.showAndWait();
         }
     }
-
-// null comment
-
 
     private ObservableList<accessoryData> accessoryBill_show;
     private void accessoryBill_showData_Table(){
@@ -1120,10 +1006,23 @@ public class system {
         sortList.comparatorProperty().bind(accessoryBill_showData_Table.comparatorProperty());
         accessoryBill_showData_Table.setItems(sortList);
     }
-    public void temp_bill_addAccessory() {
+    public void temp_bill_addAccessory() throws SQLException {
         String sql = "INSERT INTO `temp_bill_addaccessory`(`brandName`, `modelName`, `unitPrice`, `units`, `discount`, `warranty`, `total`) VALUES (?,?,?,?,?,?,?)";
 
         connect = DatabaseConnection.connectDb();
+
+        String query = "SELECT `quantityAccessory` FROM `accessories` WHERE `brandNameAccessory` =? AND `modelNameAccessory` =?";
+        assert connect != null;
+        PreparedStatement pstmt = connect.prepareStatement(query);
+        pstmt.setString(1, phoneBill_BrandName.getText());
+        pstmt.setString(2, phoneBill_modelName.getText());
+        ResultSet rs = pstmt.executeQuery();
+        int availableQuantity = 0;
+        if (rs.next()) {
+            availableQuantity = rs.getInt("quantityAccessory");
+        }
+        rs.close();
+        pstmt.close();
         try {
             Alert alert;
             if (accessoryBill_price.getText().isEmpty()) {
@@ -1150,6 +1049,18 @@ public class system {
                 alert.setHeaderText(null);
                 alert.setContentText("Quantity is less than 0 !");
                 alert.showAndWait();
+            }else if (availableQuantity < 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The selected item is out of stock!");
+                alert.showAndWait();
+            } else if (availableQuantity < Integer.parseInt(accessoryBill_quantity.getText())) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The selected item is not available in the required quantity!");
+                alert.showAndWait();
             }else {
                 String modelName = accessoryBill_modelName.getText();
                 String checkSql = "SELECT * FROM `temp_bill_addaccessory` WHERE `modelName` = ?";
@@ -1170,7 +1081,6 @@ public class system {
                         if (!checkQuantityAccessory(modelName, brandName, quantity)) {
                             return;
                         }
-
                         double discount;
                         String warranty;
 
@@ -1966,14 +1876,21 @@ public class system {
                 image.setHorizontalAlignment(HorizontalAlignment.CENTER);
                 document.add(image);
 
+
                 // Add title to the document
-                document.add(new Paragraph("J Mobiles\nNO.  ,\nAnuradhapura Rd,\nDambulla.\n074-1558571\n--------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
+                document.add(new Paragraph("J Mobiles" +
+                        "\nNO.  ," +
+                        "\nAnuradhapura Rd," +
+                        "\nDambulla." +
+                        "\n074-1558571" +
+                        "\n--------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(8).setFixedLeading(12));
                 String cashier = "J Mobile";
                 if (!Objects.equals(phoneBillCashier.getText(), "")){
                     cashier = phoneBillCashier.getText();
                 }
-                document.add(new Paragraph("Cashier : " + cashier + "             " + LocalDate.now()).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
-                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                document.add(new Paragraph("Cashier : " + cashier + "             "
+                        + LocalDate.now() +
+                        "\n----------------------------------------------------------------------------").setFontSize(8).setTextAlignment(TextAlignment.CENTER).setFixedLeading(12));
 
                 if (!Objects.equals(phoneBillCustomer.getText(), "") || !Objects.equals(phoneBillCustomerMobile.getText(),"")){
                     String customer = "-" , customerMobile = "-";
@@ -1981,8 +1898,9 @@ public class system {
                         customer = phoneBillCustomer.getText();}
                     if(!Objects.equals(phoneBillCustomerMobile.getText(), "")) {
                         customerMobile = phoneBillCustomerMobile.getText();}
-                    document.add(new Paragraph("Customer : " + customer + "              Mobile : " + customerMobile).setFontSize(8));
-                    document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                    document.add(new Paragraph("Customer : " + customer + "              Mobile : " +
+                            customerMobile +
+                            "----------------------------------------------------------------------------").setFontSize(8).setFixedLeading(12));
                 }
 
                 // Add table rows
@@ -1993,21 +1911,26 @@ public class system {
                     addHeaderLine_phones(document, "Color",item.getColor());
                     addHeaderLine_phones(document, "Unit Price", String.valueOf(item.getUnitPrice()));
                     addHeaderLine_phones(document, "Units", String.valueOf(item.getUnits()));
-                    addHeaderLine_phones(document, "Discount", String.valueOf(item.getDiscount()));
-                    addHeaderLine_phones(document, "Warranty",item.getWarranty());
-                    document.add(new Paragraph("-----------------------------------------------------------\n").setFontSize(10));
+                    if (!Objects.equals(String.valueOf(item.getDiscount()),"0.0")){
+                        addHeaderLine_phones(document, "Discount", String.valueOf(item.getDiscount()));
+                    }
+                    if (!Objects.equals(String.valueOf(item.getWarranty()),"-")){
+                        addHeaderLine_phones(document, "Warranty",item.getWarranty());
+                    }
+                    document.add(new Paragraph("-----------------------------------------------------------\n").setFontSize(8));
                 }
 
                 // Add total at the bottom
-                document.add(new Paragraph("Cash:  Rs. " + phoneBillCash.getText() + ".00").setFontSize(10));
-                document.add(new Paragraph("Balance:  Rs. " + phoneBillBalance.getText() + "0").setFontSize(10));
-                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-                Paragraph totalParagraph = new Paragraph("Total:  Rs. " + calculateTotal_phones(items) + "0").setFontSize(10);
-                document.add(totalParagraph);
-                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-                document.add(new Paragraph("*** Thank You, Come Again ! ***").setFontSize(10).setTextAlignment(TextAlignment.CENTER));
-                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-                document.add(new Paragraph("NXTGen Solutions\nshanprabodh@icloud.com\nWhatsapp : 071-2823447").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
+                document.add(new Paragraph("Cash:  Rs. " + phoneBillCash.getText() + "00"+
+                        "\nBalance:  Rs. " + phoneBillBalance.getText() + "0" +
+                        "\n----------------------------------------------------------------------------" +
+                        "\nTotal:  Rs. " + calculateTotal_phones(items) + "0" ).setFontSize(8).setFixedLeading(12));
+                document.add(new Paragraph("----------------------------------------------------------------------------" +
+                        "*** Thank You, Come Again ! ***" +
+                        "\n----------------------------------------------------------------------------" +
+                        "\nNXTGen Solutions" +
+                        "\nshanprabodh@icloud.com" +
+                        "\nWhatsapp : 071-2823447").setFontSize(8).setFixedLeading(12).setTextAlignment(TextAlignment.CENTER));
 
                 // Close the PDF file
                 document.close();
@@ -2064,7 +1987,7 @@ public class system {
     // Helper method to add table headers
     private void addHeaderLine_phones(Document document, String header, String content) {
         Paragraph headerParagraph = new Paragraph();
-        headerParagraph.add(new Text(header +"  :  " ).setBold().setFontSize(10)).add(content).setFontSize(10);
+        headerParagraph.add(new Text(header +"  :  " ).setBold().setFontSize(8)).add(content).setFontSize(8);
         document.add(headerParagraph);
     }
 
@@ -2159,13 +2082,23 @@ public class system {
             this.total = total;
         }
     }
-    private float calculatePageHeight_phones(int rowCount) {
-        // Calculate the height of the content
-        float contentHeight = 25 * (rowCount + 15) ; // Assuming each line takes up 10 points
-        if(!Objects.equals(phoneBillCustomer.getText(), "") || !Objects.equals(phoneBillCustomerMobile.getText(),"")){
-            contentHeight = 25 * (rowCount + 17) ;
+    private float calculatePageHeight_phones(int rowCount) throws SQLException {
+        float height = 50; // initial height for top and bottom (image, address+cashier, Divider Line, bottom, company)
+
+        if (!Objects.equals(phoneBillCustomer.getText(), "") ||!Objects.equals(phoneBillCustomerMobile.getText(), "")) {
+            height += 24; // add extra space for customer info
         }
-        return contentHeight;
+
+        float contentHeight = 0;
+        for (BillingItem_phones item : fetchBillingItems_phones()) {
+            contentHeight += 12 * (item.getDiscount() == 0.0? 7 : 8); // calculate height of each row
+        }
+
+        height += contentHeight; // add content height to total height
+
+        height += 50; // add some padding to the bottom of the page
+
+        return height;
     }
 
     private String generateReport_phones(List<BillingItem_phones> items) throws SQLException {
@@ -2222,9 +2155,21 @@ public class system {
             // Add the profit to the total profit
             totalProfit += profit;
         }
-
-
         totalProfit -= totalDiscount;
+
+        String sql = "INSERT INTO `profitrevenuephones`(`revenue`, `profit`, `quantity`) VALUES (?,?,?)";
+        connect = DatabaseConnection.connectDb();
+        try {
+            prepare = connect.prepareStatement(sql);
+
+            prepare.setString(1, String.valueOf(totalRevenue));
+            prepare.setString(2,String.valueOf(totalProfit));
+            prepare.setString(3,String.valueOf(totalQuantity));
+
+            prepare.executeUpdate();
+        }catch (Exception e){
+            System.out.println("ERROR while saving data in profit/revenue");
+        }
 
         return "Revenue : Rs." + totalRevenue + "\nProfit : Rs." + totalProfit + "\nQuantity : "+ totalQuantity;
     }
@@ -2250,6 +2195,347 @@ public class system {
     private void updateQuantity_phones(String brandName, String modelName, int memory, String color, int units) throws SQLException {
         connect = DatabaseConnection.connectDb();
         String query = "UPDATE phones SET quantityPhone = quantityPhone - " + units + " WHERE brandNamePhone = '" + brandName + "' AND modelNamePhone = '" + modelName + "' AND memoryPhone = " + memory + " AND colorPhone = '" + color + "'";
+        Statement stmt = connect.createStatement();
+        stmt.executeUpdate(query);
+
+        stmt.close();
+    }
+
+
+
+
+
+    public void accessoryBillPDF_() {
+        if (Objects.equals(accessoryBillCash.getText(), "")){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Enter the Cash !");
+            alert.showAndWait();
+        } else if (Double.parseDouble(accessoryBillCash.getText()) != Double.parseDouble(accessoryBillTotalAmount.getText()) + Double.parseDouble(accessoryBillBalance.getText())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Enter the Cash Correctly!");
+            alert.showAndWait();
+        } else {
+            try {
+                List<BillingItem_accessories> items_ = fetchBillingItems_accessories();
+                String revenueProfit = generateReport_accessories(items_);
+                phoneBill_showData_Table();
+
+                // Get the desktop path
+                Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
+
+                // Create the Bills folder if it does not exist
+                Path billsPath = desktopPath.resolve("Accessory Invoices");
+                if (!Files.exists(billsPath)) {
+                    Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
+                }
+
+                // Get the current date
+                LocalDate date = LocalDate.now();
+                LocalDateTime time = LocalDateTime.now();
+
+                // Create the PDF file name with the current date and a unique auto-incrementing number
+                String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
+
+                // Create the PDF file
+                String path = billsPath.resolve(fileName).toString();
+                PdfWriter pdfWriter = new PdfWriter(path);
+                PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+
+                //Database table row count
+                connect = DatabaseConnection.connectDb();
+                String query = "SELECT COUNT(*) FROM temp_bill_addaccessory" ;
+                Statement stmt = connect.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                rs.next();
+                int rowCount;
+                if (rs.getInt(1) == 0){
+                    rowCount = 1;
+                }else {
+                    rowCount = rs.getInt(1) *9;
+                }
+
+                rs.close();
+
+                // Define the page width with the specified width and add margins
+                float widthInPoints = 80 * 2.83465f; // 80mm to points
+                float marginInPoints = 4 * 2.83465f; // 4mm to points
+                PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight_accessories(rowCount));
+                pdfDocument.setDefaultPageSize(pageSize);
+                Document document = new Document(pdfDocument, pageSize);
+                document.setMargins(0, marginInPoints, 0, marginInPoints);
+
+                // Fetch data from the database
+                List<BillingItem_accessories> items = fetchBillingItems_accessories();
+
+                //Add logo
+                String imagePath = "images\\logo.png";
+                ImageData imageData = ImageDataFactory.create(imagePath);
+                Image image = new Image(imageData);
+                image.setHeight(50);
+                image.setWidth(50);
+                image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                document.add(image);
+
+                // Add title to the document
+                document.add(new Paragraph("J Mobiles\nNO.  ,\nAnuradhapura Rd,\nDambulla.\n074-1558571\n--------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
+                String cashier = "J Mobile";
+                if (!Objects.equals(accessoryBillCashier.getText(), "")){
+                    cashier = accessoryBillCashier.getText();
+                }
+                document.add(new Paragraph("Cashier : " + cashier + "             " + LocalDate.now()).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
+                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+
+                if (!Objects.equals(accessoryBillCustomer.getText(), "") || !Objects.equals(accessoryBillCustomerMobile.getText(),"")){
+                    String customer = "-" , customerMobile = "-";
+                    if(!Objects.equals(accessoryBillCustomer.getText(), "")) {
+                        customer = accessoryBillCustomer.getText();}
+                    if(!Objects.equals(accessoryBillCustomerMobile.getText(), "")) {
+                        customerMobile = accessoryBillCustomerMobile.getText();}
+                    document.add(new Paragraph("Customer : " + customer + "              Mobile : " + customerMobile).setFontSize(8));
+                    document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                }
+
+                // Add table rows
+                for (BillingItem_accessories item : items) {
+                    addHeaderLine_phones(document, "Brand Name", item.getBrandName());
+                    addHeaderLine_phones(document, "Model Name",item.getModelName());
+                    addHeaderLine_phones(document, "Unit Price", String.valueOf(item.getUnitPrice()));
+                    addHeaderLine_phones(document, "Units", String.valueOf(item.getUnits()));
+                    addHeaderLine_phones(document, "Discount", String.valueOf(item.getDiscount()));
+                    addHeaderLine_phones(document, "Warranty",item.getWarranty());
+                    document.add(new Paragraph("-----------------------------------------------------------\n").setFontSize(10));
+                }
+
+                // Add total at the bottom
+                document.add(new Paragraph("Cash:  Rs. " + accessoryBillCash.getText() + ".00").setFontSize(10));
+                document.add(new Paragraph("Balance:  Rs. " + accessoryBillBalance.getText() + "0").setFontSize(10));
+                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                Paragraph totalParagraph = new Paragraph("Total:  Rs. " + accessoryBillTotalAmount.getText() + "0").setFontSize(10);
+                document.add(totalParagraph);
+                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                document.add(new Paragraph("*** Thank You, Come Again ! ***").setFontSize(10).setTextAlignment(TextAlignment.CENTER));
+                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
+                document.add(new Paragraph("NXTGen Solutions\nshanprabodh@icloud.com\nWhatsapp : 071-2823447").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
+
+                // Close the PDF file
+                document.close();
+
+                // Show a success message
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The PDF file has been created successfully!\n" + billsPath.toAbsolutePath().toString() + "\n" + revenueProfit);
+                alert.showAndWait();
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                // Show an error message
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("An error occurred while creating the PDF file!");
+                alert.showAndWait();
+            }
+        }
+    }
+
+    // Helper method to fetch billing items from the database
+    private List<BillingItem_accessories> fetchBillingItems_accessories() throws SQLException {
+        List<BillingItem_accessories> items = new ArrayList<>();
+        connect = DatabaseConnection.connectDb();
+        String query = "SELECT * FROM temp_bill_addaccessory";
+        Statement stmt = connect.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+
+        while (rs.next()) {
+            BillingItem_accessories item = new BillingItem_accessories();
+            item.setBrandName(rs.getString("brandName"));
+            item.setModelName(rs.getString("modelName"));
+            item.setUnitPrice(rs.getDouble("unitPrice"));
+            item.setUnits(rs.getInt("units"));
+            item.setDiscount(rs.getDouble("discount"));
+            item.setWarranty(rs.getString("warranty"));
+            item.setTotal(rs.getDouble("total"));
+
+            items.add(item);
+        }
+
+        rs.close();
+        stmt.close();
+
+        return items;
+    }
+
+    // BillingItem class to represent each item in the billing details
+    public static class BillingItem_accessories {
+        private String brandName;
+        private String modelName;
+        private double unitPrice;
+        private int units;
+        private double discount;
+        private String warranty;
+        private double total;
+
+        public String getBrandName() {
+            return brandName;
+        }
+
+        public void setBrandName(String brandName) {
+            this.brandName = brandName;
+        }
+
+        public String getModelName() {
+            return modelName;
+        }
+
+        public void setModelName(String modelName) {
+            this.modelName = modelName;
+        }
+
+        public double getUnitPrice() {
+            return unitPrice;
+        }
+
+        public void setUnitPrice(double unitPrice) {
+            this.unitPrice = unitPrice;
+        }
+
+        public int getUnits() {
+            return units;
+        }
+
+        public void setUnits(int units) {
+            this.units = units;
+        }
+
+        public double getDiscount() {
+            return discount;
+        }
+
+        public void setDiscount(double discount) {
+            this.discount = discount;
+        }
+
+        public String getWarranty() {
+            return warranty;
+        }
+
+        public void setWarranty(String warranty) {
+            this.warranty = warranty;
+        }
+
+        public double getTotal() {
+            return total;
+        }
+
+        public void setTotal(double total) {
+            this.total = total;
+        }
+    }
+
+    private float calculatePageHeight_accessories(int rowCount) {
+        // Calculate the height of the content
+        float contentHeight = 25 * (rowCount + 15) ; // Assuming each line takes up 10 points
+        if(!Objects.equals(accessoryBillCustomer.getText(), "") || !Objects.equals(accessoryBillCustomerMobile.getText(),"")){
+            contentHeight = 25 * (rowCount + 17) ;
+        }
+        return contentHeight;
+    }
+
+    private String generateReport_accessories(List<BillingItem_accessories> items) throws SQLException {
+        connect = DatabaseConnection.connectDb();
+        String query = "SELECT * FROM temp_bill_addaccessory";
+        Statement stmt = connect.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+
+        double totalRevenue;
+        if (!accessoryBillTotalAmount.getText().isEmpty()) {
+            totalRevenue = Double.parseDouble(accessoryBillTotalAmount.getText());
+        } else {
+            totalRevenue = 0;
+        }
+
+        int totalQuantity = 0;
+        double totalDiscount = 0;
+
+        while (rs.next()) {
+            String brandName = rs.getString("brandName");
+            String modelName = rs.getString("modelName");
+            double unitPrice = rs.getDouble("unitPrice");
+            int units = rs.getInt("units");
+            double discount = rs.getDouble("discount");
+
+            // Update quantity in accessories table
+            updateQuantity_accessories(brandName, modelName, units);
+
+            totalQuantity += units;
+            totalDiscount += discount * units;
+        }
+
+        rs.close();
+        stmt.close();
+
+        double totalProfit = 0;
+        for (BillingItem_accessories item : items) {
+            String brandName = item.getBrandName();
+            String modelName = item.getModelName();
+            double unitPrice = item.getUnitPrice();
+            int units = item.getUnits();
+
+            // Get the cost price from the accessories table
+            double costPrice = getCostPrice_accessories(brandName, modelName);
+
+            // Calculate the profit for this item
+            double profit = (unitPrice - costPrice) * units;
+
+            // Add the profit to the total profit
+            totalProfit += profit;
+        }
+        totalProfit -= totalDiscount;
+
+        String sql = "INSERT INTO `profitrevenueaccessory`(`revenue`, `profit`, `quantity`) VALUES (?,?,?)";
+        connect = DatabaseConnection.connectDb();
+        try {
+            prepare = connect.prepareStatement(sql);
+
+            prepare.setString(1, String.valueOf(totalRevenue));
+            prepare.setString(2,String.valueOf(totalProfit));
+            prepare.setString(3,String.valueOf(totalQuantity));
+
+            prepare.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return "Revenue : Rs." + totalRevenue + "\nProfit : Rs." + totalProfit + "\nQuantity : "+ totalQuantity;
+    }
+
+    private double getCostPrice_accessories(String brandName, String modelName) throws SQLException {
+        connect = DatabaseConnection.connectDb();
+        String query = "SELECT costPriceAccessory FROM accessories WHERE brandNameAccessory = '" + brandName + "' AND modelNameAccessory = '" + modelName + "'";
+        Statement stmt = connect.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+
+        double costPrice = 0;
+        if (rs.next()) {
+            costPrice = rs.getDouble("costPriceAccessory");
+        }
+
+        rs.close();
+        stmt.close();
+        connect.close();
+
+        return costPrice;
+    }
+
+    // Helper method to update the quantity in the accessories table
+    private void updateQuantity_accessories(String brandName, String modelName, int units) throws SQLException {
+        connect = DatabaseConnection.connectDb();
+        String query = "UPDATE accessories SET quantityAccessory = quantityAccessory - " + units + " WHERE brandNameAccessory = '" + brandName + "' AND modelNameAccessory = '" + modelName + "'";
         Statement stmt = connect.createStatement();
         stmt.executeUpdate(query);
 
