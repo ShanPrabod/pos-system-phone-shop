@@ -2,18 +2,13 @@ package shop.shop;
 
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -24,15 +19,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -1884,11 +1873,11 @@ public class system {
                         "\nDambulla." +
                         "\n074-1558571" +
                         "\n--------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(8).setFixedLeading(12));
-                String cashier = "J Mobile";
+                String cashier_ = "J Mobile";
                 if (!Objects.equals(phoneBillCashier.getText(), "")){
-                    cashier = phoneBillCashier.getText();
+                    cashier_ = phoneBillCashier.getText();
                 }
-                document.add(new Paragraph("Cashier : " + cashier + "             "
+                document.add(new Paragraph("Cashier : " + cashier_ + "             "
                         + LocalDate.now() +
                         "\n----------------------------------------------------------------------------").setFontSize(8).setTextAlignment(TextAlignment.CENTER).setFixedLeading(12));
 
@@ -1902,6 +1891,7 @@ public class system {
                             customerMobile +
                             "----------------------------------------------------------------------------").setFontSize(8).setFixedLeading(12));
                 }
+                //null comment
 
                 // Add table rows
                 for (BillingItem_phones item : items) {
