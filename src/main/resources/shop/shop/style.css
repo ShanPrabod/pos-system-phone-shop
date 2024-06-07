@@ -66,6 +66,7 @@
     -fx-background-color: #3cd070;
     -fx-border-width: 0px 0px 0px 0px;
 }
+
 .clearButton{
     -fx-background-color: #e4717a; /* Set the background color */
     -fx-text-fill: white; /* Set the text color */

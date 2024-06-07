@@ -13,11 +13,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -476,7 +474,7 @@
                   <Button fx:id="clearButtonAccessory" focusTraversable="false" layoutX="1201.0" layoutY="892.0" mnemonicParsing="false" onAction="#accessoryDataReset" prefHeight="26.0" prefWidth="60.0" styleClass="clear-btn" stylesheets="@dashboarddesign.css" text="Clear" />
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="billForm_phone" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css">
+            <AnchorPane fx:id="billForm_phone" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -560,52 +558,32 @@
                               <Font name="System Bold" size="28.0" />
                            </font>
                         </Label>
-                        <RadioButton fx:id="radioButton_cash_phone" focusTraversable="false" graphicTextGap="6.0" layoutX="1270.0" layoutY="444.0" mnemonicParsing="false" selected="true" text="Cash">
-                           <font>
-                              <Font name="System Italic" size="15.0" />
-                           </font>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <toggleGroup>
-                              <ToggleGroup fx:id="paymentMethodPhone" />
-                           </toggleGroup>
-                        </RadioButton>
-                        <RadioButton fx:id="radioButton_credit_phone" focusTraversable="false" graphicTextGap="6.0" layoutX="1343.0" layoutY="444.0" mnemonicParsing="false" text="Credit" toggleGroup="$paymentMethodPhone">
-                           <font>
-                              <Font name="System Italic" size="15.0" />
-                           </font>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </RadioButton>
-                        <Line endX="304.0" layoutX="1220.0" layoutY="333.0" startX="-216.0" />
-                        <TextField fx:id="phoneBillCashier" focusTraversable="false" layoutX="1359.0" layoutY="348.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="1271.0" layoutY="350.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cashier :">
+                        <Line endX="304.0" layoutX="1214.0" layoutY="352.0" startX="-216.0" />
+                        <TextField fx:id="phoneBillCashier" focusTraversable="false" layoutX="1358.0" layoutY="365.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1270.0" layoutY="367.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cashier :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="phoneBillCash" focusTraversable="false" layoutX="1359.0" layoutY="393.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="1271.0" layoutY="395.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cash :">
+                        <TextField fx:id="phoneBillCash" focusTraversable="false" layoutX="1358.0" layoutY="410.0" onKeyPressed="#updateBalancePhone" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1270.0" layoutY="412.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cash :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <Button fx:id="phoneBillPrint_OKButton" layoutX="1456.0" layoutY="441.0" mnemonicParsing="false" onAction="#updateBalancePhone" prefHeight="26.0" prefWidth="70.0" styleClass="OK-btn" stylesheets="@dashboarddesign.css" text="OK" />
-                        <TextField fx:id="phoneBillCustomer" focusTraversable="false" layoutX="1080.0" layoutY="350.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="992.0" layoutY="352.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Customer :">
+                        <TextField fx:id="phoneBillCustomer" focusTraversable="false" layoutX="1079.0" layoutY="367.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="991.0" layoutY="369.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Customer :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="phoneBillCustomerMobile" focusTraversable="false" layoutX="1080.0" layoutY="395.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="992.0" layoutY="397.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Mobile :">
+                        <TextField fx:id="phoneBillCustomerMobile" focusTraversable="false" layoutX="1079.0" layoutY="412.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="991.0" layoutY="414.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Mobile :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <Line endX="95.0" endY="-107.5" layoutX="1163.0" layoutY="441.0" startX="95.0" startY="27.0" />
+                        <Line endX="95.0" endY="-88.0" layoutX="1163.0" layoutY="441.0" startX="95.0" startY="27.0" />
                      </children>
                   </AnchorPane>
                   <AnchorPane layoutX="14.0" layoutY="516.0" prefHeight="456.0" prefWidth="1540.0" stylesheets="@dashboarddesign.css">
@@ -761,40 +739,26 @@
                            </font>
                         </Label>
                         <Line endX="419.0" layoutX="1111.0" layoutY="315.0" startX="-100.0" />
-                        <RadioButton fx:id="radioButton_cash_accessory" focusTraversable="false" layoutX="1271.0" layoutY="442.0" mnemonicParsing="false" selected="true" text="Cash">
-                           <font>
-                              <Font name="System Italic" size="13.0" />
-                           </font>
-                           <toggleGroup>
-                              <ToggleGroup fx:id="paymentMethodAccessory" />
-                           </toggleGroup>
-                        </RadioButton>
-                        <RadioButton fx:id="radioButton_credit_accessory" focusTraversable="false" layoutX="1341.0" layoutY="442.0" mnemonicParsing="false" text="Credit" toggleGroup="$paymentMethodAccessory">
-                           <font>
-                              <Font name="System Italic" size="13.0" />
-                           </font>
-                        </RadioButton>
-                        <TextField fx:id="accessoryBillCashier" focusTraversable="false" layoutX="1358.0" layoutY="340.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="1269.0" layoutY="340.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cashier :">
+                        <TextField fx:id="accessoryBillCashier" focusTraversable="false" layoutX="1358.0" layoutY="352.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1269.0" layoutY="352.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cashier :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="accessoryBillCash" focusTraversable="false" layoutX="1358.0" layoutY="385.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="1269.0" layoutY="385.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cash :">
+                        <TextField fx:id="accessoryBillCash" focusTraversable="false" layoutX="1358.0" layoutY="397.0" onKeyPressed="#updateBalanceAccessory" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1269.0" layoutY="397.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cash :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <Button fx:id="accessoryBillPrint_OKButton" layoutX="1449.0" layoutY="438.0" mnemonicParsing="false" onAction="#updateBalanceAccessory" prefHeight="26.0" prefWidth="70.0" styleClass="OK-btn" stylesheets="@dashboarddesign.css" text="OK" />
-                        <TextField fx:id="accessoryBillCustomer" focusTraversable="false" layoutX="1079.0" layoutY="340.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="990.0" layoutY="340.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Customer :">
+                        <TextField fx:id="accessoryBillCustomer" focusTraversable="false" layoutX="1079.0" layoutY="352.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="990.0" layoutY="352.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Customer :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="accessoryBillCustomerMobile" focusTraversable="false" layoutX="1079.0" layoutY="385.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="990.0" layoutY="385.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Mobile :">
+                        <TextField fx:id="accessoryBillCustomerMobile" focusTraversable="false" layoutX="1079.0" layoutY="397.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="990.0" layoutY="397.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Mobile :">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -839,7 +803,7 @@
                   </AnchorPane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="billForm_repair" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
+            <AnchorPane fx:id="billForm_repair" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -855,63 +819,80 @@
                      </styleClass>
                      <children>
                         <FontAwesomeIcon glyphName="WRENCH" layoutX="22.0" layoutY="55.0" size="4em" />
-                        <TextField focusTraversable="false" layoutX="165.0" layoutY="102.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <TextField fx:id="repairBill_brandName" focusTraversable="false" layoutX="165.0" layoutY="102.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="22.0" layoutY="100.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Brand Name :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField focusTraversable="false" layoutX="515.0" layoutY="99.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <TextField fx:id="repairBill_modelName" focusTraversable="false" layoutX="515.0" layoutY="99.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="410.0" layoutY="102.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Model Name :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField focusTraversable="false" layoutX="165.0" layoutY="152.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <TextField fx:id="repairBill_IMEI" focusTraversable="false" layoutX="165.0" layoutY="152.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="22.0" layoutY="150.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="IMEI :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField focusTraversable="false" layoutX="515.0" layoutY="149.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="410.0" layoutY="152.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Warrenty :">
+                        <TextField fx:id="repairBill_warranty" focusTraversable="false" layoutX="515.0" layoutY="149.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="410.0" layoutY="152.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Warranty :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <Button layoutX="644.0" layoutY="260.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="add-btn" stylesheets="@dashboarddesign.css" text="Add" />
                         <Label layoutX="100.0" layoutY="18.0" prefHeight="40.0" prefWidth="168.0" text="Repairs - Bill">
                            <font>
                               <Font name="System Bold" size="28.0" />
                            </font>
                         </Label>
-                        <TextField focusTraversable="false" layoutX="164.0" layoutY="197.0" prefHeight="25.0" prefWidth="550.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <TextField fx:id="repairBill_issue" focusTraversable="false" layoutX="164.0" layoutY="197.0" prefHeight="25.0" prefWidth="550.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="22.0" layoutY="203.0" prefHeight="21.0" prefWidth="143.0" stylesheets="@dashboarddesign.css" text="Description of issue:">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField focusTraversable="false" layoutX="987.0" layoutY="98.0" prefHeight="25.0" prefWidth="532.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="891.0" layoutY="102.0" prefHeight="21.0" prefWidth="76.0" stylesheets="@dashboarddesign.css" text="Parts :">
+                        <TextField fx:id="repairBill_parts_name" focusTraversable="false" layoutX="987.0" layoutY="98.0" prefHeight="25.0" prefWidth="532.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="891.0" layoutY="102.0" prefHeight="21.0" prefWidth="92.0" stylesheets="@dashboarddesign.css" text="Part's Name :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField focusTraversable="false" layoutX="987.0" layoutY="197.0" prefHeight="25.0" prefWidth="532.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <TextField fx:id="repairBill_part_price" focusTraversable="false" layoutX="987.0" layoutY="197.0" prefHeight="25.0" prefWidth="532.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="891.0" layoutY="203.0" prefHeight="21.0" prefWidth="75.0" stylesheets="@dashboarddesign.css" text="Price :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <Button layoutX="1334.0" layoutY="260.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
-                        <Button layoutX="1449.0" layoutY="260.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="add-btn" stylesheets="@dashboarddesign.css" text="Add" />
-                        <Button layoutX="1218.0" layoutY="260.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="clear-btn" stylesheets="@dashboarddesign.css" text="Clear" />
-                        <TextField focusTraversable="false" layoutX="990.0" layoutY="150.0" prefHeight="25.0" prefWidth="532.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Button fx:id="repairBill_addButton_part" layoutX="1449.0" layoutY="260.0" mnemonicParsing="false" onAction="#repairBill_addItem" prefHeight="26.0" prefWidth="70.0" styleClass="add-btn" stylesheets="@dashboarddesign.css" text="Add" />
+                        <Button fx:id="repairBill_clearButton" layoutX="1325.0" layoutY="260.0" mnemonicParsing="false" onAction="#repairBillClear" prefHeight="26.0" prefWidth="70.0" styleClass="clear-btn" stylesheets="@dashboarddesign.css" text="Clear" />
+                        <TextField fx:id="repairBill_parts" focusTraversable="false" layoutX="987.0" layoutY="150.0" prefHeight="25.0" prefWidth="532.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
                         <Label layoutX="891.0" layoutY="154.0" prefHeight="21.0" prefWidth="91.0" stylesheets="@dashboarddesign.css" text="No of Parts :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
+                        <TextField fx:id="repairBill_customer" focusTraversable="false" layoutX="162.0" layoutY="249.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="19.0" layoutY="247.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Customer :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="repairBill_customerMobile" focusTraversable="false" layoutX="512.0" layoutY="246.0" prefHeight="25.0" prefWidth="200.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="407.0" layoutY="249.0" prefHeight="21.0" prefWidth="99.0" stylesheets="@dashboarddesign.css" text="Mobile :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="repairBill_cashier" focusTraversable="false" layoutX="162.0" layoutY="293.0" prefHeight="25.0" prefWidth="197.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="19.0" layoutY="295.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cashier :">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Line endX="-91.0" endY="-250.0" layoutX="889.0" layoutY="267.0" startX="-91.0" startY="47.0" />
                      </children>
                   </AnchorPane>
                   <AnchorPane layoutX="14.0" layoutY="378.0" prefHeight="456.0" prefWidth="1540.0" stylesheets="@dashboarddesign.css">
@@ -920,53 +901,47 @@
                         <String fx:value="shadow" />
                      </styleClass>
                      <children>
-                        <TableView layoutX="7.0" layoutY="24.0" prefHeight="334.0" prefWidth="1521.0">
+                        <TableView fx:id="repairTable" layoutX="7.0" layoutY="24.0" prefHeight="376.0" prefWidth="1225.0">
                            <columns>
-                              <TableColumn prefWidth="54.0" text="NO" />
-                              <TableColumn prefWidth="140.0" text="Brand Name" />
-                              <TableColumn prefWidth="141.0" text="Model Name" />
-                              <TableColumn prefWidth="196.0" text="IMEI" />
-                              <TableColumn prefWidth="243.0" text="Issue" />
-                              <TableColumn prefWidth="126.0" text="Warrenty" />
-                              <TableColumn prefWidth="255.0" text="Parts" />
-                              <TableColumn prefWidth="78.0" text="No of Parts " />
-                              <TableColumn prefWidth="140.0" text="Unit Price" />
-                              <TableColumn prefWidth="151.0" text="Total " />
+                              <TableColumn fx:id="repairTablePartName" prefWidth="481.0" text="Part's Name" />
+                              <TableColumn fx:id="repairTableNoOfParts" prefWidth="239.0" text="No of Parts " />
+                              <TableColumn fx:id="repairTableUnitPrice" prefWidth="235.0" text="Unit Price" />
+                              <TableColumn fx:id="repairTableTotal" prefWidth="269.0" text="Total " />
                            </columns>
                         </TableView>
-                        <TextField editable="false" focusTraversable="false" layoutX="100.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="39.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Total :">
+                        <TextField fx:id="repairBill_total" editable="false" focusTraversable="false" layoutX="1066.0" layoutY="417.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1005.0" layoutY="419.0" prefHeight="21.0" prefWidth="59.0" stylesheets="@dashboarddesign.css" text="Total :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField focusTraversable="false" layoutX="391.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="330.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cash :">
+                        <TextField fx:id="repairBill_cash" focusTraversable="false" layoutX="1362.0" layoutY="180.0" onKeyPressed="#updateBalanceRepair" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1308.0" layoutY="182.0" prefHeight="21.0" prefWidth="41.0" stylesheets="@dashboarddesign.css" text="Cash :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField editable="false" focusTraversable="false" layoutX="735.0" layoutY="419.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="640.0" layoutY="421.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Balance :">
+                        <TextField fx:id="repairBill_balance" editable="false" focusTraversable="false" layoutX="1362.0" layoutY="232.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1293.0" layoutY="234.0" prefHeight="21.0" prefWidth="66.0" stylesheets="@dashboarddesign.css" text="Balance :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <Button layoutX="1250.0" layoutY="395.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="116.0" styleClass="pdf-btn" stylesheets="@dashboarddesign.css" text="PDF" />
-                        <Button layoutX="1396.0" layoutY="395.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="116.0" styleClass="print-btn" stylesheets="@dashboarddesign.css" text="Print" />
-                        <TextField focusTraversable="false" layoutX="100.0" layoutY="376.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="39.0" layoutY="378.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Cashier :">
+                        <Button fx:id="repairBill_pdfButton" layoutX="1405.0" layoutY="393.0" mnemonicParsing="false" onAction="#repairBill_pdf" prefHeight="48.0" prefWidth="116.0" styleClass="pdf-btn" stylesheets="@dashboarddesign.css" text="PDF" />
+                        <TextField fx:id="repairBill_profit" focusTraversable="false" layoutX="1361.0" layoutY="24.0" onKeyPressed="#calculateTotalAmountRepairBill" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1313.0" layoutY="26.0" prefHeight="21.0" prefWidth="47.0" stylesheets="@dashboarddesign.css" text="Profit :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <TextField focusTraversable="false" layoutX="391.0" layoutY="376.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
-                        <Label layoutX="330.0" layoutY="378.0" prefHeight="21.0" prefWidth="80.0" stylesheets="@dashboarddesign.css" text="Profit :">
+                        <TextField fx:id="repairBill_totalAmount" editable="false" focusTraversable="false" layoutX="1362.0" layoutY="83.0" prefHeight="25.0" prefWidth="166.0" styleClass="textfield" stylesheets="@dashboarddesign.css" />
+                        <Label layoutX="1258.0" layoutY="85.0" prefHeight="21.0" prefWidth="101.0" stylesheets="@dashboarddesign.css" text="Total Amount :">
                            <font>
                               <Font size="15.0" />
                            </font>
                         </Label>
-                        <FontAwesomeIcon fill="RED" glyphName="STAR" layoutX="572.0" layoutY="397.0" size="2em" />
+                        <Button fx:id="repairBill_deleteButton" layoutX="855.0" layoutY="417.0" mnemonicParsing="false" onAction="#deleteRepairItem" prefHeight="26.0" prefWidth="70.0" styleClass="delete-btn" stylesheets="@dashboarddesign.css" text="Delete" />
+                        <Button fx:id="repairBill_cancelButton" layoutX="759.0" layoutY="417.0" mnemonicParsing="false" onAction="#repairBillCancel" prefHeight="26.0" prefWidth="70.0" styleClass="cancel-btn" stylesheets="@dashboarddesign.css" text="Cancel" />
                      </children>
                   </AnchorPane>
                </children>

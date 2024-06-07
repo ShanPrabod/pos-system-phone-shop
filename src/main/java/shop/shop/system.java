@@ -5,10 +5,15 @@ import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -19,17 +24,21 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
 public class system {
     @FXML
     private TableView<accessoryData> accessoryTable;
@@ -385,6 +394,65 @@ public class system {
 
     @FXML
     private Button updateButtonPhone;
+    @FXML
+    private TableView<repairData> repairTable;
+
+    @FXML
+    private TableColumn<?, ?> repairTableNoOfParts;
+
+    @FXML
+    private TableColumn<?, ?> repairTablePartName;
+
+    @FXML
+    private TableColumn<?, ?> repairTableTotal;
+
+    @FXML
+    private TableColumn<?, ?> repairTableUnitPrice;
+
+    @FXML
+    private TextField repairBill_brandName;
+    @FXML
+    private TextField repairBill_IMEI;
+    @FXML
+    private TextField repairBill_issue;
+    @FXML
+    private TextField repairBill_modelName;
+    @FXML
+    private TextField repairBill_warranty;
+    @FXML
+    private TextField repairBill_parts_name;
+    @FXML
+    private TextField repairBill_parts;
+    @FXML
+    private TextField repairBill_part_price;
+    @FXML
+    private TextField repairBill_cashier;
+    @FXML
+    private TextField repairBill_total;
+    @FXML
+    private TextField repairBill_profit;
+    @FXML
+    private TextField repairBill_cash;
+    @FXML
+    private TextField repairBill_totalAmount;
+    @FXML
+    private TextField repairBill_balance;
+    @FXML
+    private TextField repairBill_customerMobile;
+    @FXML
+    private TextField repairBill_customer;
+    @FXML
+    private Button repairBill_clearButton;
+    @FXML
+    private Button repairBill_deleteButton;
+    @FXML
+    private Button repairBill_addButton_part;
+    @FXML
+    private Button repairBill_tickMark;
+    @FXML
+    private Button repairBill_pdfButton;
+
+
     private Connection connect;
     private Statement statement;
     private PreparedStatement prepare;
@@ -392,33 +460,33 @@ public class system {
 
 
 
-    public void addPhones(){
+    public void addPhones() {
         String sql = "INSERT INTO phones"
-                +"(brandNamePhone, modelNamePhone, memoryPhone, colorPhone, costPricePhone, sellingPricePhone, quantityPhone) "
-                +"VALUES(?,?,?,?,?,?,?)";
+                + "(brandNamePhone, modelNamePhone, memoryPhone, colorPhone, costPricePhone, sellingPricePhone, quantityPhone) "
+                + "VALUES(?,?,?,?,?,?,?)";
 
         connect = DatabaseConnection.connectDb();
 
+        Alert alert;
         try {
-            Alert alert;
             if (brandNamePhone.getText().isEmpty()
-            ||modelNamePhone.getText().isEmpty()
-            ||memoryPhone.getText().isEmpty()
-            ||colorPhone.getText().isEmpty()
-            ||costPricePhone.getText().isEmpty()
-            ||sellingPricePhone.getText().isEmpty()
-            ||quantityPhone.getText().isEmpty()){
+                    || modelNamePhone.getText().isEmpty()
+                    || memoryPhone.getText().isEmpty()
+                    || colorPhone.getText().isEmpty()
+                    || costPricePhone.getText().isEmpty()
+                    || sellingPricePhone.getText().isEmpty()
+                    || quantityPhone.getText().isEmpty()) {
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error Message");
                 alert.setHeaderText(null);
                 alert.setContentText("Please fill all blank fields");
                 alert.showAndWait();
-            }else {
+            } else {
                 String check = "SELECT * FROM phones WHERE " +
-                        "brandNamePhone = '" +brandNamePhone.getText()+"' AND " +
-                        "modelNamePhone = '"+ modelNamePhone.getText()+"' AND " +
-                        "memoryPhone = '"+ memoryPhone.getText()+"' AND " +
-                        "colorPhone = '"+ colorPhone.getText()+"'";
+                        "brandNamePhone = '" + brandNamePhone.getText() + "' AND " +
+                        "modelNamePhone = '" + modelNamePhone.getText() + "' AND " +
+                        "memoryPhone = '" + memoryPhone.getText() + "' AND " +
+                        "colorPhone = '" + colorPhone.getText() + "'";
 
                 statement = connect.createStatement();
                 result = statement.executeQuery(check);
@@ -429,7 +497,7 @@ public class system {
                     alert.setHeaderText(null);
                     alert.setContentText("Entered data already exists in the table:");
                     alert.showAndWait();
-                }else {
+                } else {
                     prepare = connect.prepareStatement(sql);
 
                     prepare.setString(1, brandNamePhone.getText());
@@ -450,7 +518,13 @@ public class system {
                     phonesShowListData();
                 }
             }
-        }catch (Exception e){e.printStackTrace();
+        } catch (Exception e) {
+            // Show error alert for non-numeric price or quantity
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter a valid data !");
+            alert.showAndWait();
         }
     }
     public ObservableList<phoneData> phonesListData(){
@@ -497,839 +571,28 @@ public class system {
     }
 
 
-
-
-
-
-    private ObservableList<phoneData> phoneBill_show;
-    private void phoneBill_showData_Table(){
-        phoneBill_show = phonesListData();
-
-        phoneBill_showData_Table_ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
-        phoneBill_showData_Table_BrandName.setCellValueFactory(new PropertyValueFactory<>("brandName"));
-        phoneBill_showData_Table_ModelName.setCellValueFactory(new PropertyValueFactory<>("modelName"));
-        phoneBill_showData_Table_Memory.setCellValueFactory(new PropertyValueFactory<>("memory"));
-        phoneBill_showData_Table_Color.setCellValueFactory(new PropertyValueFactory<>("color"));
-        phoneBill_showData_Table_Price.setCellValueFactory(new PropertyValueFactory<>("sellingPrice"));
-        phoneBill_showData_Table_Quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-
-        phoneBill_showData_Table.setItems(phoneBill_show);
-    }
-    public void phoneBillSelect(){
-        phoneData phoneData = phoneBill_showData_Table.getSelectionModel().getSelectedItem();
-        int num = phoneBill_showData_Table.getSelectionModel().getSelectedIndex();
-
-        if ((num-1) < -1){
-            return;
-        }
-        phoneBill_BrandName.setText(String.valueOf(phoneData.getBrandName()));
-        phoneBill_modelName.setText(String.valueOf(phoneData.getModelName()));
-        phoneBill_memory.setText(String.valueOf(phoneData.getMemory()));
-        phoneBill_color.setText(String.valueOf(phoneData.getColor()));
-        phoneBill_price.setText(String.valueOf(phoneData.getSellingPrice()));
-        phoneBill_quantity.setText(String.valueOf(1));
-
-    }
-    public void phoneBillClear(){
-        phoneBill_BrandName.clear();
-        phoneBill_modelName.clear();
-        phoneBill_memory.clear();
-        phoneBill_color.clear();
-        phoneBill_price.clear();
-        phoneBill_quantity.clear();
-        phoneBill_discount.clear();
-        phoneBill_warranty.clear();
-    }
-    public void phoneBillSearch(){
-        FilteredList<phoneData> filter = new FilteredList<>(phoneBill_show, e -> true);
-
-        searchBarPhoneBill.textProperty().addListener((Observable, oldValue, newValue) -> {
-
-            filter.setPredicate(predicatePhoneData -> {
-
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-
-                String searchKey = newValue.toLowerCase();
-
-                if (predicatePhoneData.getID().toString().contains(searchKey)) {
-                    return true;
-                } else if (predicatePhoneData.getBrandName().toLowerCase().contains(searchKey)) {
-                    return true;
-                } else if (predicatePhoneData.getModelName().toLowerCase().contains(searchKey)) {
-                    return true;
-                } else if (predicatePhoneData.getMemory().toString().toLowerCase().contains(searchKey)) {
-                    return true;
-                } else if (predicatePhoneData.getColor().toLowerCase().contains(searchKey)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            });
-        });
-
-        SortedList<phoneData> sortList = new SortedList<>(filter);
-
-        sortList.comparatorProperty().bind(phoneBill_showData_Table.comparatorProperty());
-        phoneBill_showData_Table.setItems(sortList);
-    }
-    public void temp_bill_addPhones() throws SQLException {
-        String sql = "INSERT INTO temp_bill_addphones " +
-                "(`Brand Name`, `Model Name`, Memory, Color, `Unit Price`, Units, Discount, Warranty, Total) " +
-                "VALUES (?,?,?,?,?,?,?,?,?)";
-        connect = DatabaseConnection.connectDb();
-
-        String query = "SELECT `quantityPhone` FROM `phones` WHERE `brandNamePhone` =? AND `modelNamePhone` =?";
-        assert connect != null;
-        PreparedStatement pstmt = connect.prepareStatement(query);
-        pstmt.setString(1, phoneBill_BrandName.getText());
-        pstmt.setString(2, phoneBill_modelName.getText());
-        ResultSet rs = pstmt.executeQuery();
-        int availableQuantity = 0;
-        if (rs.next()) {
-            availableQuantity = rs.getInt("quantityPhone");
-        }
-        rs.close();
-        pstmt.close();
-
-        try {
-            Alert alert;
-            if (phoneBill_price.getText().isEmpty() ){
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please enter Price !");
-                alert.showAndWait();
-            } else if (phoneBill_quantity.getText().isEmpty()) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please enter Quantity !");
-                alert.showAndWait();
-            } else if (Double.parseDouble(phoneBill_price.getText()) <= 0 ) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Price is less than 0 !");
-                alert.showAndWait();
-            } else if (Double.parseDouble(phoneBill_quantity.getText()) <= 0 ) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Quantity is less than 0 !");
-                alert.showAndWait();
-            } else if (availableQuantity < 0) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("The selected item is out of stock!");
-                alert.showAndWait();
-            } else if (availableQuantity < Integer.parseInt(phoneBill_quantity.getText())) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("The selected item is not available in the required quantity!");
-                alert.showAndWait();
-            }else {
-                String modelName = phoneBill_modelName.getText();
-                String checkSql = "SELECT * FROM `temp_bill_addphones` WHERE `Model Name` = ?";
-                prepare = connect.prepareStatement(checkSql);
-                prepare.setString(1, modelName);
-                ResultSet resultSet = prepare.executeQuery();
-                if (resultSet.next()) {
-                    // show error for existing brand name
-                    alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("The Model name already exists in the bill!");
-                    alert.showAndWait();
-                }
-                else {
-                    try {
-                        // Check the quantity in the database table
-                        String brandName = phoneBill_BrandName.getText();
-                        int quantity = Integer.parseInt(phoneBill_quantity.getText());
-                        if (!checkQuantityPhone(modelName, brandName, quantity)) {
-                            return;
-                        }
-
-                    double discount;
-                    String warranty;
-
-                    if (phoneBill_discount.getText().isEmpty()) {
-                        discount = 0;
-                    }else {
-                        discount = Double.parseDouble(phoneBill_discount.getText());
-                    }
-
-                    if (!phoneBill_warranty.getText().isEmpty()) {
-                        warranty = phoneBill_warranty.getText();
-                    } else {
-                        warranty = "-";
-                    }
-
-                    double unitPrice = Double.parseDouble(phoneBill_price.getText());
-                    int units = Integer.parseInt(phoneBill_quantity.getText());
-
-                    double total = (unitPrice - discount) * units;
-
-                    String unitPrice_ = String.valueOf(unitPrice);
-                    String units_ = String.valueOf(units);
-                    String discount_ = String.valueOf(discount);
-                    String total_ = String.valueOf(total);
-
-                    prepare = connect.prepareStatement(sql);
-
-                    prepare.setString(1, phoneBill_BrandName.getText());
-                    prepare.setString(2, phoneBill_modelName.getText());
-                    prepare.setString(3, phoneBill_memory.getText());
-                    prepare.setString(4, phoneBill_color.getText());
-
-                    prepare.setString(5, unitPrice_);
-                    prepare.setString(6, units_);
-                    prepare.setString(7, discount_);
-                    prepare.setString(8, warranty);
-                    prepare.setString(9, total_);
-
-                    prepare.executeUpdate();
-
-                    phoneBillClear();
-                    phoneBillShowData();
-                    calculateTotalPhoneBill();
-
-                } catch (NumberFormatException e) {
-                    // Show error alert for non-numeric price or quantity
-                    alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Please enter a valid Price and Quantity !");
-                    alert.showAndWait();
-                }}
-
-            }
-        }catch (Exception e){e.printStackTrace();
-        }
-    }
-    public boolean checkQuantityPhone(String modelName, String brandName, int quantity) {
-        String checkSql = "SELECT `quantityPhone` FROM `phones` WHERE `modelNamePhone` = ? AND `brandNamePhone` = ?";
-        try {
-            PreparedStatement prepare = connect.prepareStatement(checkSql);
-            prepare.setString(1, modelName);
-            prepare.setString(2, brandName);
-            ResultSet resultSet = prepare.executeQuery();
-            if (resultSet.next()) {
-                int unitsInDatabase = resultSet.getInt("quantityPhone");
-                if (unitsInDatabase < quantity) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("The quantity is not sufficient!");
-                    alert.showAndWait();
-                    return false;
-                }
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("The model name and brand name are not in the database!");
-                alert.showAndWait();
-                return false;
-            }
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    public ObservableList<billPhoneData> phoneBillListData(){
-        ObservableList<billPhoneData> listData = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM temp_bill_addphones";
-
-        connect = DatabaseConnection.connectDb();
-        try {
-            prepare = connect.prepareStatement(sql);
-            result = prepare.executeQuery();
-            billPhoneData phone_data;
-
-            while (result.next()){
-                phone_data = new billPhoneData(
-                        result.getString("Brand Name"),
-                        result.getString("Model Name"),
-                result.getInt("Memory"),
-                result.getString("Color"),
-                result.getDouble("Unit Price"),
-                result.getInt("Units"),
-                result.getDouble("Discount"),
-                result.getString("Warranty"),
-                result.getDouble("Total"));
-                listData.add(phone_data);
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return listData;
-    }
-    public ObservableList<billPhoneData> phonesBillShowList;
-    public void phoneBillShowData(){
-        phonesBillShowList = phoneBillListData();
-
-
-        phoneBill_printData_Table_brandName.setCellValueFactory(new PropertyValueFactory<>("brandName"));
-        phoneBill_printData_Table_modelName.setCellValueFactory(new PropertyValueFactory<>("modelName"));
-        phoneBill_printData_Table_memory.setCellValueFactory(new PropertyValueFactory<>("memory"));
-        phoneBill_printData_Table_color.setCellValueFactory(new PropertyValueFactory<>("color"));
-        phoneBill_printData_Table_unitPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-        phoneBill_printData_Table_units.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        phoneBill_printData_Table_discount.setCellValueFactory(new PropertyValueFactory<>("discount"));
-        phoneBill_printData_Table_warranty.setCellValueFactory(new PropertyValueFactory<>("warranty"));
-        phoneBill_printData_Table_total.setCellValueFactory(new PropertyValueFactory<>("total"));
-
-        phoneBill_printData_Table.setItems(phonesBillShowList);
-    }
-    public void phoneBillCancel(){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel this transaction?");
-        alert.setTitle("Cancel Confirmation");
-        alert.setHeaderText(null);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                Statement statement = connect.createStatement();
-                statement.executeUpdate("DELETE FROM temp_bill_addphones");
-                phoneBillClear(); // call phoneBillClear method to clear all input fields
-                phoneBillShowData();
-                calculateTotalPhoneBill();
-                phoneBillCash.clear();
-                phoneBillBalance.clear();
-                phoneBillCustomer.clear();
-                phoneBillCustomerMobile.clear();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    public void phoneBillDrop(){
-        try {
-            Connection connect = DatabaseConnection.connectDb();
-            Statement statement = connect.createStatement();
-            statement.executeUpdate("DELETE FROM temp_bill_addphones");
-            connect.close();
-            calculateTotalPhoneBill();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    public void deletePhoneBillItem() {
-        // Get the selected item from the table
-        billPhoneData phoneData = phoneBill_printData_Table.getSelectionModel().getSelectedItem();
-
-        // Check if a valid item is selected
-        if (phoneData == null) {
-            // Show an error message or dialog indicating no item selected
-            System.out.println("Please select a phone bill item to delete.");
-            return;
-        }
-
-        // Confirmation dialog for deletion
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Message");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to DELETE Phone model name : " + phoneData.getModelName() + "?");
-        Optional<ButtonType> option = alert.showAndWait();
-
-        if (option.get().equals(ButtonType.OK)) {
-            // Connect to the database
-            Connection connect = DatabaseConnection.connectDb();
-
-            try {
-                // Prepared statement to prevent SQL injection
-                String sql = "DELETE FROM `temp_bill_addphones` WHERE `Model Name` = ? AND `Brand Name` = ? ";
-                assert connect != null;
-                PreparedStatement statement = connect.prepareStatement(sql);
-                statement.setString(1, phoneData.getModelName());
-                statement.setString(2,phoneData.getBrandName());
-
-                // Execute the deletion query
-                int rowsAffected = statement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    // Refresh table data (assuming phoneBillShowData() does this)
-                    phoneBillShowData();
-                    calculateTotalPhoneBill();
-                    phoneBillBalance.clear();
-                    phoneBillCash.clear();
-                } else {
-                    // Error message if no rows deleted
-                    System.out.println("Deletion failed! No rows affected." );
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    public void calculateTotalPhoneBill() {
-        double totalAmount = 0.0;
-
-        if (this.connect == null) {
-            System.out.println("Database connection is not established.");
-        }
-
-        String query = "SELECT SUM(Total) AS totalAmount FROM temp_bill_addphones";
-
-        try (Statement stmt = this.connect.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-
-            if (rs.next()) {
-                totalAmount = rs.getDouble("totalAmount");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        phoneBillTotalAmount.setText(String.valueOf(totalAmount));
-    }
-
-
-    public void updateBalancePhone() {
-        try {
-            double totalAmount = Double.parseDouble(phoneBillTotalAmount.getText());
-            double cashAmount = Double.parseDouble(phoneBillCash.getText());
-            double balanceAmount = cashAmount - totalAmount;
-            phoneBillBalance.setText(String.valueOf(balanceAmount));
-            if(cashAmount < totalAmount && radioButton_cash_phone.isSelected()){
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setHeaderText("Insufficient Cash");
-                alert.setContentText("The cash provided is less than the total bill amount. Please enter sufficient cash.");
-                alert.showAndWait();
-            }
-        } catch (NumberFormatException e) {
-            phoneBillBalance.setText("0.0");
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Input Error");
-            alert.setContentText("Please enter valid numbers only.");
-            alert.showAndWait();
-        }
-    }
-    public void updateBalanceAccessory() {
-        try {
-            double totalAmount = Double.parseDouble(accessoryBillTotalAmount.getText());
-            double cashAmount = Double.parseDouble(accessoryBillCash.getText());
-            double balanceAmount = cashAmount - totalAmount;
-            accessoryBillBalance.setText(String.valueOf(balanceAmount));
-            if(cashAmount < totalAmount && radioButton_cash_accessory.isSelected()){
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setHeaderText("Insufficient Cash");
-                alert.setContentText("The cash provided is less than the total bill amount. Please enter sufficient cash.");
-                alert.showAndWait();
-            }
-        } catch (NumberFormatException e) {
-            accessoryBillCash.setText("0.0");
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Input Error");
-            alert.setContentText("Please enter valid numbers only.");
-            alert.showAndWait();
-        }
-    }
-
-    private ObservableList<accessoryData> accessoryBill_show;
-    private void accessoryBill_showData_Table(){
-        accessoryBill_show = accessoryListData();
-
-        accessoryBill_showData_Table_ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
-        accessoryBill_showData_Table_brandName.setCellValueFactory(new PropertyValueFactory<>("brandName"));
-        accessoryBill_showData_Table_modelName.setCellValueFactory(new PropertyValueFactory<>("modelName"));
-        accessoryBill_showData_Table_price.setCellValueFactory(new PropertyValueFactory<>("sellingPrice"));
-        accessoryBill_showData_Table_quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-
-        accessoryBill_showData_Table.setItems(accessoryBill_show);
-    }
-    public void accessoryBillSelect(){
-        accessoryData accessoryData = accessoryBill_showData_Table.getSelectionModel().getSelectedItem();
-        int num = accessoryBill_showData_Table.getSelectionModel().getSelectedIndex();
-
-        if ((num-1) < -1){
-            return;
-        }
-        accessoryBill_brandName.setText(String.valueOf(accessoryData.getBrandName()));
-        accessoryBill_modelName.setText(String.valueOf(accessoryData.getModelName()));
-        accessoryBill_price.setText(String.valueOf(accessoryData.getSellingPrice()));
-        accessoryBill_quantity.setText(String.valueOf(1));
-    }
-    public void accessoryBillClear(){
-        accessoryBill_brandName.clear();
-        accessoryBill_modelName.clear();
-        accessoryBill_price.clear();
-        accessoryBill_quantity.clear();
-        accessoryBill_discount.clear();
-        accessoryBill_warranty.clear();
-    }
-    public void accessoryBillSearch(){
-        FilteredList<accessoryData> filter = new FilteredList<>(accessoryBill_show, e -> true);
-
-        searchBarAccessoryBill.textProperty().addListener((Observable, oldValue, newValue) -> {
-
-            filter.setPredicate(predicateAccessoryData -> {
-
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-
-                String searchKey = newValue.toLowerCase();
-
-                if (predicateAccessoryData.getID().toString().contains(searchKey)) {
-                    return true;
-                } else if (predicateAccessoryData.getBrandName().toLowerCase().contains(searchKey)) {
-                    return true;
-                } else if (predicateAccessoryData.getModelName().toLowerCase().contains(searchKey)) {
-                    return true;
-                }else {
-                    return false;
-                }
-            });
-        });
-
-        SortedList<accessoryData> sortList = new SortedList<>(filter);
-
-        sortList.comparatorProperty().bind(accessoryBill_showData_Table.comparatorProperty());
-        accessoryBill_showData_Table.setItems(sortList);
-    }
-    public void temp_bill_addAccessory() throws SQLException {
-        String sql = "INSERT INTO `temp_bill_addaccessory`(`brandName`, `modelName`, `unitPrice`, `units`, `discount`, `warranty`, `total`) VALUES (?,?,?,?,?,?,?)";
-
-        connect = DatabaseConnection.connectDb();
-
-        String query = "SELECT `quantityAccessory` FROM `accessories` WHERE `brandNameAccessory` =? AND `modelNameAccessory` =?";
-        assert connect != null;
-        PreparedStatement pstmt = connect.prepareStatement(query);
-        pstmt.setString(1, phoneBill_BrandName.getText());
-        pstmt.setString(2, phoneBill_modelName.getText());
-        ResultSet rs = pstmt.executeQuery();
-        int availableQuantity = 0;
-        if (rs.next()) {
-            availableQuantity = rs.getInt("quantityAccessory");
-        }
-        rs.close();
-        pstmt.close();
-        try {
-            Alert alert;
-            if (accessoryBill_price.getText().isEmpty()) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please enter Price !");
-                alert.showAndWait();
-            } else if (accessoryBill_quantity.getText().isEmpty()) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please enter Quantity !");
-                alert.showAndWait();
-            } else if (Double.parseDouble(accessoryBill_price.getText()) <= 0) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Price is less than 0 !");
-                alert.showAndWait();
-            } else if (Double.parseDouble(accessoryBill_quantity.getText()) <= 0) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Quantity is less than 0 !");
-                alert.showAndWait();
-            }else if (availableQuantity < 0) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("The selected item is out of stock!");
-                alert.showAndWait();
-            } else if (availableQuantity < Integer.parseInt(accessoryBill_quantity.getText())) {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("The selected item is not available in the required quantity!");
-                alert.showAndWait();
-            }else {
-                String modelName = accessoryBill_modelName.getText();
-                String checkSql = "SELECT * FROM `temp_bill_addaccessory` WHERE `modelName` = ?";
-                prepare = connect.prepareStatement(checkSql);
-                prepare.setString(1, modelName);
-                ResultSet resultSet = prepare.executeQuery();
-                if (resultSet.next()) {
-                    // show error for existing brand name
-                    alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("The model name already exists in the bill!");
-                    alert.showAndWait();
-                }else {
-                    try {// Check the quantity in the database table
-                        String brandName = accessoryBill_brandName.getText();
-                        int quantity = Integer.parseInt(accessoryBill_quantity.getText());
-                        if (!checkQuantityAccessory(modelName, brandName, quantity)) {
-                            return;
-                        }
-                        double discount;
-                        String warranty;
-
-                        if (accessoryBill_discount.getText().isEmpty()) {
-                            discount = 0;
-                        }else {
-                            discount = Double.parseDouble(accessoryBill_discount.getText());
-                        }
-
-                        if (!accessoryBill_warranty.getText().isEmpty()) {
-                            warranty =accessoryBill_warranty.getText();
-                        } else {
-                            warranty = "-";
-                        }
-
-                        double unitPrice = Double.parseDouble(accessoryBill_price.getText());
-                        int units = Integer.parseInt(accessoryBill_quantity.getText());
-
-                        double total = (unitPrice - discount) * units;
-
-                        String unitPrice_ = String.valueOf(unitPrice);
-                        String units_ = String.valueOf(units);
-                        String discount_ = String.valueOf(discount);
-                        String total_ = String.valueOf(total);
-
-                        prepare = connect.prepareStatement(sql);
-
-                        prepare.setString(1, accessoryBill_brandName.getText());
-                        prepare.setString(2, accessoryBill_modelName.getText());
-
-                        prepare.setString(3, unitPrice_);
-                        prepare.setString(4, units_);
-                        prepare.setString(5, discount_);
-                        prepare.setString(6, warranty);
-                        prepare.setString(7, total_);
-
-                        prepare.executeUpdate();
-
-                        accessoryBillClear();
-                        accessoryBillShowData();
-                        calculateTotalAccessoryBill();
-
-                    } catch (NumberFormatException e) {
-                        // Show error alert for non-numeric price or quantity
-                        alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Error Message");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Please enter a valid Price and Quantity !");
-                        alert.showAndWait();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public boolean checkQuantityAccessory(String modelName, String brandName, int quantity) {
-        String checkSql = "SELECT `quantityAccessory` FROM `accessories` WHERE `modelNameAccessory` = ? AND `brandNameAccessory` = ?";
-        try {
-            PreparedStatement prepare = connect.prepareStatement(checkSql);
-            prepare.setString(1, modelName);
-            prepare.setString(2, brandName);
-            ResultSet resultSet = prepare.executeQuery();
-            if (resultSet.next()) {
-                int unitsInDatabase = resultSet.getInt("quantityAccessory");
-                if (unitsInDatabase < quantity) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("The quantity is not sufficient!");
-                    alert.showAndWait();
-                    return false;
-                }
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("The model name and brand name are not in the database!");
-                alert.showAndWait();
-                return false;
-            }
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public ObservableList<billAccessoryData> accessoryBillListData(){
-        ObservableList<billAccessoryData> listData = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM temp_bill_addaccessory";
-
-        connect = DatabaseConnection.connectDb();
-        try {
-            prepare = connect.prepareStatement(sql);
-            result = prepare.executeQuery();
-            billAccessoryData accessory_data;
-
-            while (result.next()){
-                accessory_data = new billAccessoryData(
-                        result.getString("brandName"),
-                        result.getString("modelName"),
-                        result.getDouble("unitPrice"),
-                        result.getInt("units"),
-                        result.getDouble("discount"),
-                        result.getString("warranty"),
-                        result.getDouble("total"));
-                listData.add(accessory_data);
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return listData;
-    }
-    public ObservableList<billAccessoryData> accessoryBillShowList;
-    public void accessoryBillShowData(){
-        accessoryBillShowList = accessoryBillListData();
-
-
-        accessoryBill_printData_Table_brandName.setCellValueFactory(new PropertyValueFactory<>("brandName"));
-        accessoryBill_printData_Table_modelName.setCellValueFactory(new PropertyValueFactory<>("modelName"));
-        accessoryBill_printData_Table_unitPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-        accessoryBill_printData_Table_units.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        accessoryBill_printData_Table_discount.setCellValueFactory(new PropertyValueFactory<>("discount"));
-        accessoryBill_printData_Table_warranty.setCellValueFactory(new PropertyValueFactory<>("warranty"));
-        accessoryBill_printData_Table_total.setCellValueFactory(new PropertyValueFactory<>("total"));
-
-        accessoryBill_printData_Table.setItems(accessoryBillShowList);
-
-    }
-    public void accessoryBillCancel(){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel this transaction?");
-        alert.setTitle("Cancel Confirmation");
-        alert.setHeaderText(null);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                Statement statement = connect.createStatement();
-                statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
-                accessoryBillClear(); // call phoneBillClear method to clear all input fields
-                accessoryBillShowData();
-                calculateTotalAccessoryBill();
-                accessoryBillCash.clear();
-                accessoryBillBalance.clear();
-                accessoryBillCustomer.clear();
-                accessoryBillCustomerMobile.clear();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    public void accessoryBillDrop(){
-        try {
-            Connection connect = DatabaseConnection.connectDb();
-            Statement statement = connect.createStatement();
-            statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
-            connect.close();
-            calculateTotalAccessoryBill();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    public void deleteAccessoryBillItem() {
-        // Get the selected item from the table
-        billAccessoryData accessoryData = accessoryBill_printData_Table.getSelectionModel().getSelectedItem();
-
-        // Check if a valid item is selected
-        if (accessoryData == null) {
-            // Show an error message or dialog indicating no item selected
-            System.out.println("Please select a phone bill item to delete.");
-            return;
-        }
-
-        // Confirmation dialog for deletion
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Message");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to DELETE item : " + accessoryData.getModelName() + "?");
-        Optional<ButtonType> option = alert.showAndWait();
-
-        if (option.get().equals(ButtonType.OK)) {
-            // Connect to the database
-            Connection connect = DatabaseConnection.connectDb();
-
-            try {
-                // Prepared statement to prevent SQL injection
-                String sql = "DELETE FROM `temp_bill_addaccessory` WHERE `modelName` = ? AND `brandName` = ? ";
-                assert connect != null;
-                PreparedStatement statement = connect.prepareStatement(sql);
-                statement.setString(1, accessoryData.getModelName());
-                statement.setString(2,accessoryData.getBrandName());
-
-                // Execute the deletion query
-                int rowsAffected = statement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    // Refresh table data
-                    accessoryBillShowData();
-                    calculateTotalAccessoryBill();
-                    accessoryBillBalance.clear();
-                    accessoryBillCash.clear();
-                } else {
-                    // Error message if no rows deleted
-                    System.out.println("Deletion failed! No rows affected." );
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    public void calculateTotalAccessoryBill() {
-        double totalAmount = 0.0;
-
-        if (this.connect == null) {
-            System.out.println("Database connection is not established.");
-        }
-
-        String query = "SELECT SUM(total) AS totalAmount FROM temp_bill_addaccessory";
-
-        try (Statement stmt = this.connect.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-
-            if (rs.next()) {
-                totalAmount = rs.getDouble("totalAmount");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        accessoryBillTotalAmount.setText(String.valueOf(totalAmount));
-    }
-
-
-
-
-
-    public void addAccessories(){
+    public void addAccessories() {
         String sql = "INSERT INTO accessories"
-                +"(brandNameAccessory, modelNameAccessory, costPriceAccessory, sellingPriceAccessory, quantityAccessory) "
-                +"VALUES(?,?,?,?,?)";
+                + "(brandNameAccessory, modelNameAccessory, costPriceAccessory, sellingPriceAccessory, quantityAccessory) "
+                + "VALUES(?,?,?,?,?)";
 
         connect = DatabaseConnection.connectDb();
+        Alert alert;
         try {
-            Alert alert;
-            if(brandNameAccessory.getText().isEmpty()||
-            modelNameAccessory.getText().isEmpty()||
-            costPriceAccessory.getText().isEmpty()||
-            sellingPriceAccessory.getText().isEmpty()||
-            quantityAccessory.getText().isEmpty()){
+            if (brandNameAccessory.getText().isEmpty() ||
+                    modelNameAccessory.getText().isEmpty() ||
+                    costPriceAccessory.getText().isEmpty() ||
+                    sellingPriceAccessory.getText().isEmpty() ||
+                    quantityAccessory.getText().isEmpty()) {
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error Message");
                 alert.setHeaderText(null);
                 alert.setContentText("Please fill all blank fields");
                 alert.showAndWait();
-            }else {
+            } else {
                 String check = "SELECT * FROM accessories WHERE " +
-                        "brandNameAccessory = '" +brandNameAccessory.getText()+"' AND " +
-                        "modelNameAccessory = '"+ modelNameAccessory.getText() +"'";
+                        "brandNameAccessory = '" + brandNameAccessory.getText() + "' AND " +
+                        "modelNameAccessory = '" + modelNameAccessory.getText() + "'";
 
                 statement = connect.createStatement();
                 result = statement.executeQuery(check);
@@ -1340,12 +603,12 @@ public class system {
                     alert.setHeaderText(null);
                     alert.setContentText("Entered data already exists in the table:");
                     alert.showAndWait();
-                }else{
+                } else {
                     prepare = connect.prepareStatement(sql);
 
                     prepare.setString(1, brandNameAccessory.getText());
                     prepare.setString(2, modelNameAccessory.getText());
-                    prepare.setString(3,costPriceAccessory.getText());
+                    prepare.setString(3, costPriceAccessory.getText());
                     prepare.setString(4, sellingPriceAccessory.getText());
                     prepare.setString(5, quantityAccessory.getText());
 
@@ -1359,8 +622,12 @@ public class system {
                     accessoryShowListData();
                 }
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter a valid data !");
+            alert.showAndWait();
         }
     }
     public ObservableList<accessoryData> accessoryListData(){
@@ -1776,44 +1043,1229 @@ public class system {
         accessoryTable.setItems(sortList);
     }
 
-    public void phonesChart(){
-        String sql = "SELECT brandNamePhone, quantityPhone\n" +
-                "FROM phones\n" +
-                "GROUP BY brandNamePhone\n" +
-                "ORDER BY quantityPhone DESC;\n";
 
+
+
+
+
+    private ObservableList<phoneData> phoneBill_show;
+    private void phoneBill_showData_Table(){
+        phoneBill_show = phonesListData();
+
+        phoneBill_showData_Table_ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+        phoneBill_showData_Table_BrandName.setCellValueFactory(new PropertyValueFactory<>("brandName"));
+        phoneBill_showData_Table_ModelName.setCellValueFactory(new PropertyValueFactory<>("modelName"));
+        phoneBill_showData_Table_Memory.setCellValueFactory(new PropertyValueFactory<>("memory"));
+        phoneBill_showData_Table_Color.setCellValueFactory(new PropertyValueFactory<>("color"));
+        phoneBill_showData_Table_Price.setCellValueFactory(new PropertyValueFactory<>("sellingPrice"));
+        phoneBill_showData_Table_Quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+
+        phoneBill_showData_Table.setItems(phoneBill_show);
+    }
+    public void phoneBillSelect(){
+        phoneData phoneData = phoneBill_showData_Table.getSelectionModel().getSelectedItem();
+        int num = phoneBill_showData_Table.getSelectionModel().getSelectedIndex();
+
+        if ((num-1) < -1){
+            return;
+        }
+        phoneBill_BrandName.setText(String.valueOf(phoneData.getBrandName()));
+        phoneBill_modelName.setText(String.valueOf(phoneData.getModelName()));
+        phoneBill_memory.setText(String.valueOf(phoneData.getMemory()));
+        phoneBill_color.setText(String.valueOf(phoneData.getColor()));
+        phoneBill_price.setText(String.valueOf(phoneData.getSellingPrice()));
+        phoneBill_quantity.setText(String.valueOf(1));
+
+    }
+    public void phoneBillClear(){
+        phoneBill_BrandName.clear();
+        phoneBill_modelName.clear();
+        phoneBill_memory.clear();
+        phoneBill_color.clear();
+        phoneBill_price.clear();
+        phoneBill_quantity.clear();
+        phoneBill_discount.clear();
+        phoneBill_warranty.clear();
+    }
+    public void phoneBillSearch(){
+        FilteredList<phoneData> filter = new FilteredList<>(phoneBill_show, e -> true);
+
+        searchBarPhoneBill.textProperty().addListener((Observable, oldValue, newValue) -> {
+
+            filter.setPredicate(predicatePhoneData -> {
+
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String searchKey = newValue.toLowerCase();
+
+                if (predicatePhoneData.getID().toString().contains(searchKey)) {
+                    return true;
+                } else if (predicatePhoneData.getBrandName().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else if (predicatePhoneData.getModelName().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else if (predicatePhoneData.getMemory().toString().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else if (predicatePhoneData.getColor().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        });
+
+        SortedList<phoneData> sortList = new SortedList<>(filter);
+
+        sortList.comparatorProperty().bind(phoneBill_showData_Table.comparatorProperty());
+        phoneBill_showData_Table.setItems(sortList);
+    }
+    public void temp_bill_addPhones() throws SQLException {
+        String sql = "INSERT INTO temp_bill_addphones " +
+                "(`Brand Name`, `Model Name`, Memory, Color, `Unit Price`, Units, Discount, Warranty, Total) " +
+                "VALUES (?,?,?,?,?,?,?,?,?)";
+        connect = DatabaseConnection.connectDb();
+
+        String query = "SELECT `quantityPhone` FROM `phones` WHERE `brandNamePhone` =? AND `modelNamePhone` =? AND `memoryPhone` =? AND `colorPhone` =?";
+        assert connect != null;
+        PreparedStatement pstmt = connect.prepareStatement(query);
+        pstmt.setString(1, phoneBill_BrandName.getText());
+        pstmt.setString(2, phoneBill_modelName.getText());
+        pstmt.setString(3, phoneBill_memory.getText());
+        pstmt.setString(4, phoneBill_color.getText());
+        ResultSet rs = pstmt.executeQuery();
+        int availableQuantity = 0;
+        if (rs.next()) {
+            availableQuantity = rs.getInt("quantityPhone");
+        }
+        rs.close();
+        pstmt.close();
+
+        try {
+            Alert alert;
+            if (phoneBill_price.getText().isEmpty() ){
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter Price !");
+                alert.showAndWait();
+            } else if (phoneBill_quantity.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter Quantity !");
+                alert.showAndWait();
+            } else if (Double.parseDouble(phoneBill_price.getText()) <= 0 ) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Price is less than 0 !");
+                alert.showAndWait();
+            } else if (Double.parseDouble(phoneBill_quantity.getText()) <= 0 ) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Quantity is less than 0 !");
+                alert.showAndWait();
+            } else if (availableQuantity <= 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The selected item is out of stock!");
+                alert.showAndWait();
+            } else if (availableQuantity < Integer.parseInt(phoneBill_quantity.getText())) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The selected item is not available in the required quantity!");
+                alert.showAndWait();
+            }else {
+                String modelName = phoneBill_modelName.getText();
+                String checkSql = "SELECT * FROM `temp_bill_addphones` WHERE `Model Name` = ?";
+                prepare = connect.prepareStatement(checkSql);
+                prepare.setString(1, modelName);
+                ResultSet resultSet = prepare.executeQuery();
+                if (resultSet.next()) {
+                    // show error for existing brand name
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("The Model name already exists in the bill!");
+                    alert.showAndWait();
+                }
+                else {
+                    try {
+                        // Check the quantity in the database table
+                        String brandName = phoneBill_BrandName.getText();
+                        int quantity = Integer.parseInt(phoneBill_quantity.getText());
+                        if (!checkQuantityPhone(modelName, brandName, quantity)) {
+                            return;
+                        }
+
+                    double discount;
+                    String warranty;
+
+                    if (phoneBill_discount.getText().isEmpty()) {
+                        discount = 0;
+                    }else {
+                        discount = Double.parseDouble(phoneBill_discount.getText());
+                    }
+
+                    if (!phoneBill_warranty.getText().isEmpty()) {
+                        warranty = phoneBill_warranty.getText();
+                    } else {
+                        warranty = "-";
+                    }
+
+                    double unitPrice = Double.parseDouble(phoneBill_price.getText());
+                    int units = Integer.parseInt(phoneBill_quantity.getText());
+
+                    double total = (unitPrice - discount) * units;
+
+                    String unitPrice_ = String.valueOf(unitPrice);
+                    String units_ = String.valueOf(units);
+                    String discount_ = String.valueOf(discount);
+                    String total_ = String.valueOf(total);
+
+                    prepare = connect.prepareStatement(sql);
+
+                    prepare.setString(1, phoneBill_BrandName.getText());
+                    prepare.setString(2, phoneBill_modelName.getText());
+                    prepare.setString(3, phoneBill_memory.getText());
+                    prepare.setString(4, phoneBill_color.getText());
+
+                    prepare.setString(5, unitPrice_);
+                    prepare.setString(6, units_);
+                    prepare.setString(7, discount_);
+                    prepare.setString(8, warranty);
+                    prepare.setString(9, total_);
+
+                    prepare.executeUpdate();
+
+                    phoneBillClear();
+                    phoneBillShowData();
+                    calculateTotalPhoneBill();
+
+                } catch (NumberFormatException e) {
+                    // Show error alert for non-numeric price or quantity
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please enter a valid data !");
+                    alert.showAndWait();
+                }}
+
+            }
+        }catch (Exception e){e.printStackTrace();
+        }
+    }
+    public boolean checkQuantityPhone(String modelName, String brandName, int quantity) {
+        String checkSql = "SELECT `quantityPhone` FROM `phones` WHERE `modelNamePhone` = ? AND `brandNamePhone` = ?";
+        try {
+            PreparedStatement prepare = connect.prepareStatement(checkSql);
+            prepare.setString(1, modelName);
+            prepare.setString(2, brandName);
+            ResultSet resultSet = prepare.executeQuery();
+            if (resultSet.next()) {
+                int unitsInDatabase = resultSet.getInt("quantityPhone");
+                if (unitsInDatabase < quantity) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("The quantity is not sufficient!");
+                    alert.showAndWait();
+                    return false;
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The model name and brand name are not in the database!");
+                alert.showAndWait();
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public ObservableList<billPhoneData> phoneBillListData(){
+        ObservableList<billPhoneData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM temp_bill_addphones";
+
+        connect = DatabaseConnection.connectDb();
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            billPhoneData phone_data;
+
+            while (result.next()){
+                phone_data = new billPhoneData(
+                        result.getString("Brand Name"),
+                        result.getString("Model Name"),
+                result.getInt("Memory"),
+                result.getString("Color"),
+                result.getDouble("Unit Price"),
+                result.getInt("Units"),
+                result.getDouble("Discount"),
+                result.getString("Warranty"),
+                result.getDouble("Total"));
+                listData.add(phone_data);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return listData;
+    }
+    public ObservableList<billPhoneData> phonesBillShowList;
+    public void phoneBillShowData(){
+        phonesBillShowList = phoneBillListData();
+
+
+        phoneBill_printData_Table_brandName.setCellValueFactory(new PropertyValueFactory<>("brandName"));
+        phoneBill_printData_Table_modelName.setCellValueFactory(new PropertyValueFactory<>("modelName"));
+        phoneBill_printData_Table_memory.setCellValueFactory(new PropertyValueFactory<>("memory"));
+        phoneBill_printData_Table_color.setCellValueFactory(new PropertyValueFactory<>("color"));
+        phoneBill_printData_Table_unitPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        phoneBill_printData_Table_units.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        phoneBill_printData_Table_discount.setCellValueFactory(new PropertyValueFactory<>("discount"));
+        phoneBill_printData_Table_warranty.setCellValueFactory(new PropertyValueFactory<>("warranty"));
+        phoneBill_printData_Table_total.setCellValueFactory(new PropertyValueFactory<>("total"));
+
+        phoneBill_printData_Table.setItems(phonesBillShowList);
+    }
+    public void phoneBillCancel(){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel this transaction?");
+        alert.setTitle("Cancel Confirmation");
+        alert.setHeaderText(null);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                Statement statement = connect.createStatement();
+                statement.executeUpdate("DELETE FROM temp_bill_addphones");
+                phoneBillClear(); // call phoneBillClear method to clear all input fields
+                phoneBillShowData();
+                calculateTotalPhoneBill();
+                phoneBillCash.clear();
+                phoneBillBalance.clear();
+                phoneBillCustomer.clear();
+                phoneBillCustomerMobile.clear();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void phoneBillDrop(){
+        try {
+            Connection connect = DatabaseConnection.connectDb();
+            Statement statement = connect.createStatement();
+            statement.executeUpdate("DELETE FROM temp_bill_addphones");
+            connect.close();
+            calculateTotalPhoneBill();
+            phoneBill_BrandName.clear();
+            phoneBill_modelName.clear();
+            phoneBill_memory.clear();
+            phoneBill_color.clear();
+            phoneBill_price.clear();
+            phoneBill_quantity.clear();
+            phoneBill_discount.clear();
+            phoneBill_warranty.clear();
+            phoneBillCash.clear();
+            phoneBillBalance.clear();
+            phoneBillCustomer.clear();
+            phoneBillCustomerMobile.clear();
+            phoneBillCashier.clear();
+            phoneBillTotalAmount.clear();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void deletePhoneBillItem() {
+        // Get the selected item from the table
+        billPhoneData phoneData = phoneBill_printData_Table.getSelectionModel().getSelectedItem();
+
+        // Check if a valid item is selected
+        if (phoneData == null) {
+            // Show an error message or dialog indicating no item selected
+            System.out.println("Please select a phone bill item to delete.");
+            return;
+        }
+
+        // Confirmation dialog for deletion
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Message");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to DELETE Phone model name : " + phoneData.getModelName() + "?");
+        Optional<ButtonType> option = alert.showAndWait();
+
+        if (option.get().equals(ButtonType.OK)) {
+            // Connect to the database
+            Connection connect = DatabaseConnection.connectDb();
+
+            try {
+                // Prepared statement to prevent SQL injection
+                String sql = "DELETE FROM `temp_bill_addphones` WHERE `Model Name` = ? AND `Brand Name` = ? ";
+                assert connect != null;
+                PreparedStatement statement = connect.prepareStatement(sql);
+                statement.setString(1, phoneData.getModelName());
+                statement.setString(2,phoneData.getBrandName());
+
+                // Execute the deletion query
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    // Refresh table data (assuming phoneBillShowData() does this)
+                    phoneBillShowData();
+                    calculateTotalPhoneBill();
+                    phoneBillBalance.clear();
+                    phoneBillCash.clear();
+                } else {
+                    // Error message if no rows deleted
+                    System.out.println("Deletion failed! No rows affected." );
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void calculateTotalPhoneBill() {
+        connect = DatabaseConnection.connectDb();
+        double totalAmount = 0.0;
+
+        if (connect == null) {
+            System.out.println("Database connection is not established.");
+        }
+
+        String query = "SELECT SUM(Total) AS totalAmount FROM temp_bill_addphones";
+
+        try (Statement stmt = connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                totalAmount = rs.getDouble("totalAmount");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        phoneBillTotalAmount.setText(String.valueOf(totalAmount));
     }
 
 
+    public void updateBalancePhone() {
+        // Initialize total amount from the totalAmount TextField
+        double total = 0.0;
+        String totalText = phoneBillTotalAmount.getText();
+        if (totalText != null && !totalText.isEmpty()) {
+            try {
+                total = Double.parseDouble(totalText);
+            } catch (NumberFormatException e) {
+                // Handle invalid input for total amount
+                phoneBillBalance.setText("Invalid total amount");
+                return;
+            }
+        }
+
+        // Add listener to cashEntered field to update balance
+        double finalTotal = total;
+        phoneBillCash.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.isEmpty()) {
+                try {
+                    double cash = Double.parseDouble(newValue);
+                    double balanceAmount = cash - finalTotal;
+                    phoneBillBalance.setText(String.valueOf(balanceAmount));
+                } catch (NumberFormatException e) {
+                    // Handle invalid input for cash entered
+                    phoneBillBalance.setText("Invalid cash amount");
+                }
+            } else {
+                // If cashEntered field is empty, display only the negative total amount
+                phoneBillBalance.setText(String.valueOf(-finalTotal));
+            }
+        });
+    }
+    public void updateBalanceAccessory() {
+        // Initialize total amount from the totalAmount TextField
+        double total = 0.0;
+        String totalText = accessoryBillTotalAmount.getText();
+        if (totalText != null && !totalText.isEmpty()) {
+            try {
+                total = Double.parseDouble(totalText);
+            } catch (NumberFormatException e) {
+                // Handle invalid input for total amount
+                accessoryBillBalance.setText("Invalid total amount");
+                return;
+            }
+        }
+
+        // Add listener to cashEntered field to update balance
+        double finalTotal = total;
+        accessoryBillCash.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.isEmpty()) {
+                try {
+                    double cash = Double.parseDouble(newValue);
+                    double balanceAmount = cash - finalTotal;
+                    accessoryBillBalance.setText(String.valueOf(balanceAmount));
+                } catch (NumberFormatException e) {
+                    // Handle invalid input for cash entered
+                    accessoryBillBalance.setText("Invalid cash amount");
+                }
+            } else {
+                // If cashEntered field is empty, display only the negative total amount
+                accessoryBillBalance.setText(String.valueOf(-finalTotal));
+            }
+        });
+    }
+
+    private ObservableList<accessoryData> accessoryBill_show;
+    private void accessoryBill_showData_Table(){
+        accessoryBill_show = accessoryListData();
+
+        accessoryBill_showData_Table_ID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+        accessoryBill_showData_Table_brandName.setCellValueFactory(new PropertyValueFactory<>("brandName"));
+        accessoryBill_showData_Table_modelName.setCellValueFactory(new PropertyValueFactory<>("modelName"));
+        accessoryBill_showData_Table_price.setCellValueFactory(new PropertyValueFactory<>("sellingPrice"));
+        accessoryBill_showData_Table_quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+
+        accessoryBill_showData_Table.setItems(accessoryBill_show);
+    }
+    public void accessoryBillSelect(){
+        accessoryData accessoryData = accessoryBill_showData_Table.getSelectionModel().getSelectedItem();
+        int num = accessoryBill_showData_Table.getSelectionModel().getSelectedIndex();
+
+        if ((num-1) < -1){
+            return;
+        }
+        accessoryBill_brandName.setText(String.valueOf(accessoryData.getBrandName()));
+        accessoryBill_modelName.setText(String.valueOf(accessoryData.getModelName()));
+        accessoryBill_price.setText(String.valueOf(accessoryData.getSellingPrice()));
+        accessoryBill_quantity.setText(String.valueOf(1));
+    }
+    public void accessoryBillClear(){
+        accessoryBill_brandName.clear();
+        accessoryBill_modelName.clear();
+        accessoryBill_price.clear();
+        accessoryBill_quantity.clear();
+        accessoryBill_discount.clear();
+        accessoryBill_warranty.clear();
+    }
+    public void accessoryBillSearch(){
+        FilteredList<accessoryData> filter = new FilteredList<>(accessoryBill_show, e -> true);
+
+        searchBarAccessoryBill.textProperty().addListener((Observable, oldValue, newValue) -> {
+
+            filter.setPredicate(predicateAccessoryData -> {
+
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String searchKey = newValue.toLowerCase();
+
+                if (predicateAccessoryData.getID().toString().contains(searchKey)) {
+                    return true;
+                } else if (predicateAccessoryData.getBrandName().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else if (predicateAccessoryData.getModelName().toLowerCase().contains(searchKey)) {
+                    return true;
+                }else {
+                    return false;
+                }
+            });
+        });
+
+        SortedList<accessoryData> sortList = new SortedList<>(filter);
+
+        sortList.comparatorProperty().bind(accessoryBill_showData_Table.comparatorProperty());
+        accessoryBill_showData_Table.setItems(sortList);
+    }
+    public void temp_bill_addAccessory() throws SQLException {
+        String sql = "INSERT INTO `temp_bill_addaccessory`(`brandName`, `modelName`, `unitPrice`, `units`, `discount`, `warranty`, `total`) VALUES (?,?,?,?,?,?,?)";
+
+        connect = DatabaseConnection.connectDb();
+
+        String query = "SELECT `quantityAccessory` FROM `accessories` WHERE `brandNameAccessory` =? AND `modelNameAccessory` =?";
+        assert connect != null;
+        PreparedStatement pstmt = connect.prepareStatement(query);
+        pstmt.setString(1, accessoryBill_brandName.getText());
+        pstmt.setString(2, accessoryBill_modelName.getText());
+        ResultSet rs = pstmt.executeQuery();
+        int availableQuantity = 0;
+        if (rs.next()) {
+            availableQuantity = rs.getInt("quantityAccessory");
+        }
+        rs.close();
+        pstmt.close();
+        try {
+            Alert alert;
+            if (accessoryBill_price.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter Price !");
+                alert.showAndWait();
+            } else if (accessoryBill_quantity.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter Quantity !");
+                alert.showAndWait();
+            } else if (Double.parseDouble(accessoryBill_price.getText()) <= 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Price is less than 0 !");
+                alert.showAndWait();
+            } else if (Double.parseDouble(accessoryBill_quantity.getText()) <= 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Quantity is less than 0 !");
+                alert.showAndWait();
+            }else if (availableQuantity <= 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The selected item is out of stock!");
+                alert.showAndWait();
+            } else if (availableQuantity < Integer.parseInt(accessoryBill_quantity.getText())) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The selected item is not available in the required quantity!");
+                alert.showAndWait();
+            }else {
+                String modelName = accessoryBill_modelName.getText();
+                String checkSql = "SELECT * FROM `temp_bill_addaccessory` WHERE `modelName` = ?";
+                prepare = connect.prepareStatement(checkSql);
+                prepare.setString(1, modelName);
+                ResultSet resultSet = prepare.executeQuery();
+                if (resultSet.next()) {
+                    // show error for existing brand name
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("The model name already exists in the bill!");
+                    alert.showAndWait();
+                }else {
+                    try {// Check the quantity in the database table
+                        String brandName = accessoryBill_brandName.getText();
+                        int quantity = Integer.parseInt(accessoryBill_quantity.getText());
+                        if (!checkQuantityAccessory(modelName, brandName, quantity)) {
+                            return;
+                        }
+                        double discount;
+                        String warranty;
+
+                        if (accessoryBill_discount.getText().isEmpty()) {
+                            discount = 0;
+                        }else {
+                            discount = Double.parseDouble(accessoryBill_discount.getText());
+                        }
+
+                        if (!accessoryBill_warranty.getText().isEmpty()) {
+                            warranty =accessoryBill_warranty.getText();
+                        } else {
+                            warranty = "-";
+                        }
+
+                        double unitPrice = Double.parseDouble(accessoryBill_price.getText());
+                        int units = Integer.parseInt(accessoryBill_quantity.getText());
+
+                        double total = (unitPrice - discount) * units;
+
+                        String unitPrice_ = String.valueOf(unitPrice);
+                        String units_ = String.valueOf(units);
+                        String discount_ = String.valueOf(discount);
+                        String total_ = String.valueOf(total);
+
+                        prepare = connect.prepareStatement(sql);
+
+                        prepare.setString(1, accessoryBill_brandName.getText());
+                        prepare.setString(2, accessoryBill_modelName.getText());
+
+                        prepare.setString(3, unitPrice_);
+                        prepare.setString(4, units_);
+                        prepare.setString(5, discount_);
+                        prepare.setString(6, warranty);
+                        prepare.setString(7, total_);
+
+                        prepare.executeUpdate();
+
+                        accessoryBillClear();
+                        accessoryBillShowData();
+                        calculateTotalAccessoryBill();
+
+                    } catch (NumberFormatException e) {
+                        // Show error alert for non-numeric price or quantity
+                        alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error Message");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please enter a valid data !");
+                        alert.showAndWait();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public boolean checkQuantityAccessory(String modelName, String brandName, int quantity) {
+        String checkSql = "SELECT `quantityAccessory` FROM `accessories` WHERE `modelNameAccessory` = ? AND `brandNameAccessory` = ?";
+        try {
+            PreparedStatement prepare = connect.prepareStatement(checkSql);
+            prepare.setString(1, modelName);
+            prepare.setString(2, brandName);
+            ResultSet resultSet = prepare.executeQuery();
+            if (resultSet.next()) {
+                int unitsInDatabase = resultSet.getInt("quantityAccessory");
+                if (unitsInDatabase < quantity) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("The quantity is not sufficient!");
+                    alert.showAndWait();
+                    return false;
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("The model name and brand name are not in the database!");
+                alert.showAndWait();
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public ObservableList<billAccessoryData> accessoryBillListData(){
+        ObservableList<billAccessoryData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM temp_bill_addaccessory";
+
+        connect = DatabaseConnection.connectDb();
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            billAccessoryData accessory_data;
+
+            while (result.next()){
+                accessory_data = new billAccessoryData(
+                        result.getString("brandName"),
+                        result.getString("modelName"),
+                        result.getDouble("unitPrice"),
+                        result.getInt("units"),
+                        result.getDouble("discount"),
+                        result.getString("warranty"),
+                        result.getDouble("total"));
+                listData.add(accessory_data);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return listData;
+    }
+    public ObservableList<billAccessoryData> accessoryBillShowList;
+    public void accessoryBillShowData(){
+        accessoryBillShowList = accessoryBillListData();
 
 
+        accessoryBill_printData_Table_brandName.setCellValueFactory(new PropertyValueFactory<>("brandName"));
+        accessoryBill_printData_Table_modelName.setCellValueFactory(new PropertyValueFactory<>("modelName"));
+        accessoryBill_printData_Table_unitPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        accessoryBill_printData_Table_units.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        accessoryBill_printData_Table_discount.setCellValueFactory(new PropertyValueFactory<>("discount"));
+        accessoryBill_printData_Table_warranty.setCellValueFactory(new PropertyValueFactory<>("warranty"));
+        accessoryBill_printData_Table_total.setCellValueFactory(new PropertyValueFactory<>("total"));
+
+        accessoryBill_printData_Table.setItems(accessoryBillShowList);
+
+    }
+    public void accessoryBillCancel(){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel this transaction?");
+        alert.setTitle("Cancel Confirmation");
+        alert.setHeaderText(null);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                Statement statement = connect.createStatement();
+                statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
+                accessoryBillClear(); // call phoneBillClear method to clear all input fields
+                accessoryBillShowData();
+                calculateTotalAccessoryBill();
+                accessoryBillCash.clear();
+                accessoryBillBalance.clear();
+                accessoryBillCustomer.clear();
+                accessoryBillCustomerMobile.clear();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void accessoryBillDrop(){
+        try {
+            Connection connect = DatabaseConnection.connectDb();
+            assert connect != null;
+            Statement statement = connect.createStatement();
+            statement.executeUpdate("DELETE FROM temp_bill_addaccessory");
+            connect.close();
+            calculateTotalAccessoryBill();
+            accessoryBill_brandName.clear();
+            accessoryBill_modelName.clear();
+            accessoryBill_price.clear();
+            accessoryBill_quantity.clear();
+            accessoryBill_discount.clear();
+            accessoryBill_warranty.clear();
+            accessoryBillCash.clear();
+            accessoryBillBalance.clear();
+            accessoryBillCustomer.clear();
+            accessoryBillCustomerMobile.clear();
+            accessoryBillCashier.clear();
+            accessoryBillTotalAmount.clear();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void deleteAccessoryBillItem() {
+        // Get the selected item from the table
+        billAccessoryData accessoryData = accessoryBill_printData_Table.getSelectionModel().getSelectedItem();
+
+        // Check if a valid item is selected
+        if (accessoryData == null) {
+            // Show an error message or dialog indicating no item selected
+            System.out.println("Please select a phone bill item to delete.");
+            return;
+        }
+
+        // Confirmation dialog for deletion
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Message");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to DELETE item : " + accessoryData.getModelName() + "?");
+        Optional<ButtonType> option = alert.showAndWait();
+
+        if (option.get().equals(ButtonType.OK)) {
+            // Connect to the database
+            Connection connect = DatabaseConnection.connectDb();
+
+            try {
+                // Prepared statement to prevent SQL injection
+                String sql = "DELETE FROM `temp_bill_addaccessory` WHERE `modelName` = ? AND `brandName` = ? ";
+                assert connect != null;
+                PreparedStatement statement = connect.prepareStatement(sql);
+                statement.setString(1, accessoryData.getModelName());
+                statement.setString(2,accessoryData.getBrandName());
+
+                // Execute the deletion query
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    // Refresh table data
+                    accessoryBillShowData();
+                    calculateTotalAccessoryBill();
+                    accessoryBillBalance.clear();
+                    accessoryBillCash.clear();
+                } else {
+                    // Error message if no rows deleted
+                    System.out.println("Deletion failed! No rows affected." );
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void calculateTotalAccessoryBill() {
+        double totalAmount = 0.0;
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+        }
+
+        String query = "SELECT SUM(total) AS totalAmount FROM temp_bill_addaccessory";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                totalAmount = rs.getDouble("totalAmount");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        accessoryBillTotalAmount.setText(String.valueOf(totalAmount));
+    }
 
 
+    public void repairBill_addItem() {
+        String sql = "INSERT INTO temp_bill_repair"
+                + "(part_name,no_of_parts,unit_price,total) "
+                + "VALUES(?,?,?,?)";
 
-    public void phoneBillPDF_() {
-        if (Objects.equals(phoneBillCash.getText(), "")){
+        connect = DatabaseConnection.connectDb();
+
+        Alert alert;
+        try {
+            if (repairBill_parts_name.getText().isEmpty()
+                    || repairBill_parts.getText().isEmpty()
+                    || repairBill_part_price.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill all blank fields");
+                alert.showAndWait();
+            } else if (Integer.parseInt(repairBill_parts.getText()) == 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Number of parts cannot be 0");
+                alert.showAndWait();
+            } else if (Float.parseFloat(repairBill_part_price.getText()) == 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Price cannot be 0");
+                alert.showAndWait();
+            } else if (Float.parseFloat(repairBill_part_price.getText()) < 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Price cannot be negative");
+                alert.showAndWait();
+            } else if (Integer.parseInt(repairBill_parts.getText()) < 0) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Number of parts cannot be negative");
+                alert.showAndWait();
+            }else {
+                String check = "SELECT * FROM temp_bill_repair WHERE " +
+                        "part_name ='" + repairBill_parts_name.getText() + "'";
+
+                statement = connect.createStatement();
+                result = statement.executeQuery(check);
+
+                if (result.next()) {
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Entered data already exists in the table:");
+                    alert.showAndWait();
+                } else {
+                    prepare = connect.prepareStatement(sql);
+
+                    prepare.setString(1, repairBill_parts_name.getText());
+                    prepare.setString(2, repairBill_parts.getText());
+                    prepare.setString(3, repairBill_part_price.getText());
+                    prepare.setString(4, String.valueOf(Float.parseFloat(repairBill_parts.getText()) * Float.parseFloat(repairBill_part_price.getText())));
+
+                    prepare.executeUpdate();
+                    repairBill_parts_name.clear();
+                    repairBill_parts.clear();
+                    repairBill_part_price.clear();
+
+                    repairShowListData();
+                    calculateTotalRepairBill();
+                }
+            }
+        } catch (Exception e) {
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter a valid data !");
+            alert.showAndWait();
+        }
+    }
+    public ObservableList<repairData> repairListData(){
+        ObservableList<repairData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM temp_bill_repair";
+
+        connect = DatabaseConnection.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            repairData repairD;
+
+            while (result.next()){
+                repairD = new repairData(result.getString("part_name"),
+                        result.getInt("no_of_parts"),
+                        result.getDouble("unit_price"),
+                        result.getDouble("total"));
+                listData.add(repairD);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return listData;
+    }
+    public ObservableList<repairData> repairList;
+    public void repairShowListData(){
+        repairList = repairListData();
+
+        repairTablePartName.setCellValueFactory(new PropertyValueFactory<>("partName"));
+        repairTableNoOfParts.setCellValueFactory(new PropertyValueFactory<>("NoOfParts"));
+        repairTableUnitPrice.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));
+        repairTableTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+
+        repairTable.setItems(repairList);
+    }
+    public void deleteRepairItem(){
+        // Get the selected item from the table
+        repairData repairData = repairTable.getSelectionModel().getSelectedItem();
+
+        // Check if a valid item is selected
+        if (repairData == null) {
+            // Show an error message or dialog indicating no item selected
+            System.out.println("Please select an item to delete.");
+            return;
+        }
+
+        // Confirmation dialog for deletion
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Message");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to DELETE item : " + repairData.getPartName() + "?");
+        Optional<ButtonType> option = alert.showAndWait();
+
+        if (option.get().equals(ButtonType.OK)) {
+            // Connect to the database
+            connect = DatabaseConnection.connectDb();
+
+            try {
+                // Prepared statement to prevent SQL injection
+                String sql = "DELETE FROM `temp_bill_repair` WHERE `part_name` = ? ";
+                assert connect != null;
+                PreparedStatement statement = connect.prepareStatement(sql);
+                statement.setString(1, repairData.getPartName());
+
+                // Execute the deletion query
+                int rowsAffected = statement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    // Refresh table data
+                    repairShowListData();
+                    repairBillClear();
+                    calculateTotalRepairBill();
+                } else {
+                    // Error message if no rows deleted
+                    System.out.println("Deletion failed! No rows affected." );
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void repairBillClear(){
+        repairBill_parts_name.clear();
+        repairBill_parts.clear();
+        repairBill_part_price.clear();
+    }
+    public void calculateTotalRepairBill() {
+        double totalAmount = 0.0;
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+        }
+
+        String query = "SELECT SUM(total) AS totalAmount FROM temp_bill_repair";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                totalAmount = rs.getDouble("totalAmount");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        repairBill_total.setText(String.valueOf(totalAmount));
+    }
+   public void calculateTotalAmountRepairBill() {
+       double total = 0.0;
+
+       // Retrieve and parse the total amount from the repair bill
+       String totalText = repairBill_total.getText();
+       if (totalText != null && !totalText.isEmpty()) {
+           try {
+               total = Double.parseDouble(totalText);
+           } catch (NumberFormatException e) {
+               // Handle invalid input
+               repairBill_totalAmount.setText("Invalid total amount");
+               return;
+           }
+       }
+
+       // Add a listener to the profit field to update the total amount
+       double finalTotal = total;
+       repairBill_profit.textProperty().addListener((observable, oldValue, newValue) -> {
+           if (newValue != null && !newValue.isEmpty()) {
+               try {
+                   double profit = Double.parseDouble(newValue);
+                   repairBill_totalAmount.setText(String.valueOf(finalTotal + profit));
+               } catch (NumberFormatException e) {
+                   // Handle invalid input
+                   repairBill_totalAmount.setText("Invalid profit amount");
+               }
+           } else {
+               // If the profit field is empty, just display the total amount
+               repairBill_totalAmount.setText(String.valueOf(finalTotal));
+           }
+       });
+   }
+    public void repairBillDrop() {
+        try {
+            Connection connect = DatabaseConnection.connectDb();
+            assert connect != null;
+            Statement statement = connect.createStatement();
+            statement.executeUpdate("DELETE FROM temp_bill_repair");
+            connect.close();
+            calculateTotalRepairBill();
+            repairBillClear();
+            repairBill_brandName.clear();
+            repairBill_IMEI.clear();
+            repairBill_issue.clear();
+            repairBill_customer.clear();
+            repairBill_customerMobile.clear();
+            repairBill_modelName.clear();
+            repairBill_warranty.clear();
+            repairBill_total.clear();
+            repairBill_cash.clear();
+            repairBill_balance.clear();
+            repairBill_totalAmount.clear();
+            repairBill_profit.clear();
+            repairBill_cashier.clear();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void repairBillCancel(){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to cancel this transaction?");
+        alert.setTitle("Cancel Confirmation");
+        alert.setHeaderText(null);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                Statement statement = connect.createStatement();
+                statement.executeUpdate("DELETE FROM temp_bill_repair");
+                repairBillClear();
+                repairShowListData();
+                calculateTotalRepairBill();
+                repairBill_brandName.clear();
+                repairBill_IMEI.clear();
+                repairBill_issue.clear();
+                repairBill_customer.clear();
+                repairBill_customerMobile.clear();
+                repairBill_modelName.clear();
+                repairBill_warranty.clear();
+                repairBill_total.clear();
+                repairBill_cash.clear();
+                repairBill_balance.clear();
+                repairBill_totalAmount.clear();
+                repairBill_profit.clear();
+                repairBill_cashier.clear();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void updateBalanceRepair() {
+        // Initialize total amount from the totalAmount TextField
+        double total = 0.0;
+        String totalText = repairBill_totalAmount.getText();
+        if (totalText != null && !totalText.isEmpty()) {
+            try {
+                total = Double.parseDouble(totalText);
+            } catch (NumberFormatException e) {
+                // Handle invalid input for total amount
+                repairBill_balance.setText("Invalid total amount");
+                return;
+            }
+        }
+
+        // Add listener to cashEntered field to update balance
+        double finalTotal = total;
+        repairBill_cash.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.isEmpty()) {
+                try {
+                    double cash = Double.parseDouble(newValue);
+                    double balanceAmount = cash - finalTotal;
+                    repairBill_balance.setText(String.valueOf(balanceAmount));
+                } catch (NumberFormatException e) {
+                    // Handle invalid input for cash entered
+                    repairBill_balance.setText("Invalid cash amount");
+                }
+            } else {
+                // If cashEntered field is empty, display only the negative total amount
+                repairBill_balance.setText(String.valueOf(-finalTotal));
+            }
+        });
+    }
+
+    public void repairBill_pdf() throws SQLException {
+        double balance;
+        if (!Objects.equals(repairBill_balance.getText(), "")) {
+            balance = Double.parseDouble(repairBill_balance.getText());
+        } else {
+            balance = 0;
+        }
+        if (Objects.equals(repairBill_cash.getText(), "")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("Enter the Cash !");
             alert.showAndWait();
-        } else if (Double.parseDouble(phoneBillCash.getText()) != Double.parseDouble(phoneBillTotalAmount.getText()) + Double.parseDouble(phoneBillBalance.getText())) {
+        } else if (Objects.equals(repairBill_profit.getText(), "")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText("Enter the Cash Correctly!");
+            alert.setContentText("Enter the Profit !");
+            alert.showAndWait();
+        } else if (Objects.equals(repairBill_total.getText(), "")) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Add billing items!");
+            alert.showAndWait();
+        } else if (Double.parseDouble(repairBill_cash.getText()) != Double.parseDouble(repairBill_totalAmount.getText())+ Double.parseDouble(repairBill_balance.getText())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("enter Cash Correctly!");
+            alert.showAndWait();
+        } else if (balance < 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Insufficient Cash !");
+            alert.showAndWait();
+        } else if (repairBill_profit.getText() == null || Double.parseDouble(repairBill_profit.getText()) <= 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Enter the Profit!");
             alert.showAndWait();
         } else {
             try {
-                List<BillingItem_phones> items_ = fetchBillingItems_phones();
-                String revenueProfit = generateReport_phones(items_);
-                phoneBill_showData_Table();
+                List<BillingItem_repair> items_ = fetchBillingItems_repair();
+                String revenueProfit = generateReport_repair(items_);
+                repairShowListData();
 
                 // Get the desktop path
                 Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
 
                 // Create the Bills folder if it does not exist
-                Path billsPath = desktopPath.resolve("Phone Invoices");
+                Path billsPath = desktopPath.resolve("Repair Invoices");
                 if (!Files.exists(billsPath)) {
                     Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
                 }
@@ -1830,31 +2282,14 @@ public class system {
                 PdfWriter pdfWriter = new PdfWriter(path);
                 PdfDocument pdfDocument = new PdfDocument(pdfWriter);
 
-                //Database table row count
-                connect = DatabaseConnection.connectDb();
-                String query = "SELECT COUNT(*) FROM temp_bill_addphones" ;
-                Statement stmt = connect.createStatement();
-                ResultSet rs = stmt.executeQuery(query);
-                rs.next();
-                int rowCount;
-                if (rs.getInt(1) == 0){
-                    rowCount = 1;
-                }else {
-                    rowCount = rs.getInt(1) *9;
-                }
-
-                rs.close();
-
                 // Define the page width with the specified width and add margins
-                float widthInPoints = 80 * 2.83465f; // 80mm to points
                 float marginInPoints = 4 * 2.83465f; // 4mm to points
-                PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight_phones(rowCount));
-                pdfDocument.setDefaultPageSize(pageSize);
-                Document document = new Document(pdfDocument, pageSize);
+                pdfDocument.setDefaultPageSize(PageSize.A5);
+                Document document = new Document(pdfDocument, PageSize.A5);
                 document.setMargins(0, marginInPoints, 0, marginInPoints);
 
                 // Fetch data from the database
-                List<BillingItem_phones> items = fetchBillingItems_phones();
+                List<BillingItem_repair> items = fetchBillingItems_repair();
 
                 //Add logo
                 String imagePath = "images\\logo.png";
@@ -1872,55 +2307,58 @@ public class system {
                         "\nAnuradhapura Rd," +
                         "\nDambulla." +
                         "\n074-1558571" +
-                        "\n--------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(8).setFixedLeading(12));
-                String cashier_ = "J Mobile";
-                if (!Objects.equals(phoneBillCashier.getText(), "")){
-                    cashier_ = phoneBillCashier.getText();
+                        "\n----------------------------------------------------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(9).setFixedLeading(12));
+                String cashier_ = "J Mobiles";
+                if (!Objects.equals(repairBill_cashier.getText(), "")) {
+                    cashier_ = repairBill_cashier.getText();
                 }
                 document.add(new Paragraph("Cashier : " + cashier_ + "             "
-                        + LocalDate.now() +
-                        "\n----------------------------------------------------------------------------").setFontSize(8).setTextAlignment(TextAlignment.CENTER).setFixedLeading(12));
+                        + LocalDate.now() + "    " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH.mm.ss")) +
+                        "\n-----------------------------------------------------------------------------------------------------------------------").setFontSize(9).setTextAlignment(TextAlignment.CENTER).setFixedLeading(12));
 
-                if (!Objects.equals(phoneBillCustomer.getText(), "") || !Objects.equals(phoneBillCustomerMobile.getText(),"")){
-                    String customer = "-" , customerMobile = "-";
-                    if(!Objects.equals(phoneBillCustomer.getText(), "")) {
-                        customer = phoneBillCustomer.getText();}
-                    if(!Objects.equals(phoneBillCustomerMobile.getText(), "")) {
-                        customerMobile = phoneBillCustomerMobile.getText();}
+                if (!Objects.equals(repairBill_customer.getText(), "") || !Objects.equals(repairBill_customerMobile.getText(), "")) {
+                    String customer = "-", customerMobile = "-";
+                    if (!Objects.equals(repairBill_customer.getText(), "")) {
+                        customer = repairBill_customer.getText();
+                    }
+                    if (!Objects.equals(repairBill_customerMobile.getText(), "")) {
+                        customerMobile = repairBill_customerMobile.getText();
+                    }
                     document.add(new Paragraph("Customer : " + customer + "              Mobile : " +
                             customerMobile +
-                            "----------------------------------------------------------------------------").setFontSize(8).setFixedLeading(12));
+                            "\n-----------------------------------------------------------------------------------------------------------------------").setFontSize(9).setFixedLeading(12).setTextAlignment(TextAlignment.CENTER));
                 }
-                //null comment
-
-                // Add table rows
-                for (BillingItem_phones item : items) {
-                    addHeaderLine_phones(document, "Brand Name", item.getBrandName());
-                    addHeaderLine_phones(document, "Model Name",item.getModelName());
-                    addHeaderLine_phones(document, "Memory", String.valueOf(item.getMemory()) + " GB");
-                    addHeaderLine_phones(document, "Color",item.getColor());
-                    addHeaderLine_phones(document, "Unit Price", String.valueOf(item.getUnitPrice()));
-                    addHeaderLine_phones(document, "Units", String.valueOf(item.getUnits()));
-                    if (!Objects.equals(String.valueOf(item.getDiscount()),"0.0")){
-                        addHeaderLine_phones(document, "Discount", String.valueOf(item.getDiscount()));
-                    }
-                    if (!Objects.equals(String.valueOf(item.getWarranty()),"-")){
-                        addHeaderLine_phones(document, "Warranty",item.getWarranty());
-                    }
-                    document.add(new Paragraph("-----------------------------------------------------------\n").setFontSize(8));
+                if (!Objects.equals(repairBill_brandName.getText(), "")){
+                    addData_repair(document, "Brand Name :", repairBill_brandName.getText());
                 }
-
+                if (!Objects.equals(repairBill_modelName.getText(), "")){
+                    addData_repair(document, "Model Name :", repairBill_modelName.getText());
+                }
+                if (!Objects.equals(repairBill_IMEI.getText(), "")){
+                    addData_repair(document, "IMEI :", repairBill_IMEI.getText());
+                }
+                if (!Objects.equals(repairBill_warranty.getText(), "")){
+                    addData_repair(document, "Warranty :", repairBill_warranty.getText());
+                }
+                if(!Objects.equals(repairBill_issue.getText(), "")){
+                    addData_repair(document, "Issue :", repairBill_issue.getText());
+                }
+                document.add(new Paragraph("\nUsed Parts :").setBold().setFontSize(10).setFixedLeading(12));
+                for (BillingItem_repair item : items) {
+                    addLine_repair(document, item.getPartName(), item.getNoOfParts());
+                }
                 // Add total at the bottom
-                document.add(new Paragraph("Cash:  Rs. " + phoneBillCash.getText() + "00"+
-                        "\nBalance:  Rs. " + phoneBillBalance.getText() + "0" +
-                        "\n----------------------------------------------------------------------------" +
-                        "\nTotal:  Rs. " + calculateTotal_phones(items) + "0" ).setFontSize(8).setFixedLeading(12));
-                document.add(new Paragraph("----------------------------------------------------------------------------" +
-                        "*** Thank You, Come Again ! ***" +
+                document.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------" +
+                        "\nCash:     Rs. " + repairBill_cash.getText() + ".00" +
+                        "\nBalance:  Rs. " + repairBill_balance.getText() + "0" +
+                        "\n-----------------------------------------------------------------------------------------------------------------------" +
+                        "\nTotal:    Rs. " + repairBill_totalAmount.getText() + "0").setFontSize(10).setFixedLeading(12));
+                document.add(new Paragraph("-----------------------------------------------------------------------------------------------------------------------" +
+                        "\n\n***   Thank You, Come Again !   ***" +
                         "\n----------------------------------------------------------------------------" +
                         "\nNXTGen Solutions" +
                         "\nshanprabodh@icloud.com" +
-                        "\nWhatsapp : 071-2823447").setFontSize(8).setFixedLeading(12).setTextAlignment(TextAlignment.CENTER));
+                        "\nWhatsapp : 071-2823447").setFontSize(10).setFixedLeading(12).setTextAlignment(TextAlignment.CENTER));
 
                 // Close the PDF file
                 document.close();
@@ -1931,396 +2369,9 @@ public class system {
                 alert.setHeaderText(null);
                 alert.setContentText("The PDF file has been created successfully!\n" + billsPath.toAbsolutePath().toString() + "\n" + revenueProfit);
                 alert.showAndWait();
-            } catch (Exception e) {
-                e.printStackTrace();
 
-                // Show an error message
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("An error occurred while creating the PDF file!");
-                alert.showAndWait();
-            }
-        }
 
-    }
-
-    // Helper method to fetch billing items from the database
-    private List<BillingItem_phones> fetchBillingItems_phones() throws SQLException {
-        List<BillingItem_phones> items = new ArrayList<>();
-        connect = DatabaseConnection.connectDb();
-        String query = "SELECT * FROM temp_bill_addphones";
-        Statement stmt = connect.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
-
-        while (rs.next()) {
-            BillingItem_phones item = new BillingItem_phones();
-            item.setBrandName(rs.getString("Brand Name"));
-            item.setModelName(rs.getString("Model Name"));
-            item.setMemory(rs.getInt("Memory"));
-            item.setColor(rs.getString("Color"));
-            item.setUnitPrice(rs.getDouble("Unit Price"));
-            item.setUnits(rs.getInt("Units"));
-            item.setDiscount(rs.getDouble("Discount"));
-            item.setWarranty(rs.getString("Warranty"));
-            item.setTotal(rs.getDouble("Total"));
-
-            items.add(item);
-        }
-
-        rs.close();
-        stmt.close();
-
-        return items;
-    }
-
-    // Helper method to add table headers
-    private void addHeaderLine_phones(Document document, String header, String content) {
-        Paragraph headerParagraph = new Paragraph();
-        headerParagraph.add(new Text(header +"  :  " ).setBold().setFontSize(8)).add(content).setFontSize(8);
-        document.add(headerParagraph);
-    }
-
-    // Helper method to calculate the total amount
-    private double calculateTotal_phones(List<BillingItem_phones> items) {
-        return items.stream().mapToDouble(BillingItem_phones::getTotal).sum();
-    }
-
-    // BillingItem class to represent each item in the billing details
-    public static class BillingItem_phones {
-        private String brandName;
-        private String modelName;
-        private int memory;
-        private String color;
-        private double unitPrice;
-        private int units;
-        private double discount;
-        private String warranty;
-        private double total;
-
-        // Getters and setters for BillingItem properties
-
-        public String getBrandName() {
-            return brandName;
-        }
-
-        public void setBrandName(String brandName) {
-            this.brandName = brandName;
-        }
-
-        public String getModelName() {
-            return modelName;
-        }
-
-        public void setModelName(String modelName) {
-            this.modelName = modelName;
-        }
-
-        public int getMemory() {
-            return memory;
-        }
-
-        public void setMemory(int memory) {
-            this.memory = memory;
-        }
-
-        public String getColor() {
-            return color;
-        }
-
-        public void setColor(String color) {
-            this.color = color;
-        }
-
-        public double getUnitPrice() {
-            return unitPrice;
-        }
-
-        public void setUnitPrice(double unitPrice) {
-            this.unitPrice = unitPrice;
-        }
-
-        public int getUnits() {
-            return units;
-        }
-
-        public void setUnits(int units) {
-            this.units = units;
-        }
-
-        public double getDiscount() {
-            return discount;
-        }
-
-        public void setDiscount(double discount) {
-            this.discount = discount;
-        }
-
-        public String getWarranty() {
-            return warranty;
-        }
-
-        public void setWarranty(String warranty) {
-            this.warranty = warranty;
-        }
-
-        public double getTotal() {
-            return total;
-        }
-
-        public void setTotal(double total) {
-            this.total = total;
-        }
-    }
-    private float calculatePageHeight_phones(int rowCount) throws SQLException {
-        float height = 50; // initial height for top and bottom (image, address+cashier, Divider Line, bottom, company)
-
-        if (!Objects.equals(phoneBillCustomer.getText(), "") ||!Objects.equals(phoneBillCustomerMobile.getText(), "")) {
-            height += 24; // add extra space for customer info
-        }
-
-        float contentHeight = 0;
-        for (BillingItem_phones item : fetchBillingItems_phones()) {
-            contentHeight += 12 * (item.getDiscount() == 0.0? 7 : 8); // calculate height of each row
-        }
-
-        height += contentHeight; // add content height to total height
-
-        height += 50; // add some padding to the bottom of the page
-
-        return height;
-    }
-
-    private String generateReport_phones(List<BillingItem_phones> items) throws SQLException {
-        connect = DatabaseConnection.connectDb();
-        String query = "SELECT * FROM temp_bill_addphones";
-        Statement stmt = connect.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
-
-        double totalRevenue;
-        if (!phoneBillTotalAmount.getText().isEmpty()) {
-            totalRevenue = Double.parseDouble(phoneBillTotalAmount.getText());
-        } else {
-            totalRevenue = 0;
-        }
-
-        int totalQuantity = 0;
-        double totalDiscount = 0;
-
-        while (rs.next()) {
-            String brandName = rs.getString("Brand Name");
-            String modelName = rs.getString("Model Name");
-            int memory = rs.getInt("Memory");
-            String color = rs.getString("Color");
-            double unitPrice = rs.getDouble("Unit Price");
-            int units = rs.getInt("Units");
-            double discount = rs.getDouble("Discount");
-
-
-            // Update quantity in phones table
-            updateQuantity_phones(brandName, modelName, memory, color, units);
-
-            totalQuantity += units;
-            totalDiscount += discount * units;
-        }
-
-        rs.close();
-        stmt.close();
-
-        double totalProfit = 0;
-        for (BillingItem_phones item : items) {
-            String brandName = item.getBrandName();
-            String modelName = item.getModelName();
-            int memory = item.getMemory();
-            String color = item.getColor();
-            double unitPrice = item.getUnitPrice();
-            int units = item.getUnits();
-
-            // Get the cost price from the phones table
-            double costPrice = getCostPrice_phones(brandName, modelName, memory, color);
-
-            // Calculate the profit for this item
-            double profit = (unitPrice - costPrice) * units;
-
-            // Add the profit to the total profit
-            totalProfit += profit;
-        }
-        totalProfit -= totalDiscount;
-
-        String sql = "INSERT INTO `profitrevenuephones`(`revenue`, `profit`, `quantity`) VALUES (?,?,?)";
-        connect = DatabaseConnection.connectDb();
-        try {
-            prepare = connect.prepareStatement(sql);
-
-            prepare.setString(1, String.valueOf(totalRevenue));
-            prepare.setString(2,String.valueOf(totalProfit));
-            prepare.setString(3,String.valueOf(totalQuantity));
-
-            prepare.executeUpdate();
-        }catch (Exception e){
-            System.out.println("ERROR while saving data in profit/revenue");
-        }
-
-        return "Revenue : Rs." + totalRevenue + "\nProfit : Rs." + totalProfit + "\nQuantity : "+ totalQuantity;
-    }
-    private double getCostPrice_phones(String brandName, String modelName, int memory, String color) throws SQLException {
-        connect = DatabaseConnection.connectDb();
-        String query = "SELECT costPricePhone FROM phones WHERE brandNamePhone = '" + brandName + "' AND modelNamePhone = '" + modelName + "' AND memoryPhone = " + memory + " AND colorPhone = '" + color + "'";
-        Statement stmt = connect.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
-
-        double costPrice = 0;
-        if (rs.next()) {
-            costPrice = rs.getDouble("costPricePhone");
-        }
-
-        rs.close();
-        stmt.close();
-        connect.close();
-
-        return costPrice;
-    }
-
-    // Helper method to update the quantity in the phones table
-    private void updateQuantity_phones(String brandName, String modelName, int memory, String color, int units) throws SQLException {
-        connect = DatabaseConnection.connectDb();
-        String query = "UPDATE phones SET quantityPhone = quantityPhone - " + units + " WHERE brandNamePhone = '" + brandName + "' AND modelNamePhone = '" + modelName + "' AND memoryPhone = " + memory + " AND colorPhone = '" + color + "'";
-        Statement stmt = connect.createStatement();
-        stmt.executeUpdate(query);
-
-        stmt.close();
-    }
-
-
-
-
-
-    public void accessoryBillPDF_() {
-        if (Objects.equals(accessoryBillCash.getText(), "")){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Enter the Cash !");
-            alert.showAndWait();
-        } else if (Double.parseDouble(accessoryBillCash.getText()) != Double.parseDouble(accessoryBillTotalAmount.getText()) + Double.parseDouble(accessoryBillBalance.getText())) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Enter the Cash Correctly!");
-            alert.showAndWait();
-        } else {
-            try {
-                List<BillingItem_accessories> items_ = fetchBillingItems_accessories();
-                String revenueProfit = generateReport_accessories(items_);
-                phoneBill_showData_Table();
-
-                // Get the desktop path
-                Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
-
-                // Create the Bills folder if it does not exist
-                Path billsPath = desktopPath.resolve("Accessory Invoices");
-                if (!Files.exists(billsPath)) {
-                    Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
-                }
-
-                // Get the current date
-                LocalDate date = LocalDate.now();
-                LocalDateTime time = LocalDateTime.now();
-
-                // Create the PDF file name with the current date and a unique auto-incrementing number
-                String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
-
-                // Create the PDF file
-                String path = billsPath.resolve(fileName).toString();
-                PdfWriter pdfWriter = new PdfWriter(path);
-                PdfDocument pdfDocument = new PdfDocument(pdfWriter);
-
-                //Database table row count
-                connect = DatabaseConnection.connectDb();
-                String query = "SELECT COUNT(*) FROM temp_bill_addaccessory" ;
-                Statement stmt = connect.createStatement();
-                ResultSet rs = stmt.executeQuery(query);
-                rs.next();
-                int rowCount;
-                if (rs.getInt(1) == 0){
-                    rowCount = 1;
-                }else {
-                    rowCount = rs.getInt(1) *9;
-                }
-
-                rs.close();
-
-                // Define the page width with the specified width and add margins
-                float widthInPoints = 80 * 2.83465f; // 80mm to points
-                float marginInPoints = 4 * 2.83465f; // 4mm to points
-                PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight_accessories(rowCount));
-                pdfDocument.setDefaultPageSize(pageSize);
-                Document document = new Document(pdfDocument, pageSize);
-                document.setMargins(0, marginInPoints, 0, marginInPoints);
-
-                // Fetch data from the database
-                List<BillingItem_accessories> items = fetchBillingItems_accessories();
-
-                //Add logo
-                String imagePath = "images\\logo.png";
-                ImageData imageData = ImageDataFactory.create(imagePath);
-                Image image = new Image(imageData);
-                image.setHeight(50);
-                image.setWidth(50);
-                image.setHorizontalAlignment(HorizontalAlignment.CENTER);
-                document.add(image);
-
-                // Add title to the document
-                document.add(new Paragraph("J Mobiles\nNO.  ,\nAnuradhapura Rd,\nDambulla.\n074-1558571\n--------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
-                String cashier = "J Mobile";
-                if (!Objects.equals(accessoryBillCashier.getText(), "")){
-                    cashier = accessoryBillCashier.getText();
-                }
-                document.add(new Paragraph("Cashier : " + cashier + "             " + LocalDate.now()).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
-                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-
-                if (!Objects.equals(accessoryBillCustomer.getText(), "") || !Objects.equals(accessoryBillCustomerMobile.getText(),"")){
-                    String customer = "-" , customerMobile = "-";
-                    if(!Objects.equals(accessoryBillCustomer.getText(), "")) {
-                        customer = accessoryBillCustomer.getText();}
-                    if(!Objects.equals(accessoryBillCustomerMobile.getText(), "")) {
-                        customerMobile = accessoryBillCustomerMobile.getText();}
-                    document.add(new Paragraph("Customer : " + customer + "              Mobile : " + customerMobile).setFontSize(8));
-                    document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-                }
-
-                // Add table rows
-                for (BillingItem_accessories item : items) {
-                    addHeaderLine_phones(document, "Brand Name", item.getBrandName());
-                    addHeaderLine_phones(document, "Model Name",item.getModelName());
-                    addHeaderLine_phones(document, "Unit Price", String.valueOf(item.getUnitPrice()));
-                    addHeaderLine_phones(document, "Units", String.valueOf(item.getUnits()));
-                    addHeaderLine_phones(document, "Discount", String.valueOf(item.getDiscount()));
-                    addHeaderLine_phones(document, "Warranty",item.getWarranty());
-                    document.add(new Paragraph("-----------------------------------------------------------\n").setFontSize(10));
-                }
-
-                // Add total at the bottom
-                document.add(new Paragraph("Cash:  Rs. " + accessoryBillCash.getText() + ".00").setFontSize(10));
-                document.add(new Paragraph("Balance:  Rs. " + accessoryBillBalance.getText() + "0").setFontSize(10));
-                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-                Paragraph totalParagraph = new Paragraph("Total:  Rs. " + accessoryBillTotalAmount.getText() + "0").setFontSize(10);
-                document.add(totalParagraph);
-                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-                document.add(new Paragraph("*** Thank You, Come Again ! ***").setFontSize(10).setTextAlignment(TextAlignment.CENTER));
-                document.add(new Paragraph("-----------------------------------------------------------").setFontSize(10));
-                document.add(new Paragraph("NXTGen Solutions\nshanprabodh@icloud.com\nWhatsapp : 071-2823447").setTextAlignment(TextAlignment.CENTER).setFontSize(8));
-
-                // Close the PDF file
-                document.close();
-
-                // Show a success message
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success Message");
-                alert.setHeaderText(null);
-                alert.setContentText("The PDF file has been created successfully!\n" + billsPath.toAbsolutePath().toString() + "\n" + revenueProfit);
-                alert.showAndWait();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
 
                 // Show an error message
@@ -2332,23 +2383,66 @@ public class system {
             }
         }
     }
+    private void addData_repair (Document document, String header, String content){
+        Table table = new Table(2);
+        //remove table border
+        table.setBorder(Border.NO_BORDER);
+        table.setWidth(UnitValue.createPercentValue(80)); // set the table width to 100%
 
-    // Helper method to fetch billing items from the database
-    private List<BillingItem_accessories> fetchBillingItems_accessories() throws SQLException {
-        List<BillingItem_accessories> items = new ArrayList<>();
+
+        Cell headerCell = new Cell();
+        headerCell.add(new Paragraph("  " + header).setBold().setFontSize(10));
+        headerCell.setWidth(UnitValue.createPercentValue(30)); // set the width of the headerCell to 25%
+        table.addCell(headerCell);
+
+        Cell contentCell = new Cell();
+        contentCell.add(new Paragraph("  " + content).setFontSize(10));
+        contentCell.setWidth(UnitValue.createPercentValue(50)); // set the width of the contentCell to 75%
+        table.addCell(contentCell);
+
+        table.setHorizontalAlignment(HorizontalAlignment.CENTER);
+
+        document.add(table);
+    }
+    private void addLine_repair (Document document, String partName, int noOfParts){
+        Table table = new Table(3);
+        //remove table border
+        table.setBorder(Border.NO_BORDER);
+        table.setWidth(UnitValue.createPercentValue(100)); // set the table width to 100%
+
+        Cell nullCell = new Cell();
+        nullCell.setBorder(Border.NO_BORDER);
+        nullCell.add(new Paragraph(" ").setFontSize(10));
+        nullCell.setWidth(UnitValue.createPercentValue(10)); // set the width of the nullCell to 10%
+        table.addCell(nullCell);
+
+        Cell partNameCell = new Cell();
+        partNameCell.setBorder(Border.NO_BORDER);
+        partNameCell.add(new Paragraph("  " + partName).setFontSize(10));
+        partNameCell.setWidth(UnitValue.createPercentValue(25)); // set the width of the partNameCell to 75%
+        table.addCell(partNameCell);
+
+        Cell noOfPartsCell = new Cell();
+        noOfPartsCell.setBorder(Border.NO_BORDER);
+        noOfPartsCell.add(new Paragraph("-  " + noOfParts).setFontSize(10));
+        noOfPartsCell.setWidth(UnitValue.createPercentValue(25)); // set the width of the noOfPartsCell to 25%
+        table.addCell(noOfPartsCell);
+
+        document.add(table);
+    }
+    private List<BillingItem_repair> fetchBillingItems_repair() throws SQLException {
+        List<BillingItem_repair> items = new ArrayList<>();
         connect = DatabaseConnection.connectDb();
-        String query = "SELECT * FROM temp_bill_addaccessory";
+        String query = "SELECT * FROM temp_bill_repair";
+        assert connect != null;
         Statement stmt = connect.createStatement();
         ResultSet rs = stmt.executeQuery(query);
 
         while (rs.next()) {
-            BillingItem_accessories item = new BillingItem_accessories();
-            item.setBrandName(rs.getString("brandName"));
-            item.setModelName(rs.getString("modelName"));
-            item.setUnitPrice(rs.getDouble("unitPrice"));
-            item.setUnits(rs.getInt("units"));
-            item.setDiscount(rs.getDouble("discount"));
-            item.setWarranty(rs.getString("warranty"));
+            BillingItem_repair item = new BillingItem_repair();
+            item.setPartName(rs.getString("part_name"));
+            item.setNoOfParts(rs.getInt("no_of_parts"));
+            item.setUnitPrice(rs.getDouble("unit_price"));
             item.setTotal(rs.getDouble("total"));
 
             items.add(item);
@@ -2359,370 +2453,1138 @@ public class system {
 
         return items;
     }
-
-    // BillingItem class to represent each item in the billing details
-    public static class BillingItem_accessories {
-        private String brandName;
-        private String modelName;
+    public static class BillingItem_repair {
+        private String partName;
+        private int noOfParts;
         private double unitPrice;
-        private int units;
-        private double discount;
-        private String warranty;
         private double total;
 
-        public String getBrandName() {
-            return brandName;
+        // Getters and setters for BillingItem properties
+
+
+        public String getPartName() {
+            return partName;
+        }
+        public void setPartName(String partName) {
+            this.partName = partName;
         }
 
-        public void setBrandName(String brandName) {
-            this.brandName = brandName;
+        public int getNoOfParts() {
+            return noOfParts;
         }
-
-        public String getModelName() {
-            return modelName;
-        }
-
-        public void setModelName(String modelName) {
-            this.modelName = modelName;
+        public void setNoOfParts(int noOfParts) {
+            this.noOfParts = noOfParts;
         }
 
         public double getUnitPrice() {
             return unitPrice;
         }
-
         public void setUnitPrice(double unitPrice) {
             this.unitPrice = unitPrice;
-        }
-
-        public int getUnits() {
-            return units;
-        }
-
-        public void setUnits(int units) {
-            this.units = units;
-        }
-
-        public double getDiscount() {
-            return discount;
-        }
-
-        public void setDiscount(double discount) {
-            this.discount = discount;
-        }
-
-        public String getWarranty() {
-            return warranty;
-        }
-
-        public void setWarranty(String warranty) {
-            this.warranty = warranty;
         }
 
         public double getTotal() {
             return total;
         }
-
         public void setTotal(double total) {
             this.total = total;
         }
     }
-
-    private float calculatePageHeight_accessories(int rowCount) {
-        // Calculate the height of the content
-        float contentHeight = 25 * (rowCount + 15) ; // Assuming each line takes up 10 points
-        if(!Objects.equals(accessoryBillCustomer.getText(), "") || !Objects.equals(accessoryBillCustomerMobile.getText(),"")){
-            contentHeight = 25 * (rowCount + 17) ;
-        }
-        return contentHeight;
-    }
-
-    private String generateReport_accessories(List<BillingItem_accessories> items) throws SQLException {
+    private String generateReport_repair(List<BillingItem_repair> items) throws SQLException {
         connect = DatabaseConnection.connectDb();
-        String query = "SELECT * FROM temp_bill_addaccessory";
+        String query = "SELECT * FROM temp_bill_repair";
+        assert connect != null;
         Statement stmt = connect.createStatement();
         ResultSet rs = stmt.executeQuery(query);
 
-        double totalRevenue;
-        if (!accessoryBillTotalAmount.getText().isEmpty()) {
-            totalRevenue = Double.parseDouble(accessoryBillTotalAmount.getText());
+        double totalRevenue = 0.0;
+        if (!repairBill_totalAmount.getText().isEmpty()) {
+            totalRevenue = Double.parseDouble(repairBill_totalAmount.getText());
         } else {
             totalRevenue = 0;
         }
-
-        int totalQuantity = 0;
-        double totalDiscount = 0;
-
-        while (rs.next()) {
-            String brandName = rs.getString("brandName");
-            String modelName = rs.getString("modelName");
-            double unitPrice = rs.getDouble("unitPrice");
-            int units = rs.getInt("units");
-            double discount = rs.getDouble("discount");
-
-            // Update quantity in accessories table
-            updateQuantity_accessories(brandName, modelName, units);
-
-            totalQuantity += units;
-            totalDiscount += discount * units;
+        double totalProfit = 0.0;
+        if (!repairBill_profit.getText().isEmpty()) {
+            totalProfit = Double.parseDouble(repairBill_profit.getText());
+        } else {
+            totalProfit = 0;
         }
 
+        int totalQuantity = 0;
+        while (rs.next()) {
+            totalQuantity += rs.getInt("no_of_parts");
+
+        }
         rs.close();
         stmt.close();
 
-        double totalProfit = 0;
-        for (BillingItem_accessories item : items) {
-            String brandName = item.getBrandName();
-            String modelName = item.getModelName();
-            double unitPrice = item.getUnitPrice();
-            int units = item.getUnits();
-
-            // Get the cost price from the accessories table
-            double costPrice = getCostPrice_accessories(brandName, modelName);
-
-            // Calculate the profit for this item
-            double profit = (unitPrice - costPrice) * units;
-
-            // Add the profit to the total profit
-            totalProfit += profit;
-        }
-        totalProfit -= totalDiscount;
-
-        String sql = "INSERT INTO `profitrevenueaccessory`(`revenue`, `profit`, `quantity`) VALUES (?,?,?)";
+        String sql = "INSERT INTO `profitrevenuerepair`(`revenue`, `profit`, `quantity`) VALUES (?,?,?)";
         connect = DatabaseConnection.connectDb();
         try {
+            assert connect != null;
             prepare = connect.prepareStatement(sql);
 
             prepare.setString(1, String.valueOf(totalRevenue));
-            prepare.setString(2,String.valueOf(totalProfit));
-            prepare.setString(3,String.valueOf(totalQuantity));
+            prepare.setString(2, String.valueOf(totalProfit));
+            prepare.setString(3, String.valueOf(totalQuantity));
 
             prepare.executeUpdate();
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("ERROR while saving data in profit/revenue");
         }
 
-        return "Revenue : Rs." + totalRevenue + "\nProfit : Rs." + totalProfit + "\nQuantity : "+ totalQuantity;
+        return "Revenue : Rs." + totalRevenue + "\nProfit : Rs." + totalProfit + "\nParts : " + totalQuantity;
     }
 
-    private double getCostPrice_accessories(String brandName, String modelName) throws SQLException {
-        connect = DatabaseConnection.connectDb();
-        String query = "SELECT costPriceAccessory FROM accessories WHERE brandNameAccessory = '" + brandName + "' AND modelNameAccessory = '" + modelName + "'";
-        Statement stmt = connect.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
 
-        double costPrice = 0;
-        if (rs.next()) {
-            costPrice = rs.getDouble("costPriceAccessory");
+    public void phonesChart () {
+                String sql = "SELECT brandNamePhone, quantityPhone\n" +
+                        "FROM phones\n" +
+                        "GROUP BY brandNamePhone\n" +
+                        "ORDER BY quantityPhone DESC;\n";
+
+            }
+    public void phoneBillPDF_ () {
+              if (Objects.equals(phoneBillCash.getText(), "")) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Enter the Cash !");
+                    alert.showAndWait();
+                } else if (Double.parseDouble(phoneBillCash.getText()) != Double.parseDouble(phoneBillTotalAmount.getText()) + Double.parseDouble(phoneBillBalance.getText())) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Enter the Cash Correctly!");
+                    alert.showAndWait();
+                } else {
+                    try {
+                        List<BillingItem_phones> items_ = fetchBillingItems_phones();
+                        String revenueProfit = generateReport_phones(items_);
+                        phoneBill_showData_Table();
+
+                        // Get the desktop path
+                        Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
+
+                        // Create the Bills folder if it does not exist
+                        Path billsPath = desktopPath.resolve("Phone Invoices");
+                        if (!Files.exists(billsPath)) {
+                            Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
+                        }
+
+                        // Get the current date
+                        LocalDate date = LocalDate.now();
+                        LocalDateTime time = LocalDateTime.now();
+
+                        // Create the PDF file name with the current date and a unique auto-incrementing number
+                        String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
+
+                        // Create the PDF file
+                        String path = billsPath.resolve(fileName).toString();
+                        PdfWriter pdfWriter = new PdfWriter(path);
+                        PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+
+                        //Database table row count
+                        connect = DatabaseConnection.connectDb();
+                        String query = "SELECT COUNT(*) FROM temp_bill_addphones";
+                        Statement stmt = connect.createStatement();
+                        ResultSet rs = stmt.executeQuery(query);
+                        rs.next();
+                        int rowCount;
+                        if (rs.getInt(1) == 0) {
+                            rowCount = 1;
+                        } else {
+                            rowCount = rs.getInt(1) * 9;
+                        }
+
+                        rs.close();
+
+                        // Define the page width with the specified width and add margins
+                        float widthInPoints = 80 * 2.83465f; // 80mm to points
+                        float marginInPoints = 4 * 2.83465f; // 4mm to points
+                        PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight_phones(rowCount));
+                        pdfDocument.setDefaultPageSize(PageSize.A5);
+                        Document document = new Document(pdfDocument, PageSize.A5);
+                        document.setMargins(0, marginInPoints, 0, marginInPoints);
+
+                        // Fetch data from the database
+                        List<BillingItem_phones> items = fetchBillingItems_phones();
+
+                        //Add logo
+                        String imagePath = "images\\logo.png";
+                        ImageData imageData = ImageDataFactory.create(imagePath);
+                        Image image = new Image(imageData);
+                        image.setHeight(50);
+                        image.setWidth(50);
+                        image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                        document.add(image);
+
+
+                        // Add title to the document
+                        document.add(new Paragraph("J Mobiles" +
+                                "\nNO.  ," +
+                                "\nAnuradhapura Rd," +
+                                "\nDambulla." +
+                                "\n074-1558571" +
+                                "\n----------------------------------------------------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(9).setFixedLeading(12));
+                        String cashier_ = "J Mobiles";
+                        if (!Objects.equals(phoneBillCashier.getText(), "")) {
+                            cashier_ = phoneBillCashier.getText();
+                        }
+                        document.add(new Paragraph("Cashier : " + cashier_ + "             "
+                                + LocalDate.now() + "    " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH.mm.ss")) +
+                                "\n----------------------------------------------------------------------------").setFontSize(9).setTextAlignment(TextAlignment.CENTER).setFixedLeading(12));
+
+                        if (!Objects.equals(phoneBillCustomer.getText(), "") || !Objects.equals(phoneBillCustomerMobile.getText(), "")) {
+                            String customer = "-", customerMobile = "-";
+                            if (!Objects.equals(phoneBillCustomer.getText(), "")) {
+                                customer = phoneBillCustomer.getText();
+                            }
+                            if (!Objects.equals(phoneBillCustomerMobile.getText(), "")) {
+                                customerMobile = phoneBillCustomerMobile.getText();
+                            }
+                            document.add(new Paragraph("Customer : " + customer + "              Mobile : " +
+                                    customerMobile +
+                                    "\n----------------------------------------------------------------------------").setFontSize(9).setFixedLeading(12).setTextAlignment(TextAlignment.CENTER));
+                        }
+
+                        // Add table rows
+                        for (BillingItem_phones item : items) {
+                            addHeaderLine_phones(document, "Brand Name", item.getBrandName());
+                            addHeaderLine_phones(document, "Model Name", item.getModelName());
+                            addHeaderLine_phones(document, "Memory", String.valueOf(item.getMemory()) + " GB");
+                            addHeaderLine_phones(document, "Color", item.getColor());
+                            addHeaderLine_phones(document, "Unit Price", String.valueOf(item.getUnitPrice()));
+                            addHeaderLine_phones(document, "Units", String.valueOf(item.getUnits()));
+                            if (!Objects.equals(String.valueOf(item.getDiscount()), "0.0")) {
+                                addHeaderLine_phones(document, "Discount", String.valueOf(item.getDiscount()));
+                            }
+                            if (!Objects.equals(String.valueOf(item.getWarranty()), "-")) {
+                                addHeaderLine_phones(document, "Warranty", item.getWarranty());
+                            }
+                            document.add(new Paragraph(""));
+
+                        }
+
+                        // Add total at the bottom
+                        document.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------" +
+                                "\nCash:     Rs. " + phoneBillCash.getText() + ".00" +
+                                "\nBalance:  Rs. " + phoneBillBalance.getText() + "0" +
+                                "\n-----------------------------------------------------------------------------------------------------------------------" +
+                                "\nTotal:    Rs. " + calculateTotal_phones(items) + "0").setFontSize(10).setFixedLeading(12));
+                        document.add(new Paragraph("-----------------------------------------------------------------------------------------------------------------------" +
+                                "\n\n***   Thank You, Come Again !   ***" +
+                                "\n----------------------------------------------------------------------------" +
+                                "\nNXTGen Solutions" +
+                                "\nshanprabodh@icloud.com" +
+                                "\nWhatsapp : 071-2823447").setFontSize(10).setFixedLeading(12).setTextAlignment(TextAlignment.CENTER));
+
+                        // Close the PDF file
+                        document.close();
+
+                        // Show a success message
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success Message");
+                        alert.setHeaderText(null);
+                        alert.setContentText("The PDF file has been created successfully!\n" + billsPath.toAbsolutePath().toString() + "\n" + revenueProfit);
+                        alert.showAndWait();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                        // Show an error message
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error Message");
+                        alert.setHeaderText(null);
+                        alert.setContentText("An error occurred while creating the PDF file!");
+                        alert.showAndWait();
+                    }
+                }
+
+            }
+
+            // Helper method to fetch billing items from the database
+    private List<BillingItem_phones> fetchBillingItems_phones () throws SQLException {
+                List<BillingItem_phones> items = new ArrayList<>();
+                connect = DatabaseConnection.connectDb();
+                String query = "SELECT * FROM temp_bill_addphones";
+                Statement stmt = connect.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+
+                while (rs.next()) {
+                    BillingItem_phones item = new BillingItem_phones();
+                    item.setBrandName(rs.getString("Brand Name"));
+                    item.setModelName(rs.getString("Model Name"));
+                    item.setMemory(rs.getInt("Memory"));
+                    item.setColor(rs.getString("Color"));
+                    item.setUnitPrice(rs.getDouble("Unit Price"));
+                    item.setUnits(rs.getInt("Units"));
+                    item.setDiscount(rs.getDouble("Discount"));
+                    item.setWarranty(rs.getString("Warranty"));
+                    item.setTotal(rs.getDouble("Total"));
+
+                    items.add(item);
+                }
+
+                rs.close();
+                stmt.close();
+
+                return items;
+            }
+
+            // Helper method to add table headers
+    private void addHeaderLine_phones (Document document, String header, String content){
+                Table table = new Table(2);
+                table.setWidth(UnitValue.createPercentValue(100)); // set the table width to 100%
+
+                Cell headerCell = new Cell();
+                headerCell.add(new Paragraph("  " + header).setBold().setFontSize(10));
+                headerCell.setWidth(UnitValue.createPercentValue(50)); // set the width of the headerCell to 50%
+                table.addCell(headerCell);
+
+                Cell contentCell = new Cell();
+                contentCell.add(new Paragraph("  " + content).setFontSize(10));
+                contentCell.setWidth(UnitValue.createPercentValue(50)); // set the width of the contentCell to 50%
+                table.addCell(contentCell);
+
+                document.add(table);
+            }
+
+            // Helper method to calculate the total amount
+    private double calculateTotal_phones (List < BillingItem_phones > items) {
+                return items.stream().mapToDouble(BillingItem_phones::getTotal).sum();
+            }
+
+            // BillingItem class to represent each item in the billing details
+    public static class BillingItem_phones {
+                private String brandName;
+                private String modelName;
+                private int memory;
+                private String color;
+                private double unitPrice;
+                private int units;
+                private double discount;
+                private String warranty;
+                private double total;
+
+                // Getters and setters for BillingItem properties
+
+                public String getBrandName() {
+                    return brandName;
+                }
+
+                public void setBrandName(String brandName) {
+                    this.brandName = brandName;
+                }
+
+                public String getModelName() {
+                    return modelName;
+                }
+
+                public void setModelName(String modelName) {
+                    this.modelName = modelName;
+                }
+
+                public int getMemory() {
+                    return memory;
+                }
+
+                public void setMemory(int memory) {
+                    this.memory = memory;
+                }
+
+                public String getColor() {
+                    return color;
+                }
+
+                public void setColor(String color) {
+                    this.color = color;
+                }
+
+                public double getUnitPrice() {
+                    return unitPrice;
+                }
+
+                public void setUnitPrice(double unitPrice) {
+                    this.unitPrice = unitPrice;
+                }
+
+                public int getUnits() {
+                    return units;
+                }
+
+                public void setUnits(int units) {
+                    this.units = units;
+                }
+
+                public double getDiscount() {
+                    return discount;
+                }
+
+                public void setDiscount(double discount) {
+                    this.discount = discount;
+                }
+
+                public String getWarranty() {
+                    return warranty;
+                }
+
+                public void setWarranty(String warranty) {
+                    this.warranty = warranty;
+                }
+
+                public double getTotal() {
+                    return total;
+                }
+
+                public void setTotal(double total) {
+                    this.total = total;
+                }
+            }
+    private float calculatePageHeight_phones ( int rowCount) throws SQLException {
+                float height = 50; // initial height for top and bottom (image, address+cashier, Divider Line, bottom, company)
+
+                if (!Objects.equals(phoneBillCustomer.getText(), "") || !Objects.equals(phoneBillCustomerMobile.getText(), "")) {
+                    height += 24; // add extra space for customer info
+                }
+
+                float contentHeight = 0;
+                for (BillingItem_phones item : fetchBillingItems_phones()) {
+                    contentHeight += 12 * (item.getDiscount() == 0.0 ? 7 : 8); // calculate height of each row
+                }
+
+                height += contentHeight; // add content height to total height
+
+                height += 50; // add some padding to the bottom of the page
+
+                return height;
+            }
+
+    private String generateReport_phones (List < BillingItem_phones > items) throws SQLException {
+                connect = DatabaseConnection.connectDb();
+                String query = "SELECT * FROM temp_bill_addphones";
+                Statement stmt = connect.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+
+                double totalRevenue;
+                if (!phoneBillTotalAmount.getText().isEmpty()) {
+                    totalRevenue = Double.parseDouble(phoneBillTotalAmount.getText());
+                } else {
+                    totalRevenue = 0;
+                }
+
+                int totalQuantity = 0;
+                double totalDiscount = 0;
+
+                while (rs.next()) {
+                    String brandName = rs.getString("Brand Name");
+                    String modelName = rs.getString("Model Name");
+                    int memory = rs.getInt("Memory");
+                    String color = rs.getString("Color");
+                    double unitPrice = rs.getDouble("Unit Price");
+                    int units = rs.getInt("Units");
+                    double discount = rs.getDouble("Discount");
+
+
+                    // Update quantity in phones table
+                    updateQuantity_phones(brandName, modelName, memory, color, units);
+
+                    totalQuantity += units;
+                    totalDiscount += discount * units;
+                }
+
+                rs.close();
+                stmt.close();
+
+                double totalProfit = 0;
+                for (BillingItem_phones item : items) {
+                    String brandName = item.getBrandName();
+                    String modelName = item.getModelName();
+                    int memory = item.getMemory();
+                    String color = item.getColor();
+                    double unitPrice = item.getUnitPrice();
+                    int units = item.getUnits();
+
+                    // Get the cost price from the phones table
+                    double costPrice = getCostPrice_phones(brandName, modelName, memory, color);
+
+                    // Calculate the profit for this item
+                    double profit = (unitPrice - costPrice) * units;
+
+                    // Add the profit to the total profit
+                    totalProfit += profit;
+                }
+                totalProfit -= totalDiscount;
+
+                String sql = "INSERT INTO `profitrevenuephones`(`revenue`, `profit`, `quantity`) VALUES (?,?,?)";
+                connect = DatabaseConnection.connectDb();
+                try {
+                    prepare = connect.prepareStatement(sql);
+
+                    prepare.setString(1, String.valueOf(totalRevenue));
+                    prepare.setString(2, String.valueOf(totalProfit));
+                    prepare.setString(3, String.valueOf(totalQuantity));
+
+                    prepare.executeUpdate();
+                } catch (Exception e) {
+                    System.out.println("ERROR while saving data in profit/revenue");
+                }
+
+                return "Revenue : Rs." + totalRevenue + "\nProfit : Rs." + totalProfit + "\nQuantity : " + totalQuantity;
+            }
+    private double getCostPrice_phones (String brandName, String modelName,int memory, String color) throws
+            SQLException {
+                connect = DatabaseConnection.connectDb();
+                String query = "SELECT costPricePhone FROM phones WHERE brandNamePhone = '" + brandName + "' AND modelNamePhone = '" + modelName + "' AND memoryPhone = " + memory + " AND colorPhone = '" + color + "'";
+                Statement stmt = connect.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+
+                double costPrice = 0;
+                if (rs.next()) {
+                    costPrice = rs.getDouble("costPricePhone");
+                }
+
+                rs.close();
+                stmt.close();
+                connect.close();
+
+                return costPrice;
+            }
+
+            // Helper method to update the quantity in the phones table
+    private void updateQuantity_phones (String brandName, String modelName,int memory, String color,int units) throws
+            SQLException {
+                connect = DatabaseConnection.connectDb();
+                String query = "UPDATE phones SET quantityPhone = quantityPhone - " + units + " WHERE brandNamePhone = '" + brandName + "' AND modelNamePhone = '" + modelName + "' AND memoryPhone = " + memory + " AND colorPhone = '" + color + "'";
+                Statement stmt = connect.createStatement();
+                stmt.executeUpdate(query);
+
+                stmt.close();
+            }
+
+
+    public void accessoryBillPDF_ () {
+                if (Objects.equals(accessoryBillCash.getText(), "")) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Enter the Cash !");
+                    alert.showAndWait();
+                } else if (Double.parseDouble(accessoryBillCash.getText()) != Double.parseDouble(accessoryBillTotalAmount.getText()) + Double.parseDouble(accessoryBillBalance.getText())) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Enter the Cash Correctly!");
+                    alert.showAndWait();
+                } else {
+                    try {
+                        List<BillingItem_accessories> items_ = fetchBillingItems_accessories();
+                        String revenueProfit = generateReport_accessories(items_);
+                        accessoryBill_showData_Table();
+
+                        // Get the desktop path
+                        Path desktopPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
+
+                        // Create the Bills folder if it does not exist
+                        Path billsPath = desktopPath.resolve("Accessory Invoices");
+                        if (!Files.exists(billsPath)) {
+                            Files.createDirectories(billsPath); // Changed from createDirectory to createDirectories
+                        }
+
+                        // Get the current date
+                        LocalDate date = LocalDate.now();
+                        LocalDateTime time = LocalDateTime.now();
+
+                        // Create the PDF file name with the current date and a unique auto-incrementing number
+                        String fileName = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "_" + time.format(DateTimeFormatter.ofPattern("HH-mm-ss")) + ".pdf";
+
+                        // Create the PDF file
+                        String path = billsPath.resolve(fileName).toString();
+                        PdfWriter pdfWriter = new PdfWriter(path);
+                        PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+
+                        //Database table row count
+                        connect = DatabaseConnection.connectDb();
+                        String query = "SELECT COUNT(*) FROM temp_bill_addaccessory";
+                        Statement stmt = connect.createStatement();
+                        ResultSet rs = stmt.executeQuery(query);
+                        rs.next();
+                        int rowCount;
+                        if (rs.getInt(1) == 0) {
+                            rowCount = 1;
+                        } else {
+                            rowCount = rs.getInt(1) * 9;
+                        }
+
+                        rs.close();
+
+                        // Define the page width with the specified width and add margins
+                        float widthInPoints = 80 * 2.83465f; // 80mm to points
+                        float marginInPoints = 4 * 2.83465f; // 4mm to points
+                        PageSize pageSize = new PageSize(widthInPoints, calculatePageHeight_accessories(rowCount));
+                        pdfDocument.setDefaultPageSize(PageSize.A5);
+                        Document document = new Document(pdfDocument, PageSize.A5);
+                        document.setMargins(0, marginInPoints, 0, marginInPoints);
+
+
+                        // Fetch data from the database
+                        List<BillingItem_accessories> items = fetchBillingItems_accessories();
+
+                        document.add(new Paragraph(""));
+                        //Add logo
+                        String imagePath = "images\\logo.png";
+                        ImageData imageData = ImageDataFactory.create(imagePath);
+                        Image image = new Image(imageData);
+                        image.setHeight(50);
+                        image.setWidth(50);
+                        image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                        document.add(image);
+
+                        // Add title to the document
+                        document.add(new Paragraph("J Mobiles" +
+                                "\nNO.  ," +
+                                "\nAnuradhapura Rd," +
+                                "\nDambulla." +
+                                "\n074-1558571" +
+                                "\n----------------------------------------------------------------------------------------").setTextAlignment(TextAlignment.CENTER).setFontSize(9).setFixedLeading(12));
+                        String cashier_ = "J Mobiles";
+                        if (!Objects.equals(accessoryBillCashier.getText(), "")) {
+                            cashier_ = accessoryBillCashier.getText();
+                        }
+                        document.add(new Paragraph("Cashier : " + cashier_ + "             "
+                                + LocalDate.now() + "    " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH.mm.ss")) +
+                                "\n----------------------------------------------------------------------------").setFontSize(9).setTextAlignment(TextAlignment.CENTER).setFixedLeading(12));
+
+                        if (!Objects.equals(accessoryBillCustomer.getText(), "") || !Objects.equals(accessoryBillCustomerMobile.getText(), "")) {
+                            String customer = "-", customerMobile = "-";
+                            if (!Objects.equals(accessoryBillCustomer.getText(), "")) {
+                                customer = accessoryBillCustomer.getText();
+                            }
+                            if (!Objects.equals(accessoryBillCustomerMobile.getText(), "")) {
+                                customerMobile = accessoryBillCustomerMobile.getText();
+                            }
+                            document.add(new Paragraph("Customer : " + customer + "              Mobile : " +
+                                    customerMobile +
+                                    "\n----------------------------------------------------------------------------").setFontSize(9).setFixedLeading(12).setTextAlignment(TextAlignment.CENTER));
+                        }
+                        addTopLineAccessory(document);
+
+                        // Add table rows
+                        for (BillingItem_accessories item : items) {
+                            addLine_accessory(document, item.getBrandName(), item.getModelName(), item.getUnitPrice(), item.getUnits(), item.getDiscount(), item.getWarranty());
+                        }
+
+                        // Add total at the bottom
+                        document.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------" +
+                                "\nCash:     Rs. " + accessoryBillCash.getText() + ".00" +
+                                "\nBalance:  Rs. " + accessoryBillBalance.getText() + "0" +
+                                "\n-----------------------------------------------------------------------------------------------------------------------" +
+                                "\nTotal:    Rs. " + accessoryBillTotalAmount.getText() + "0").setFontSize(10).setFixedLeading(12));
+                        document.add(new Paragraph("-----------------------------------------------------------------------------------------------------------------------" +
+                                "\n\n***   Thank You, Come Again !   ***" +
+                                "\n----------------------------------------------------------------------------" +
+                                "\nNXTGen Solutions" +
+                                "\nshanprabodh@icloud.com" +
+                                "\nWhatsapp : 071-2823447").setFontSize(10).setFixedLeading(12).setTextAlignment(TextAlignment.CENTER));
+
+                        // Close the PDF file
+                        document.close();
+
+
+                        // Show a success message
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Success Message");
+                        alert.setHeaderText(null);
+                        alert.setContentText("The PDF file has been created successfully!\n" + billsPath.toAbsolutePath().toString() + "\n" + revenueProfit);
+                        alert.showAndWait();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                        // Show an error message
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error Message");
+                        alert.setHeaderText(null);
+                        alert.setContentText("An error occurred while creating the PDF file!");
+                        alert.showAndWait();
+                    }
+                }
+            }
+    private void addTopLineAccessory (Document document){
+                Table table = new Table(7);
+                table.setWidth(UnitValue.createPercentValue(100));
+
+                Cell brandNameCell = new Cell();
+                brandNameCell.add(new Paragraph("Brand Name").setFontSize(8).setBold().setTextAlignment(TextAlignment.CENTER));
+                brandNameCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(brandNameCell);
+
+                Cell modelNameCell = new Cell();
+                modelNameCell.add(new Paragraph("Model Name").setFontSize(8).setBold().setTextAlignment(TextAlignment.CENTER));
+                modelNameCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(modelNameCell);
+
+                Cell unitPriceCell = new Cell();
+                unitPriceCell.add(new Paragraph("Unit Price").setFontSize(8).setBold().setTextAlignment(TextAlignment.CENTER));
+                unitPriceCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(unitPriceCell);
+
+                Cell unitsCell = new Cell();
+                unitsCell.add(new Paragraph("Units").setFontSize(8).setBold().setTextAlignment(TextAlignment.CENTER));
+                unitsCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(unitsCell);
+
+                Cell discountCell = new Cell();
+                discountCell.add(new Paragraph("Discount").setFontSize(8).setBold().setTextAlignment(TextAlignment.CENTER));
+                discountCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(discountCell);
+
+                Cell warrantyCell = new Cell();
+                warrantyCell.add(new Paragraph("Warranty").setFontSize(8).setBold().setTextAlignment(TextAlignment.CENTER));
+                warrantyCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(warrantyCell);
+
+                Cell totalCell = new Cell();
+                totalCell.add(new Paragraph("Total").setFontSize(8).setBold().setTextAlignment(TextAlignment.CENTER));
+                totalCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(totalCell);
+
+                document.add(table);
+            }
+    private void addLine_accessory (Document document, String brandName, String modelName,double unitPrice, int units, double discount, String warranty){
+                Table table = new Table(7);
+                table.setWidth(UnitValue.createPercentValue(100));
+
+                Cell brandNameCell = new Cell();
+                brandNameCell.add(new Paragraph("  " + brandName).setFontSize(8));
+                brandNameCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(brandNameCell);
+
+                Cell modelNameCell = new Cell();
+                modelNameCell.add(new Paragraph("  " + modelName).setFontSize(8));
+                modelNameCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(modelNameCell);
+
+                Cell unitPriceCell = new Cell();
+                unitPriceCell.add(new Paragraph("  " + unitPrice).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
+                unitPriceCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(unitPriceCell);
+
+                Cell unitsCell = new Cell();
+                unitsCell.add(new Paragraph("  " + units).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
+                unitsCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(unitsCell);
+
+                Cell discountCell = new Cell();
+                discountCell.add(new Paragraph("  " + discount).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
+                discountCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(discountCell);
+
+                Cell warrantyCell = new Cell();
+                warrantyCell.add(new Paragraph("  " + warranty).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
+                warrantyCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(warrantyCell);
+
+                Cell totalCell = new Cell();
+                totalCell.add(new Paragraph(String.valueOf((unitPrice - discount) * units)).setFontSize(8).setTextAlignment(TextAlignment.CENTER));
+                totalCell.setWidth(UnitValue.createPercentValue((float) 100 / 7));
+                table.addCell(totalCell);
+
+                document.add(table);
+            }
+
+            // Helper method to fetch billing items from the database
+    private List<BillingItem_accessories> fetchBillingItems_accessories () throws SQLException {
+                List<BillingItem_accessories> items = new ArrayList<>();
+                connect = DatabaseConnection.connectDb();
+                String query = "SELECT * FROM temp_bill_addaccessory";
+                Statement stmt = connect.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+
+                while (rs.next()) {
+                    BillingItem_accessories item = new BillingItem_accessories();
+                    item.setBrandName(rs.getString("brandName"));
+                    item.setModelName(rs.getString("modelName"));
+                    item.setUnitPrice(rs.getDouble("unitPrice"));
+                    item.setUnits(rs.getInt("units"));
+                    item.setDiscount(rs.getDouble("discount"));
+                    item.setWarranty(rs.getString("warranty"));
+                    item.setTotal(rs.getDouble("total"));
+
+                    items.add(item);
+                }
+
+                rs.close();
+                stmt.close();
+
+                return items;
+            }
+
+            // BillingItem class to represent each item in the billing details
+    public static class BillingItem_accessories {
+                private String brandName;
+                private String modelName;
+                private double unitPrice;
+                private int units;
+                private double discount;
+                private String warranty;
+                private double total;
+
+                public String getBrandName() {
+                    return brandName;
+                }
+
+                public void setBrandName(String brandName) {
+                    this.brandName = brandName;
+                }
+
+                public String getModelName() {
+                    return modelName;
+                }
+
+                public void setModelName(String modelName) {
+                    this.modelName = modelName;
+                }
+
+                public double getUnitPrice() {
+                    return unitPrice;
+                }
+
+                public void setUnitPrice(double unitPrice) {
+                    this.unitPrice = unitPrice;
+                }
+
+                public int getUnits() {
+                    return units;
+                }
+
+                public void setUnits(int units) {
+                    this.units = units;
+                }
+
+                public double getDiscount() {
+                    return discount;
+                }
+
+                public void setDiscount(double discount) {
+                    this.discount = discount;
+                }
+
+                public String getWarranty() {
+                    return warranty;
+                }
+
+                public void setWarranty(String warranty) {
+                    this.warranty = warranty;
+                }
+
+                public double getTotal() {
+                    return total;
+                }
+
+                public void setTotal(double total) {
+                    this.total = total;
+                }
+            }
+
+    private float calculatePageHeight_accessories ( int rowCount){
+                // Calculate the height of the content
+                float contentHeight = 25 * (rowCount + 15); // Assuming each line takes up 10 points
+                if (!Objects.equals(accessoryBillCustomer.getText(), "") || !Objects.equals(accessoryBillCustomerMobile.getText(), "")) {
+                    contentHeight = 25 * (rowCount + 17);
+                }
+                return contentHeight;
+            }
+
+    private String generateReport_accessories (List < BillingItem_accessories > items) throws SQLException {
+                connect = DatabaseConnection.connectDb();
+                String query = "SELECT * FROM temp_bill_addaccessory";
+                Statement stmt = connect.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+
+                double totalRevenue;
+                if (!accessoryBillTotalAmount.getText().isEmpty()) {
+                    totalRevenue = Double.parseDouble(accessoryBillTotalAmount.getText());
+                } else {
+                    totalRevenue = 0;
+                }
+
+                int totalQuantity = 0;
+                double totalDiscount = 0;
+
+                while (rs.next()) {
+                    String brandName = rs.getString("brandName");
+                    String modelName = rs.getString("modelName");
+                    double unitPrice = rs.getDouble("unitPrice");
+                    int units = rs.getInt("units");
+                    double discount = rs.getDouble("discount");
+
+                    // Update quantity in accessories table
+                    updateQuantity_accessories(brandName, modelName, units);
+
+                    totalQuantity += units;
+                    totalDiscount += discount * units;
+                }
+
+                rs.close();
+                stmt.close();
+
+                double totalProfit = 0;
+                for (BillingItem_accessories item : items) {
+                    String brandName = item.getBrandName();
+                    String modelName = item.getModelName();
+                    double unitPrice = item.getUnitPrice();
+                    int units = item.getUnits();
+
+                    // Get the cost price from the accessories table
+                    double costPrice = getCostPrice_accessories(brandName, modelName);
+
+                    // Calculate the profit for this item
+                    double profit = (unitPrice - costPrice) * units;
+
+                    // Add the profit to the total profit
+                    totalProfit += profit;
+                }
+                totalProfit -= totalDiscount;
+
+                String sql = "INSERT INTO `profitrevenueaccessory`(`revenue`, `profit`, `quantity`) VALUES (?,?,?)";
+                connect = DatabaseConnection.connectDb();
+                try {
+                    prepare = connect.prepareStatement(sql);
+
+                    prepare.setString(1, String.valueOf(totalRevenue));
+                    prepare.setString(2, String.valueOf(totalProfit));
+                    prepare.setString(3, String.valueOf(totalQuantity));
+
+                    prepare.executeUpdate();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return "Revenue : Rs." + totalRevenue + "\nProfit : Rs." + totalProfit + "\nQuantity : " + totalQuantity;
+            }
+
+    private double getCostPrice_accessories (String brandName, String modelName) throws SQLException {
+                connect = DatabaseConnection.connectDb();
+                String query = "SELECT costPriceAccessory FROM accessories WHERE brandNameAccessory = '" + brandName + "' AND modelNameAccessory = '" + modelName + "'";
+                Statement stmt = connect.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+
+                double costPrice = 0;
+                if (rs.next()) {
+                    costPrice = rs.getDouble("costPriceAccessory");
+                }
+
+                rs.close();
+                stmt.close();
+                connect.close();
+
+                return costPrice;
+            }
+
+            // Helper method to update the quantity in the accessories table
+    private void updateQuantity_accessories (String brandName, String modelName,int units) throws SQLException {
+                connect = DatabaseConnection.connectDb();
+                String query = "UPDATE accessories SET quantityAccessory = quantityAccessory - " + units + " WHERE brandNameAccessory = '" + brandName + "' AND modelNameAccessory = '" + modelName + "'";
+                Statement stmt = connect.createStatement();
+                stmt.executeUpdate(query);
+
+                stmt.close();
+            }
+
+
+    public void switchForm (ActionEvent event){
+                if (event.getSource() == dashboardButton) {
+                    dashBoardForm.setVisible(true);
+                    billForm_accessory.setVisible(false);
+                    billForm_phone.setVisible(false);
+                    billForm_repair.setVisible(false);
+                    inventoryForm.setVisible(false);
+                    reportForm.setVisible(false);
+                    contactsForm.setVisible(false);
+                    settingsForm.setVisible(false);
+
+                    dashboardButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+                    billButton.setStyle("-fx-background-color:transparent");
+                    inventoryButton.setStyle("-fx-background-color:transparent");
+                    reportsButton.setStyle("-fx-background-color:transparent");
+                    contactsButton.setStyle("-fx-background-color:transparent");
+                    settingsButton.setStyle("-fx-background-color:transparent");
+
+                    phoneBillDrop();
+                    accessoryBillDrop();
+                    accessoryBillShowData();
+                    phoneBillShowData();
+                    repairBillDrop();
+
+                } else if (event.getSource() == menuItemPhone) {
+                    dashBoardForm.setVisible(false);
+                    billForm_accessory.setVisible(false);
+                    billForm_phone.setVisible(true);
+                    billForm_repair.setVisible(false);
+                    inventoryForm.setVisible(false);
+                    reportForm.setVisible(false);
+                    contactsForm.setVisible(false);
+                    settingsForm.setVisible(false);
+
+                    billButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+                    dashboardButton.setStyle("-fx-background-color:transparent");
+                    inventoryButton.setStyle("-fx-background-color:transparent");
+                    reportsButton.setStyle("-fx-background-color:transparent");
+                    contactsButton.setStyle("-fx-background-color:transparent");
+                    settingsButton.setStyle("-fx-background-color:transparent");
+
+                    phoneBill_showData_Table();
+                    phoneBillSearch();
+                    phoneBillDrop();
+                    accessoryBillDrop();
+                    accessoryBillShowData();
+                    phoneBillShowData();
+                    repairBillDrop();
+
+                } else if (event.getSource() == menuItemAccessory) {
+                    dashBoardForm.setVisible(false);
+                    billForm_accessory.setVisible(true);
+                    billForm_phone.setVisible(false);
+                    billForm_repair.setVisible(false);
+                    inventoryForm.setVisible(false);
+                    reportForm.setVisible(false);
+                    contactsForm.setVisible(false);
+                    settingsForm.setVisible(false);
+
+                    billButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+                    dashboardButton.setStyle("-fx-background-color:transparent");
+                    inventoryButton.setStyle("-fx-background-color:transparent");
+                    reportsButton.setStyle("-fx-background-color:transparent");
+                    contactsButton.setStyle("-fx-background-color:transparent");
+                    settingsButton.setStyle("-fx-background-color:transparent");
+
+                    accessoryBill_showData_Table();
+                    accessoryBillSearch();
+                    phoneBillDrop();
+                    accessoryBillDrop();
+                    accessoryBillShowData();
+                    phoneBillShowData();
+                    repairBillDrop();
+
+                } else if (event.getSource() == menuItemRepair) {
+                    dashBoardForm.setVisible(false);
+                    billForm_accessory.setVisible(false);
+                    billForm_phone.setVisible(false);
+                    billForm_repair.setVisible(true);
+                    inventoryForm.setVisible(false);
+                    reportForm.setVisible(false);
+                    contactsForm.setVisible(false);
+                    settingsForm.setVisible(false);
+
+                    billButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+                    dashboardButton.setStyle("-fx-background-color:transparent");
+                    inventoryButton.setStyle("-fx-background-color:transparent");
+                    reportsButton.setStyle("-fx-background-color:transparent");
+                    contactsButton.setStyle("-fx-background-color:transparent");
+                    settingsButton.setStyle("-fx-background-color:transparent");
+
+                    phoneBillDrop();
+                    accessoryBillDrop();
+                    accessoryBillShowData();
+                    phoneBillShowData();
+                    repairShowListData();
+                    repairBillDrop();
+
+                } else if (event.getSource() == inventoryButton) {
+                    dashBoardForm.setVisible(false);
+                    billForm_accessory.setVisible(false);
+                    billForm_phone.setVisible(false);
+                    billForm_repair.setVisible(false);
+                    inventoryForm.setVisible(true);
+                    reportForm.setVisible(false);
+                    contactsForm.setVisible(false);
+                    settingsForm.setVisible(false);
+
+                    inventoryButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+                    billButton.setStyle("-fx-background-color:transparent");
+                    dashboardButton.setStyle("-fx-background-color:transparent");
+                    reportsButton.setStyle("-fx-background-color:transparent");
+                    contactsButton.setStyle("-fx-background-color:transparent");
+                    settingsButton.setStyle("-fx-background-color:transparent");
+
+                    phonesShowListData();
+                    accessoryShowListData();
+                    phoneSearch();
+                    accessorySearch();
+                    phoneBillDrop();
+                    accessoryBillDrop();
+                    accessoryBillShowData();
+                    phoneBillShowData();
+                    repairBillDrop();
+
+                } else if (event.getSource() == reportsButton) {
+                    dashBoardForm.setVisible(false);
+                    billForm_accessory.setVisible(false);
+                    billForm_phone.setVisible(false);
+                    billForm_repair.setVisible(false);
+                    inventoryForm.setVisible(false);
+                    reportForm.setVisible(true);
+                    contactsForm.setVisible(false);
+                    settingsForm.setVisible(false);
+
+                    reportsButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+                    billButton.setStyle("-fx-background-color:transparent");
+                    inventoryButton.setStyle("-fx-background-color:transparent");
+                    dashboardButton.setStyle("-fx-background-color:transparent");
+                    contactsButton.setStyle("-fx-background-color:transparent");
+                    settingsButton.setStyle("-fx-background-color:transparent");
+
+                    phoneBillDrop();
+                    accessoryBillDrop();
+                    accessoryBillShowData();
+                    phoneBillShowData();
+                    repairBillDrop();
+
+                } else if (event.getSource() == contactsButton) {
+                    dashBoardForm.setVisible(false);
+                    billForm_accessory.setVisible(false);
+                    billForm_phone.setVisible(false);
+                    billForm_repair.setVisible(false);
+                    inventoryForm.setVisible(false);
+                    reportForm.setVisible(false);
+                    contactsForm.setVisible(true);
+                    settingsForm.setVisible(false);
+
+                    contactsButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+                    billButton.setStyle("-fx-background-color:transparent");
+                    inventoryButton.setStyle("-fx-background-color:transparent");
+                    dashboardButton.setStyle("-fx-background-color:transparent");
+                    reportsButton.setStyle("-fx-background-color:transparent");
+                    settingsButton.setStyle("-fx-background-color:transparent");
+
+                    phoneBillDrop();
+                    accessoryBillDrop();
+                    accessoryBillShowData();
+                    phoneBillShowData();
+                    repairBillDrop();
+
+                } else if (event.getSource() == settingsButton) {
+                    dashBoardForm.setVisible(false);
+                    billForm_accessory.setVisible(false);
+                    billForm_phone.setVisible(false);
+                    billForm_repair.setVisible(false);
+                    inventoryForm.setVisible(false);
+                    reportForm.setVisible(false);
+                    contactsForm.setVisible(false);
+                    settingsForm.setVisible(true);
+
+                    settingsButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+                    billButton.setStyle("-fx-background-color:transparent");
+                    inventoryButton.setStyle("-fx-background-color:transparent");
+                    dashboardButton.setStyle("-fx-background-color:transparent");
+                    contactsButton.setStyle("-fx-background-color:transparent");
+                    reportsButton.setStyle("-fx-background-color:transparent");
+                    phoneBillDrop();
+                    accessoryBillDrop();
+                    accessoryBillShowData();
+                    phoneBillShowData();
+                    repairBillDrop();
+
+                }
+            }
+
         }
-
-        rs.close();
-        stmt.close();
-        connect.close();
-
-        return costPrice;
-    }
-
-    // Helper method to update the quantity in the accessories table
-    private void updateQuantity_accessories(String brandName, String modelName, int units) throws SQLException {
-        connect = DatabaseConnection.connectDb();
-        String query = "UPDATE accessories SET quantityAccessory = quantityAccessory - " + units + " WHERE brandNameAccessory = '" + brandName + "' AND modelNameAccessory = '" + modelName + "'";
-        Statement stmt = connect.createStatement();
-        stmt.executeUpdate(query);
-
-        stmt.close();
-    }
-
-
-
-
-
-
-
-    public void switchForm(ActionEvent event){
-        if (event.getSource() == dashboardButton){
-            dashBoardForm.setVisible(true);
-            billForm_accessory.setVisible(false);
-            billForm_phone.setVisible(false);
-            billForm_repair.setVisible(false);
-            inventoryForm.setVisible(false);
-            reportForm.setVisible(false);
-            contactsForm.setVisible(false);
-            settingsForm.setVisible(false);
-
-            dashboardButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            billButton.setStyle("-fx-background-color:transparent");
-            inventoryButton.setStyle("-fx-background-color:transparent");
-            reportsButton.setStyle("-fx-background-color:transparent");
-            contactsButton.setStyle("-fx-background-color:transparent");
-            settingsButton.setStyle("-fx-background-color:transparent");
-
-            phoneBillDrop();
-            accessoryBillDrop();
-            accessoryBillShowData();
-            phoneBillShowData();
-
-        } else if (event.getSource() == menuItemPhone) {
-            dashBoardForm.setVisible(false);
-            billForm_accessory.setVisible(false);
-            billForm_phone.setVisible(true);
-            billForm_repair.setVisible(false);
-            inventoryForm.setVisible(false);
-            reportForm.setVisible(false);
-            contactsForm.setVisible(false);
-            settingsForm.setVisible(false);
-
-            billButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            dashboardButton.setStyle("-fx-background-color:transparent");
-            inventoryButton.setStyle("-fx-background-color:transparent");
-            reportsButton.setStyle("-fx-background-color:transparent");
-            contactsButton.setStyle("-fx-background-color:transparent");
-            settingsButton.setStyle("-fx-background-color:transparent");
-
-            phoneBill_showData_Table();
-            phoneBillSearch();
-            phoneBillDrop();
-            accessoryBillDrop();
-            accessoryBillShowData();
-            phoneBillShowData();
-
-        } else if (event.getSource() == menuItemAccessory) {
-            dashBoardForm.setVisible(false);
-            billForm_accessory.setVisible(true);
-            billForm_phone.setVisible(false);
-            billForm_repair.setVisible(false);
-            inventoryForm.setVisible(false);
-            reportForm.setVisible(false);
-            contactsForm.setVisible(false);
-            settingsForm.setVisible(false);
-
-            billButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            dashboardButton.setStyle("-fx-background-color:transparent");
-            inventoryButton.setStyle("-fx-background-color:transparent");
-            reportsButton.setStyle("-fx-background-color:transparent");
-            contactsButton.setStyle("-fx-background-color:transparent");
-            settingsButton.setStyle("-fx-background-color:transparent");
-
-            accessoryBill_showData_Table();
-            accessoryBillSearch();
-            phoneBillDrop();
-            accessoryBillDrop();
-            accessoryBillShowData();
-            phoneBillShowData();
-
-        } else if (event.getSource() == menuItemRepair) {
-            dashBoardForm.setVisible(false);
-            billForm_accessory.setVisible(false);
-            billForm_phone.setVisible(false);
-            billForm_repair.setVisible(true);
-            inventoryForm.setVisible(false);
-            reportForm.setVisible(false);
-            contactsForm.setVisible(false);
-            settingsForm.setVisible(false);
-
-            billButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            dashboardButton.setStyle("-fx-background-color:transparent");
-            inventoryButton.setStyle("-fx-background-color:transparent");
-            reportsButton.setStyle("-fx-background-color:transparent");
-            contactsButton.setStyle("-fx-background-color:transparent");
-            settingsButton.setStyle("-fx-background-color:transparent");
-
-            phoneBillDrop();
-            accessoryBillDrop();
-            accessoryBillShowData();
-            phoneBillShowData();
-
-        }else if (event.getSource() == inventoryButton) {
-            dashBoardForm.setVisible(false);
-            billForm_accessory.setVisible(false);
-            billForm_phone.setVisible(false);
-            billForm_repair.setVisible(false);
-            inventoryForm.setVisible(true);
-            reportForm.setVisible(false);
-            contactsForm.setVisible(false);
-            settingsForm.setVisible(false);
-
-            inventoryButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            billButton.setStyle("-fx-background-color:transparent");
-            dashboardButton.setStyle("-fx-background-color:transparent");
-            reportsButton.setStyle("-fx-background-color:transparent");
-            contactsButton.setStyle("-fx-background-color:transparent");
-            settingsButton.setStyle("-fx-background-color:transparent");
-
-            phonesShowListData();
-            accessoryShowListData();
-            phoneSearch();
-            accessorySearch();
-            phoneBillDrop();
-            accessoryBillDrop();
-            accessoryBillShowData();
-            phoneBillShowData();
-
-        }else if (event.getSource() == reportsButton) {
-            dashBoardForm.setVisible(false);
-            billForm_accessory.setVisible(false);
-            billForm_phone.setVisible(false);
-            billForm_repair.setVisible(false);
-            inventoryForm.setVisible(false);
-            reportForm.setVisible(true);
-            contactsForm.setVisible(false);
-            settingsForm.setVisible(false);
-
-            reportsButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            billButton.setStyle("-fx-background-color:transparent");
-            inventoryButton.setStyle("-fx-background-color:transparent");
-            dashboardButton.setStyle("-fx-background-color:transparent");
-            contactsButton.setStyle("-fx-background-color:transparent");
-            settingsButton.setStyle("-fx-background-color:transparent");
-
-            phoneBillDrop();
-            accessoryBillDrop();
-            accessoryBillShowData();
-            phoneBillShowData();
-
-        }else if (event.getSource() == contactsButton) {
-            dashBoardForm.setVisible(false);
-            billForm_accessory.setVisible(false);
-            billForm_phone.setVisible(false);
-            billForm_repair.setVisible(false);
-            inventoryForm.setVisible(false);
-            reportForm.setVisible(false);
-            contactsForm.setVisible(true);
-            settingsForm.setVisible(false);
-
-            contactsButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            billButton.setStyle("-fx-background-color:transparent");
-            inventoryButton.setStyle("-fx-background-color:transparent");
-            dashboardButton.setStyle("-fx-background-color:transparent");
-            reportsButton.setStyle("-fx-background-color:transparent");
-            settingsButton.setStyle("-fx-background-color:transparent");
-
-            phoneBillDrop();
-            accessoryBillDrop();
-            accessoryBillShowData();
-            phoneBillShowData();
-
-        }else if (event.getSource() == settingsButton) {
-            dashBoardForm.setVisible(false);
-            billForm_accessory.setVisible(false);
-            billForm_phone.setVisible(false);
-            billForm_repair.setVisible(false);
-            inventoryForm.setVisible(false);
-            reportForm.setVisible(false);
-            contactsForm.setVisible(false);
-            settingsForm.setVisible(true);
-
-            settingsButton.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            billButton.setStyle("-fx-background-color:transparent");
-            inventoryButton.setStyle("-fx-background-color:transparent");
-            dashboardButton.setStyle("-fx-background-color:transparent");
-            contactsButton.setStyle("-fx-background-color:transparent");
-            reportsButton.setStyle("-fx-background-color:transparent");
-            phoneBillDrop();
-            accessoryBillDrop();
-            accessoryBillShowData();
-            phoneBillShowData();
-
-        }
-    }
-
-}
