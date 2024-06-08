@@ -5,10 +5,9 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.chart.StackedBarChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
@@ -202,7 +201,7 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="656.0" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane fx:id="dashBoardForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
+            <AnchorPane fx:id="dashBoardForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -328,7 +327,14 @@
                         <String fx:value="shadow" />
                      </styleClass>
                      <children>
-                        <PieChart layoutX="94.0" layoutY="77.0" prefHeight="537.0" prefWidth="758.0" title="Today Revenue" />
+                        <StackedBarChart fx:id="stackedBarChart" categoryGap="50.0" layoutX="46.0" layoutY="14.0" prefHeight="664.0" prefWidth="856.0" title="Income In Last 5 Days">
+                          <xAxis>
+                            <CategoryAxis endMargin="10.0" prefHeight="31.0" prefWidth="799.0" startMargin="10.0" tickLength="20.0" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </StackedBarChart>
                      </children>
                   </AnchorPane>
                </children>
@@ -626,23 +632,175 @@
                   </AnchorPane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="reportForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
+            <AnchorPane fx:id="reportForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css">
                <padding>
-                  <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+                  <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
                </padding>
                <styleClass>
                   <String fx:value="shadow" />
                   <String fx:value="white-bg" />
                </styleClass>
                <children>
-                  <BarChart fx:id="phonesChart" layoutX="34.0" layoutY="42.0" prefHeight="400.0" prefWidth="1521.0" title="phones">
-                    <xAxis>
-                      <CategoryAxis side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis side="LEFT" />
-                    </yAxis>
-                  </BarChart>
+                  <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="231.0" prefWidth="1548.0">
+                     <styleClass>
+                        <String fx:value="gray-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <AnchorPane layoutX="28.0" layoutY="16.0" prefHeight="200.0" prefWidth="459.0" styleClass="card">
+                           <children>
+                              <Label layoutX="34.0" layoutY="14.0" text="Total Stock" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="21.0" />
+                                 </font>
+                              </Label>
+                              <Line endX="315.0" layoutX="117.0" layoutY="60.0" startX="-100.0" stroke="WHITE" />
+                              <Label layoutX="216.0" layoutY="85.0" text="Value :" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="21.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="216.0" layoutY="143.0" text="Profit :" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="21.0" />
+                                 </font>
+                              </Label>
+                              <FontAwesomeIcon fill="WHITE" glyphName="USD" layoutX="55.0" layoutY="149.0" size="5em" />
+                              <Label fx:id="report_totalValue" alignment="CENTER_RIGHT" layoutX="290.0" layoutY="83.0" prefHeight="31.0" prefWidth="123.0" textFill="#c5ffc5">
+                                 <font>
+                                    <Font name="System Bold" size="19.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="report_totalProfit" alignment="CENTER_RIGHT" layoutX="290.0" layoutY="141.0" prefHeight="31.0" prefWidth="123.0" textFill="#c5ffc5">
+                                 <font>
+                                    <Font name="System Bold" size="19.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutX="545.0" layoutY="14.0" prefHeight="200.0" prefWidth="459.0" styleClass="card">
+                           <children>
+                              <Label layoutX="34.0" layoutY="14.0" text="Phones Stock" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="21.0" />
+                                 </font>
+                              </Label>
+                              <Line endX="315.0" layoutX="117.0" layoutY="60.0" startX="-100.0" stroke="WHITE" />
+                              <Label layoutX="216.0" layoutY="85.0" text="Value :" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="21.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="216.0" layoutY="143.0" text="Profit :" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="21.0" />
+                                 </font>
+                              </Label>
+                              <FontAwesomeIcon fill="WHITE" glyphName="USD" layoutX="55.0" layoutY="149.0" size="5em" />
+                              <FontAwesomeIcon fill="WHITE" glyphName="MOBILE" layoutX="400.0" layoutY="46.0" size="4em" />
+                              <Label fx:id="report_phonesValue" alignment="CENTER_RIGHT" layoutX="287.0" layoutY="85.0" prefHeight="31.0" prefWidth="123.0" textFill="#c5ffc5">
+                                 <font>
+                                    <Font name="System Bold" size="19.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="report_phoneProfit" alignment="CENTER_RIGHT" layoutX="287.0" layoutY="143.0" prefHeight="31.0" prefWidth="123.0" textFill="#c5ffc5">
+                                 <font>
+                                    <Font name="System Bold" size="19.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane layoutX="1060.0" layoutY="14.0" prefHeight="200.0" prefWidth="459.0" styleClass="card">
+                           <children>
+                              <Label layoutX="34.0" layoutY="14.0" text="Accessory Stock" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="21.0" />
+                                 </font>
+                              </Label>
+                              <Line endX="315.0" layoutX="117.0" layoutY="60.0" startX="-100.0" stroke="WHITE" />
+                              <Label layoutX="216.0" layoutY="85.0" text="Value :" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="21.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="216.0" layoutY="143.0" text="Profit :" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="21.0" />
+                                 </font>
+                              </Label>
+                              <FontAwesomeIcon fill="WHITE" glyphName="USD" layoutX="55.0" layoutY="149.0" size="5em" />
+                              <FontAwesomeIcon fill="WHITE" glyphName="HEADPHONES" layoutX="394.0" layoutY="46.0" size="3em" />
+                              <Label fx:id="report_accessoryValue" alignment="CENTER_RIGHT" layoutX="288.0" layoutY="85.0" prefHeight="31.0" prefWidth="123.0" textFill="#c5ffc5">
+                                 <font>
+                                    <Font name="System Bold" size="19.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="report_accessoryProfit" alignment="CENTER_RIGHT" layoutX="288.0" layoutY="143.0" prefHeight="31.0" prefWidth="123.0" textFill="#c5ffc5">
+                                 <font>
+                                    <Font name="System Bold" size="19.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="14.0" layoutY="270.0" prefHeight="345.0" prefWidth="1547.0">
+                     <styleClass>
+                        <String fx:value="gray-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <TableView fx:id="phoneSaleHistoryTable" focusTraversable="false" layoutX="31.0" layoutY="66.0" prefHeight="267.0" prefWidth="712.0">
+                          <columns>
+                            <TableColumn fx:id="phoneSaleHistoryTable_date" prefWidth="168.0" text="Date" />
+                            <TableColumn fx:id="phoneSaleHistoryTable_revenue" prefWidth="206.0" text="Revenue" />
+                              <TableColumn fx:id="phoneSaleHistoryTable_profit" prefWidth="208.0" text="Profit" />
+                              <TableColumn fx:id="phoneSaleHistoryTable_quantity" prefWidth="129.0" text="Quantity" />
+                          </columns>
+                        </TableView>
+                        <TableView fx:id="accessorySaleHistoryTable" focusTraversable="false" layoutX="799.0" layoutY="67.0" prefHeight="266.0" prefWidth="712.0">
+                           <columns>
+                              <TableColumn fx:id="accessorySaleHistoryTable_date" prefWidth="168.0" text="Date" />
+                              <TableColumn fx:id="accessorySaleHistoryTable_revenue" prefWidth="206.0" text="Revenue" />
+                              <TableColumn fx:id="accessorySaleHistoryTable_profit" prefWidth="208.0" text="Profit" />
+                              <TableColumn fx:id="accessorySaleHistoryTable_quantity" prefWidth="129.0" text="Quantity" />
+                           </columns>
+                        </TableView>
+                        <Label layoutX="99.0" layoutY="14.0" text="Phones Sale History">
+                           <font>
+                              <Font name="System Bold Italic" size="18.0" />
+                           </font>
+                        </Label>
+                        <FontAwesomeIcon glyphName="MOBILE" layoutX="51.0" layoutY="40.0" size="3em" />
+                        <Label layoutX="875.0" layoutY="19.0" text="Accessory Sale History">
+                           <font>
+                              <Font name="System Bold Italic" size="18.0" />
+                           </font>
+                        </Label>
+                        <FontAwesomeIcon glyphName="MOBILE" layoutX="827.0" layoutY="45.0" size="3em" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="14.0" layoutY="638.0" prefHeight="345.0" prefWidth="1547.0">
+                     <styleClass>
+                        <String fx:value="gray-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <TableView fx:id="repairHistoryTable" focusTraversable="false" layoutX="933.0" layoutY="69.0" prefHeight="260.0" prefWidth="584.0">
+                           <columns>
+                              <TableColumn fx:id="repairHistoryTable_date" prefWidth="168.0" text="Date" />
+                              <TableColumn fx:id="repairHistoryTable_revenue" prefWidth="204.0" text="Revenue" />
+                              <TableColumn fx:id="repairHistoryTable_profit" prefWidth="210.0" text="Profit" />
+                           </columns>
+                        </TableView>
+                        <Label layoutX="998.0" layoutY="17.0" text="Repair History">
+                           <font>
+                              <Font name="System Bold Italic" size="18.0" />
+                           </font>
+                        </Label>
+                        <FontAwesomeIcon glyphName="WRENCH" layoutX="950.0" layoutY="43.0" size="2.8em" />
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
             <AnchorPane fx:id="contactsForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
