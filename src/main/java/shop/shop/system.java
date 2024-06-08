@@ -20,6 +20,9 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.StackedBarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
@@ -33,10 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class system {
     @FXML
@@ -509,6 +509,49 @@ public class system {
     private Label dashBoardRepairs;
     @FXML
     private Label dashBoardSale;
+    @FXML
+    private StackedBarChart stackedBarChart;
+
+    @FXML
+    private Label report_accessoryProfit;
+    @FXML
+    private Label report_accessoryValue;
+    @FXML
+    private Label report_phoneProfit;
+    @FXML
+    private Label report_phonesValue;
+    @FXML
+    private Label report_totalProfit;
+    @FXML
+    private Label report_totalValue;
+    @FXML
+    private TableView<phoneSaleHistory> phoneSaleHistoryTable;
+    @FXML
+    private TableColumn<?, ?> phoneSaleHistoryTable_date;
+    @FXML
+    private TableColumn<?, ?> phoneSaleHistoryTable_profit;
+    @FXML
+    private TableColumn<?, ?> phoneSaleHistoryTable_quantity;
+    @FXML
+    private TableColumn<?, ?> phoneSaleHistoryTable_revenue;
+    @FXML
+    private TableView<accessorySaleHistory> accessorySaleHistoryTable;
+    @FXML
+    private TableColumn<?, ?> accessorySaleHistoryTable_date;
+    @FXML
+    private TableColumn<?, ?> accessorySaleHistoryTable_profit;
+    @FXML
+    private TableColumn<?, ?> accessorySaleHistoryTable_quantity;
+    @FXML
+    private TableColumn<?, ?> accessorySaleHistoryTable_revenue;
+    @FXML
+    private TableView<repairHistory> repairHistoryTable;
+    @FXML
+    private TableColumn<?, ?> repairHistoryTable_date;
+    @FXML
+    private TableColumn<?, ?> repairHistoryTable_profit;
+    @FXML
+    private TableColumn<?, ?> repairHistoryTable_revenue;
 
 
     private Connection connect;
@@ -693,6 +736,144 @@ public class system {
 
         dashBoardProfit.setText(String.valueOf(totalprofit));
     }
+    public void getLastFiveDaysRevenueAndProfit() {
+        connect = DatabaseConnection.connectDb();
+
+        LocalDate today = LocalDate.now();
+        LocalDate[] lastFiveDays = new LocalDate[5];
+
+        for (int i = 0; i < 5; i++) {
+            lastFiveDays[i] = today.minusDays(i + 1);
+        }
+
+        int[] revenues = new int[5];
+        int[] profits = new int[5];
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+            return; // Exit the method if the connection is not established
+        }
+
+        int totalprofit;
+        for (int i = 0; i < 5; i++) {
+            totalprofit =0;
+            String query1 = "SELECT SUM(profit) AS totalprofit FROM profitrevenuephones WHERE DATE = '" + lastFiveDays[i] + "'";
+
+            try (Statement stmt = this.connect.createStatement();
+                 ResultSet rs = stmt.executeQuery(query1)) {
+
+                if (rs.next()) {
+                    totalprofit += rs.getInt("totalprofit");
+                }
+                profits[i] = totalprofit;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (int i = 0; i < 5; i++) {
+            totalprofit =0;
+            String query1 = "SELECT SUM(profit) AS totalprofit FROM profitrevenueaccessory WHERE DATE = '" + lastFiveDays[i] + "'";
+
+            try (Statement stmt = this.connect.createStatement();
+                 ResultSet rs = stmt.executeQuery(query1)) {
+
+                if (rs.next()) {
+                    totalprofit += rs.getInt("totalprofit");
+                }
+                profits[i] += totalprofit;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (int i = 0; i < 5; i++) {
+            totalprofit =0;
+            String query1 = "SELECT SUM(profit) AS totalprofit FROM profitrevenuerepair WHERE DATE = '" + lastFiveDays[i] + "'";
+
+            try (Statement stmt = this.connect.createStatement();
+                 ResultSet rs = stmt.executeQuery(query1)) {
+
+                if (rs.next()) {
+                    totalprofit += rs.getInt("totalprofit");
+                }
+                profits[i] += totalprofit;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int totalRevenue;
+        for (int i = 0; i < 5; i++) {
+            totalRevenue =0;
+            String query1 = "SELECT SUM(revenue) AS totalRevenue FROM profitrevenuephones WHERE DATE = '" + lastFiveDays[i] + "'";
+
+            try (Statement stmt = this.connect.createStatement();
+                 ResultSet rs = stmt.executeQuery(query1)) {
+
+                if (rs.next()) {
+                    totalRevenue += rs.getInt("totalRevenue");
+                }
+                revenues[i] = totalRevenue;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (int i = 0; i < 5; i++) {
+            totalRevenue =0;
+            String query1 = "SELECT SUM(revenue) AS totalRevenue FROM profitrevenueaccessory WHERE DATE = '" + lastFiveDays[i] + "'";
+
+            try (Statement stmt = this.connect.createStatement();
+                 ResultSet rs = stmt.executeQuery(query1)) {
+
+                if (rs.next()) {
+                    totalRevenue += rs.getInt("totalRevenue");
+                }
+                revenues[i] += totalRevenue;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (int i = 0; i < 5; i++) {
+            totalRevenue =0;
+            String query1 = "SELECT SUM(revenue) AS totalRevenue FROM profitrevenuerepair WHERE DATE = '" + lastFiveDays[i] + "'";
+
+            try (Statement stmt = this.connect.createStatement();
+                 ResultSet rs = stmt.executeQuery(query1)) {
+
+                if (rs.next()) {
+                    totalRevenue += rs.getInt("totalRevenue");
+                }
+                revenues[i] += totalRevenue;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        final XYChart.Series<String, Number> series1 = new XYChart.Series<>();
+        CategoryAxis xAxis = (CategoryAxis) stackedBarChart.getXAxis();
+
+        series1.setName("Revenue");
+        series1.getData().add(new XYChart.Data<>(lastFiveDays[4].toString(), revenues[4]));
+        series1.getData().add(new XYChart.Data<>(lastFiveDays[3].toString(), revenues[3]));
+        series1.getData().add(new XYChart.Data<>(lastFiveDays[2].toString(), revenues[2]));
+        series1.getData().add(new XYChart.Data<>(lastFiveDays[1].toString(), revenues[1]));
+        series1.getData().add(new XYChart.Data<>(lastFiveDays[0].toString(), revenues[0]));
+
+        final XYChart.Series<String, Number> series2 = new XYChart.Series<>();
+
+        series2.setName("Profit");
+        series2.getData().add(new XYChart.Data<>(lastFiveDays[4].toString(), profits[4]));
+        series2.getData().add(new XYChart.Data<>(lastFiveDays[3].toString(), profits[3]));
+        series2.getData().add(new XYChart.Data<>(lastFiveDays[2].toString(), profits[2]));
+        series2.getData().add(new XYChart.Data<>(lastFiveDays[1].toString(), profits[1]));
+        series2.getData().add(new XYChart.Data<>(lastFiveDays[0].toString(), profits[0]));
+
+        stackedBarChart.getData().addAll(series1,series2);
+
+    }
 
 
 
@@ -804,6 +985,107 @@ public class system {
         phoneTableQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
         phoneTable.setItems(phoneList);
+    }
+
+    public ObservableList<phoneSaleHistory> phoneSaleHistoryListData(){
+        ObservableList<phoneSaleHistory> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM profitrevenuephones";
+
+        connect = DatabaseConnection.connectDb();
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            phoneSaleHistory phoneSaleH;
+
+            while (result.next()){
+                phoneSaleH = new phoneSaleHistory(result.getString("date"),
+                        result.getDouble("revenue"),
+                        result.getDouble("profit"),
+                        result.getInt("quantity"));
+                listData.add(phoneSaleH);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return listData;
+    }
+    public ObservableList<phoneSaleHistory> phoneSaleHistoryList;
+    public void phoneSaleHistoryShowListData(){
+        phoneSaleHistoryList = phoneSaleHistoryListData();
+
+        phoneSaleHistoryTable_date.setCellValueFactory(new PropertyValueFactory<>("date"));
+        phoneSaleHistoryTable_revenue.setCellValueFactory(new PropertyValueFactory<>("revenue"));
+        phoneSaleHistoryTable_profit.setCellValueFactory(new PropertyValueFactory<>("profit"));
+        phoneSaleHistoryTable_quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+
+        phoneSaleHistoryTable.setItems(phoneSaleHistoryList);
+    }
+
+    public ObservableList<accessorySaleHistory> accessorySaleHistoryListData(){
+        ObservableList<accessorySaleHistory> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM profitrevenueaccessory";
+
+        connect = DatabaseConnection.connectDb();
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            accessorySaleHistory accessorySaleH;
+
+            while (result.next()){
+                accessorySaleH = new accessorySaleHistory(result.getString("date"),
+                        result.getDouble("revenue"),
+                        result.getDouble("profit"),
+                        result.getInt("quantity"));
+                listData.add(accessorySaleH);
+            } }catch (Exception e){
+            e.printStackTrace();
+        }
+        return listData;
+    }
+    public ObservableList<accessorySaleHistory> accessorySaleHistoryList;
+    public void accessorySaleHistoryShowListData(){
+        accessorySaleHistoryList = accessorySaleHistoryListData();
+
+        accessorySaleHistoryTable_date.setCellValueFactory(new PropertyValueFactory<>("date"));
+        accessorySaleHistoryTable_revenue.setCellValueFactory(new PropertyValueFactory<>("revenue"));
+        accessorySaleHistoryTable_profit.setCellValueFactory(new PropertyValueFactory<>("profit"));
+        accessorySaleHistoryTable_quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+
+        accessorySaleHistoryTable.setItems(accessorySaleHistoryList);
+    }
+
+    public ObservableList<repairHistory> repairHistoryListData(){
+        ObservableList<repairHistory> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM profitrevenuerepair";
+
+        connect = DatabaseConnection.connectDb();
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            repairHistory repairH;
+
+            while (result.next()){
+                repairH = new repairHistory(result.getString("date"),
+                        result.getDouble("revenue"),
+                        result.getDouble("profit"));
+                listData.add(repairH);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return listData;
+    }
+    public ObservableList<repairHistory> repairHistoryList;
+    public void repairHistoryShowListData(){
+        repairHistoryList = repairHistoryListData();
+
+        repairHistoryTable_date.setCellValueFactory(new PropertyValueFactory<>("date"));
+        repairHistoryTable_revenue.setCellValueFactory(new PropertyValueFactory<>("revenue"));
+        repairHistoryTable_profit.setCellValueFactory(new PropertyValueFactory<>("profit"));
+
+        repairHistoryTable.setItems(repairHistoryList);
     }
 
 
@@ -4162,6 +4444,10 @@ public class system {
                     accessoryBillShowData();
                     phoneBillShowData();
                     repairBillDrop();
+
+                    phoneSaleHistoryShowListData();
+                    accessorySaleHistoryShowListData();
+                    repairHistoryShowListData();
 
                 } else if (event.getSource() == contactsButton) {
                     dashBoardForm.setVisible(false);

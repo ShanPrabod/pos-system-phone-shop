@@ -66,6 +66,7 @@ public class systemLogin {
                     controller.dashBoard_repair();
                     controller.dashBoard_sale();
                     controller.dashBoard_profit();
+                    controller.getLastFiveDaysRevenueAndProfit();
 
                     Stage stage = new Stage();
                     Scene scene = new Scene(root);

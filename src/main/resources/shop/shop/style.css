@@ -77,3 +77,8 @@
     -fx-background-color: #ff0000;
     -fx-border-width: 0px 0px 0px 0px;
 }
+
+.chart-axis .axis-tick-mark-label {
+    -fx-rotate: 45; /* Rotate labels by 45 degrees */
+    -fx-label-padding: 10px; /* Increase label padding */
+}
