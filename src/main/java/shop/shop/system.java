@@ -24,7 +24,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -448,15 +447,252 @@ public class system {
     @FXML
     private Button repairBill_addButton_part;
     @FXML
-    private Button repairBill_tickMark;
-    @FXML
     private Button repairBill_pdfButton;
+
+    @FXML
+    private Button changePassword_change;
+    @FXML
+    private Button changePassword_clear;
+    @FXML
+    private PasswordField changePassword_current1;
+    @FXML
+    private PasswordField changePassword_current2;
+    @FXML
+    private PasswordField changePassword_new1;
+    @FXML
+    private PasswordField changePassword_new2;
+    @FXML
+    private Button changeUserName_change;
+    @FXML
+    private Button changeUserName_clear;
+    @FXML
+    private TextField changeUserName_current1;
+    @FXML
+    private TextField changeUserName_current2;
+    @FXML
+    private TextField changeUserName_new1;
+    @FXML
+    private TextField changeUserName_new2;
+
+    @FXML
+    private Button contactsAdd;
+    @FXML
+    private Button contactsUpdate;
+    @FXML
+    private Button contactsClear;
+    @FXML
+    private Button contactsDelete;
+    @FXML
+    private TextField contactsItem;
+    @FXML
+    private TextField contactsMobile;
+    @FXML
+    private TextField contactsName;
+    @FXML
+    private TableView<contactsData> contactsTable;
+    @FXML
+    private TableColumn<?, ?> contactsTableID;
+    @FXML
+    private TableColumn<?, ?> contactsTableItem;
+    @FXML
+    private TableColumn<?, ?> contactsTableMobile;
+    @FXML
+    private TableColumn<?, ?> contactsTableName;
+
+    @FXML
+    private Label dashBoardAccessoriesSold;
+    @FXML
+    private Label dashBoardPhonesSold;
+    @FXML
+    private Label dashBoardProfit;
+    @FXML
+    private Label dashBoardRepairs;
+    @FXML
+    private Label dashBoardSale;
 
 
     private Connection connect;
     private Statement statement;
     private PreparedStatement prepare;
     private ResultSet result;
+
+    public void setConnect(Connection connect) {
+        this.connect = connect;
+    }
+
+    public void dashBoard_phones() {
+        LocalDate date = LocalDate.now();
+
+        int totalQuantity = 0;
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+            return; // Exit the method if the connection is not established
+        }
+
+        String query = "SELECT SUM(quantity) AS totalQuantity FROM profitrevenuephones WHERE DATE = '" + date + "'";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                totalQuantity = rs.getInt("totalQuantity");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dashBoardPhonesSold.setText(String.valueOf(totalQuantity));
+    }
+    public void dashBoard_accessory() {
+        LocalDate date = LocalDate.now();
+
+        int totalQuantity = 0;
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+            return; // Exit the method if the connection is not established
+        }
+
+        String query = "SELECT SUM(quantity) AS totalQuantity FROM profitrevenueaccessory WHERE DATE = '" + date + "'";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                totalQuantity = rs.getInt("totalQuantity");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dashBoardAccessoriesSold.setText(String.valueOf(totalQuantity));
+    }
+    public void dashBoard_repair(){
+        LocalDate date = LocalDate.now();
+
+        int totalQuantity = 0;
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+            return; // Exit the method if the connection is not established
+        }
+
+        String query = "SELECT SUM(quantity) AS totalQuantity FROM profitrevenuerepair WHERE DATE = '" + date + "'";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                totalQuantity = rs.getInt("totalQuantity");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dashBoardRepairs.setText(String.valueOf(totalQuantity));
+    }
+    public void dashBoard_sale(){
+        LocalDate date = LocalDate.now();
+
+        int totalSale = 0;
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+            return; // Exit the method if the connection is not established
+        }
+
+        String query1 = "SELECT SUM(revenue) AS totalSale FROM profitrevenuephones WHERE DATE = '" + date + "'";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query1)) {
+
+            if (rs.next()) {
+                totalSale += rs.getInt("totalSale");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+
+        String query2 = "SELECT SUM(revenue) AS totalSale FROM profitrevenueaccessory WHERE DATE = '" + date + "'";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query2)) {
+
+            if (rs.next()) {
+                totalSale += rs.getInt("totalSale");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+
+        String query3 = "SELECT SUM(revenue) AS totalSale FROM profitrevenuerepair WHERE DATE = '" + date + "'";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query3)) {
+
+            if (rs.next()) {
+                totalSale += rs.getInt("totalSale");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        dashBoardSale.setText(String.valueOf(totalSale));
+    }
+    public void dashBoard_profit(){
+        LocalDate date = LocalDate.now();
+
+        int totalprofit = 0;
+
+        if (this.connect == null) {
+            System.out.println("Database connection is not established.");
+            return; // Exit the method if the connection is not established
+        }
+
+        String query1 = "SELECT SUM(profit) AS totalprofit FROM profitrevenuephones WHERE DATE = '" + date + "'";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query1)) {
+
+            if (rs.next()) {
+                totalprofit += rs.getInt("totalprofit");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+
+        String query2 = "SELECT SUM(profit) AS totalprofit FROM profitrevenueaccessory WHERE DATE = '" + date + "'";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query2)) {
+
+            if (rs.next()) {
+                totalprofit += rs.getInt("totalprofit");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+
+        String query3 = "SELECT SUM(profit) AS totalprofit FROM profitrevenuerepair WHERE DATE = '" + date + "'";
+
+        try (Statement stmt = this.connect.createStatement();
+             ResultSet rs = stmt.executeQuery(query3)) {
+
+            if (rs.next()) {
+                totalprofit += rs.getInt("totalprofit");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        dashBoardProfit.setText(String.valueOf(totalprofit));
+    }
 
 
 
@@ -963,7 +1199,6 @@ public class system {
         sellingPricePhone.setText(String.valueOf(phoneData.getSellingPrice()));
         quantityPhone.setText(String.valueOf(phoneData.getQuantity()));
     }
-
     public void accessorySelect(){
         accessoryData accessoryData = accessoryTable.getSelectionModel().getSelectedItem();
         int num = accessoryTable.getSelectionModel().getSelectedIndex();
@@ -1042,8 +1277,6 @@ public class system {
         sortList.comparatorProperty().bind(accessoryTable.comparatorProperty());
         accessoryTable.setItems(sortList);
     }
-
-
 
 
 
@@ -2369,6 +2602,7 @@ public class system {
                 alert.setHeaderText(null);
                 alert.setContentText("The PDF file has been created successfully!\n" + billsPath.toAbsolutePath().toString() + "\n" + revenueProfit);
                 alert.showAndWait();
+                repairBillDrop();
 
 
             } catch (IOException e) {
@@ -2513,7 +2747,6 @@ public class system {
         int totalQuantity = 0;
         while (rs.next()) {
             totalQuantity += rs.getInt("no_of_parts");
-
         }
         rs.close();
         stmt.close();
@@ -2526,7 +2759,7 @@ public class system {
 
             prepare.setString(1, String.valueOf(totalRevenue));
             prepare.setString(2, String.valueOf(totalProfit));
-            prepare.setString(3, String.valueOf(totalQuantity));
+            prepare.setString(3, String.valueOf(1));
 
             prepare.executeUpdate();
         } catch (Exception e) {
@@ -2544,6 +2777,7 @@ public class system {
                         "ORDER BY quantityPhone DESC;\n";
 
             }
+
     public void phoneBillPDF_ () {
               if (Objects.equals(phoneBillCash.getText(), "")) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -2688,6 +2922,7 @@ public class system {
                         alert.setHeaderText(null);
                         alert.setContentText("The PDF file has been created successfully!\n" + billsPath.toAbsolutePath().toString() + "\n" + revenueProfit);
                         alert.showAndWait();
+                        phoneBillDrop();
                     } catch (Exception e) {
                         e.printStackTrace();
 
@@ -2701,7 +2936,6 @@ public class system {
                 }
 
             }
-
             // Helper method to fetch billing items from the database
     private List<BillingItem_phones> fetchBillingItems_phones () throws SQLException {
                 List<BillingItem_phones> items = new ArrayList<>();
@@ -2730,7 +2964,6 @@ public class system {
 
                 return items;
             }
-
             // Helper method to add table headers
     private void addHeaderLine_phones (Document document, String header, String content){
                 Table table = new Table(2);
@@ -3096,6 +3329,7 @@ public class system {
                         alert.setHeaderText(null);
                         alert.setContentText("The PDF file has been created successfully!\n" + billsPath.toAbsolutePath().toString() + "\n" + revenueProfit);
                         alert.showAndWait();
+                        accessoryBillDrop();
                     } catch (Exception e) {
                         e.printStackTrace();
 
@@ -3391,6 +3625,390 @@ public class system {
             }
 
 
+    public void addContacts(){
+        String sql = "INSERT INTO contacts"
+                + "(name, item, mobile) "
+                + "VALUES(?,?,?)";
+
+        connect = DatabaseConnection.connectDb();
+        Alert alert;
+        try {
+            if (contactsName.getText().isEmpty() ||
+                    contactsItem.getText().isEmpty() ||
+                    contactsMobile.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill all blank fields");
+                alert.showAndWait();
+            } else {
+                String check = "SELECT * FROM contacts WHERE " +
+                        "name = '" + contactsName.getText() + "' AND " +
+                        "item = '" + contactsItem.getText() + "' AND " +
+                        "mobile = '" + contactsMobile.getText() + "'";
+
+                statement = connect.createStatement();
+                result = statement.executeQuery(check);
+
+                if (result.next()) {
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Entered data already exists in the table:");
+                    alert.showAndWait();
+                } else {
+                    prepare = connect.prepareStatement(sql);
+
+                    prepare.setString(1, contactsName.getText());
+                    prepare.setString(2, contactsItem.getText());
+                    prepare.setString(3, contactsMobile.getText());
+
+                    prepare.executeUpdate();
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successfully Added!");
+                    alert.showAndWait();
+
+                    contactsShowListData();
+                    clearContacts();
+                }
+            }
+        } catch (Exception e) {
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter a valid data !");
+            alert.showAndWait();
+        }
+    }
+    public ObservableList<contactsData> contactsListData(){
+        ObservableList<contactsData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM contacts";
+
+        connect = DatabaseConnection.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            contactsData contactsD;
+
+            while (result.next()) {
+                contactsD = new contactsData(result.getInt("ID"),
+                        result.getString("name"),
+                        result.getString("item"),
+                        result.getString("mobile"));
+                listData.add(contactsD);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return listData;
+    }
+    private  ObservableList<contactsData> contactsList;
+    public void contactsShowListData(){
+        contactsList = contactsListData();
+
+        contactsTableID.setCellValueFactory(new PropertyValueFactory<>("ID"));
+        contactsTableName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        contactsTableItem.setCellValueFactory(new PropertyValueFactory<>("item"));
+        contactsTableMobile.setCellValueFactory(new PropertyValueFactory<>("mobile"));
+
+        contactsTable.setItems(contactsList);
+    }
+
+
+    public void clearContacts(){
+        contactsName.clear();
+        contactsItem.clear();
+        contactsMobile.clear();
+    }
+    public void contactsUpdate(){
+        contactsData contactsData = contactsTable.getSelectionModel().getSelectedItem();
+        int num = contactsTable.getSelectionModel().getSelectedIndex();
+
+        if (num < 0) {
+            return;
+        }
+
+        if (contactsName.getText().isEmpty() ||
+                contactsItem.getText().isEmpty() ||
+                contactsMobile.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please fill all blank fields.");
+            alert.showAndWait();
+            return;
+        }
+
+        if (contactsName.getText().equals(contactsData.getName()) &&
+                contactsItem.getText().equals(contactsData.getItem()) &&
+                contactsMobile.getText().equals(contactsData.getMobile())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please Update Data!");
+            alert.showAndWait();
+
+            contactsShowListData();
+            clearContacts();
+        } else {
+            String sql = "UPDATE contacts SET name = ?, item = ?, mobile = ? WHERE ID = ?";
+
+            try (PreparedStatement prepare = connect.prepareStatement(sql)) {
+                prepare.setString(1, contactsName.getText());
+                prepare.setString(2, contactsItem.getText());
+                prepare.setString(3, contactsMobile.getText());
+                prepare.setInt(4, contactsData.getID());
+                prepare.executeUpdate();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Successfully updated!");
+                alert.showAndWait();
+
+                contactsShowListData();
+                clearContacts();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void contactSelect(){
+        contactsData contactsData = contactsTable.getSelectionModel().getSelectedItem();
+        int num = contactsTable.getSelectionModel().getSelectedIndex();
+
+        if ((num-1) < -1){
+            return;
+        }
+        contactsName.setText(String.valueOf(contactsData.getName()));
+        contactsItem.setText(String.valueOf(contactsData.getItem()));
+        contactsMobile.setText(String.valueOf(contactsData.getMobile()));
+    }
+    public void contactDelete(){
+        contactsData contactsData = contactsTable.getSelectionModel().getSelectedItem();
+        int num = contactsTable.getSelectionModel().getSelectedIndex();
+
+        if (num < 0) {
+            return;
+        }
+
+        String sql = "DELETE FROM contacts WHERE ID = " + contactsData.getID();
+        connect = DatabaseConnection.connectDb();
+
+        try {
+            Alert alert;
+            if (contactsName.getText().isEmpty() ||
+                    contactsItem.getText().isEmpty() ||
+                    contactsMobile.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill all blank fields.");
+                alert.showAndWait();
+            } else {
+                alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to DELETE Contact ID: " + contactsData.getID() + " ?");
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.get() == ButtonType.OK) {
+                    statement = connect.createStatement();
+                    statement.executeUpdate(sql);
+
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successfully Deleted!");
+                    alert.showAndWait();
+
+                    contactsShowListData();
+                    clearContacts();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void changeUserName_clear(){
+        changeUserName_current1.clear();
+        changeUserName_current2.clear();
+        changeUserName_new1.clear();
+        changeUserName_new2.clear();
+    }
+    public void changePassword_clear(){
+        changePassword_current1.clear();
+        changePassword_current2.clear();
+        changePassword_new1.clear();
+        changePassword_new2.clear();
+    }
+    public void changeUsername() {
+        if (changeUserName_current1.getText().isEmpty() || changeUserName_current2.getText().isEmpty() || changeUserName_new1.getText().isEmpty() || changeUserName_new2.getText().isEmpty()){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Fill all the fields !");
+            alert.showAndWait();
+        }else if (!changeUserName_current1.getText().equals(changeUserName_current2.getText())){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Current Username do not match !");
+            alert.showAndWait();
+        }else if (!changeUserName_new1.getText().equals(changeUserName_new2.getText())){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("New Username do not match !");
+            alert.showAndWait();
+        }else if (changeUserName_current1.getText().equals(changeUserName_new1.getText())){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Current Username is same as New Username !");
+            alert.showAndWait();
+        }else {
+            // Get the current username from the database
+            connect = DatabaseConnection.connectDb();
+            if (connect != null) {
+                try (Statement statement = connect.createStatement()) {
+                    String sql = "SELECT username FROM admin";
+                    ResultSet resultSet = statement.executeQuery(sql);
+
+                    String username = null;
+                    if (resultSet.next()) {
+                        username = resultSet.getString("username");
+                    }
+
+                    if (username != null && username.equals(changeUserName_current1.getText())) {
+                        try (PreparedStatement prepare = connect.prepareStatement("UPDATE admin SET username = ? WHERE username = ?")) {
+                            prepare.setString(1, changeUserName_new1.getText());
+                            prepare.setString(2, changeUserName_current1.getText());
+                            prepare.executeUpdate();
+
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Success");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Username Changed Successfully !");
+                            alert.showAndWait();
+
+                            changeUserName_clear();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Error while changing the Username !");
+                        }
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Enter Username correctly !");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Error while fetching current Username !");
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Database connection failed !");
+            }
+        }
+
+    }
+    public void changePassword() {
+        if (changePassword_current1.getText().isEmpty() || changePassword_current2.getText().isEmpty() || changePassword_new1.getText().isEmpty() || changePassword_new2.getText().isEmpty()){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Fill all the fields !");
+            alert.showAndWait();
+        }else if (!changePassword_current1.getText().equals(changePassword_current2.getText())){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Current Password do not match !");
+            alert.showAndWait();
+        }else if (!changePassword_new1.getText().equals(changePassword_new2.getText())){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("New Password do not match !");
+            alert.showAndWait();
+        }else if (changePassword_current1.getText().equals(changePassword_new1.getText())){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Current Password is same as New Password !");
+            alert.showAndWait();
+        }else {
+            // Get the current username from the database
+            connect = DatabaseConnection.connectDb();
+            if (connect != null) {
+                try (Statement statement = connect.createStatement()) {
+                    String sql = "SELECT password FROM admin";
+                    ResultSet resultSet = statement.executeQuery(sql);
+
+                    String Password = null;
+                    if (resultSet.next()) {
+                        Password = resultSet.getString("Password");
+                    }
+
+                    if (Password != null && Password.equals(changePassword_current1.getText())) {
+                        try (PreparedStatement prepare = connect.prepareStatement("UPDATE admin SET password = ? WHERE password = ?")) {
+                            prepare.setString(1, changePassword_new1.getText());
+                            prepare.setString(2, changePassword_current1.getText());
+                            prepare.executeUpdate();
+
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Success");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Password Changed Successfully !");
+                            alert.showAndWait();
+
+                            changePassword_clear();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Error while changing the Password !");
+                        }
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Enter Password correctly !");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Error while fetching current password !");
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Database connection failed !");
+            }
+        }
+
+    }
+
+
     public void switchForm (ActionEvent event){
                 if (event.getSource() == dashboardButton) {
                     dashBoardForm.setVisible(true);
@@ -3414,6 +4032,12 @@ public class system {
                     accessoryBillShowData();
                     phoneBillShowData();
                     repairBillDrop();
+
+                    dashBoard_phones();
+                    dashBoard_accessory();
+                    dashBoard_repair();
+                    dashBoard_sale();
+                    dashBoard_profit();
 
                 } else if (event.getSource() == menuItemPhone) {
                     dashBoardForm.setVisible(false);
@@ -3561,6 +4185,7 @@ public class system {
                     accessoryBillShowData();
                     phoneBillShowData();
                     repairBillDrop();
+                    contactsShowListData();
 
                 } else if (event.getSource() == settingsButton) {
                     dashBoardForm.setVisible(false);

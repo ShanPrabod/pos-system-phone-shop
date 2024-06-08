@@ -54,7 +54,19 @@ public class systemLogin {
             }else {
                 if (result.next()){
                     loginButton.getScene().getWindow().hide();
-                    Parent root = FXMLLoader.load(getClass().getResource("system.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("system.fxml"));
+                    Parent root = loader.load();
+
+                    // Get the controller associated with the FXML file
+                    system controller = loader.getController();
+                    controller.setConnect(connect); // Pass the connection
+
+                    controller.dashBoard_phones(); // Call the method
+                    controller.dashBoard_accessory();
+                    controller.dashBoard_repair();
+                    controller.dashBoard_sale();
+                    controller.dashBoard_profit();
+
                     Stage stage = new Stage();
                     Scene scene = new Scene(root);
 

@@ -13,6 +13,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -201,7 +202,7 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="656.0" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane fx:id="dashBoardForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
+            <AnchorPane fx:id="dashBoardForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -228,7 +229,7 @@
                                     <Font size="23.0" />
                                  </font>
                               </Label>
-                              <Label alignment="TOP_RIGHT" layoutX="232.0" layoutY="14.0" prefHeight="38.0" prefWidth="154.0" text="0" textFill="#bc9758">
+                              <Label fx:id="dashBoardPhonesSold" alignment="TOP_RIGHT" layoutX="232.0" layoutY="14.0" prefHeight="38.0" prefWidth="154.0" text="0" textFill="#bc9758">
                                  <font>
                                     <Font size="58.0" />
                                  </font>
@@ -247,7 +248,7 @@
                                     <Font size="23.0" />
                                  </font>
                               </Label>
-                              <Label alignment="TOP_RIGHT" layoutX="232.0" layoutY="14.0" prefHeight="38.0" prefWidth="154.0" text="0" textFill="#bc9758">
+                              <Label fx:id="dashBoardAccessoriesSold" alignment="TOP_RIGHT" layoutX="232.0" layoutY="14.0" prefHeight="38.0" prefWidth="154.0" text="0" textFill="#bc9758">
                                  <font>
                                     <Font size="58.0" />
                                  </font>
@@ -266,7 +267,7 @@
                                     <Font size="23.0" />
                                  </font>
                               </Label>
-                              <Label alignment="TOP_RIGHT" layoutX="232.0" layoutY="14.0" prefHeight="38.0" prefWidth="154.0" text="0" textFill="#bc9758">
+                              <Label fx:id="dashBoardRepairs" alignment="TOP_RIGHT" layoutX="232.0" layoutY="14.0" prefHeight="38.0" prefWidth="154.0" text="0" textFill="#bc9758">
                                  <font>
                                     <Font size="58.0" />
                                  </font>
@@ -293,7 +294,7 @@
                                     <Font size="30.0" />
                                  </font>
                               </Label>
-                              <Label alignment="TOP_RIGHT" layoutX="158.0" layoutY="14.0" prefHeight="85.0" prefWidth="228.0" text="0" textFill="#bc9758">
+                              <Label fx:id="dashBoardSale" alignment="TOP_RIGHT" layoutX="158.0" layoutY="14.0" prefHeight="85.0" prefWidth="228.0" text="0" textFill="#bc9758">
                                  <font>
                                     <Font size="58.0" />
                                  </font>
@@ -312,7 +313,7 @@
                                     <Font size="30.0" />
                                  </font>
                               </Label>
-                              <Label alignment="TOP_RIGHT" layoutX="158.0" layoutY="14.0" prefHeight="85.0" prefWidth="228.0" text="0" textFill="#bc9758">
+                              <Label fx:id="dashBoardProfit" alignment="TOP_RIGHT" layoutX="158.0" layoutY="14.0" prefHeight="85.0" prefWidth="228.0" text="0" textFill="#bc9758">
                                  <font>
                                     <Font size="58.0" />
                                  </font>
@@ -653,7 +654,52 @@
                   <String fx:value="white-bg" />
                </styleClass>
                <children>
-                  <Button layoutX="139.0" layoutY="112.0" mnemonicParsing="false" text="contactsForm" />
+                  <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="524.0" prefWidth="1534.0">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="gray-bg" />
+                     </styleClass>
+                     <children>
+                        <TableView fx:id="contactsTable" focusTraversable="false" layoutX="30.0" layoutY="116.0" onMouseClicked="#contactSelect" prefHeight="385.0" prefWidth="1024.0">
+                          <columns>
+                            <TableColumn fx:id="contactsTableID" prefWidth="96.0" text="ID" />
+                            <TableColumn fx:id="contactsTableName" prefWidth="340.0" text="Name" />
+                              <TableColumn fx:id="contactsTableItem" prefWidth="279.0" text="Item" />
+                              <TableColumn fx:id="contactsTableMobile" prefWidth="308.0" text="Mobile" />
+                          </columns>
+                        </TableView>
+                        <Label layoutX="1134.0" layoutY="157.0" text="Name :">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="1134.0" layoutY="218.0" text="Item :">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="1134.0" layoutY="281.0" text="Mobile :">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="contactsName" focusTraversable="false" layoutX="1224.0" layoutY="159.0" prefHeight="25.0" prefWidth="271.0" styleClass="textfield" />
+                        <TextField fx:id="contactsItem" focusTraversable="false" layoutX="1224.0" layoutY="220.0" prefHeight="25.0" prefWidth="271.0" styleClass="textfield" />
+                        <TextField fx:id="contactsMobile" focusTraversable="false" layoutX="1224.0" layoutY="283.0" prefHeight="25.0" prefWidth="271.0" styleClass="textfield" />
+                        <Button fx:id="contactsClear" layoutX="1147.0" layoutY="391.0" mnemonicParsing="false" onAction="#clearContacts" prefHeight="26.0" prefWidth="58.0" styleClass="clear-btn" text="Clear" />
+                        <Button fx:id="contactsDelete" layoutX="1230.0" layoutY="391.0" mnemonicParsing="false" onAction="#contactDelete" prefHeight="26.0" prefWidth="56.0" styleClass="delete-btn" text="Delete" />
+                        <Button fx:id="contactsUpdate" layoutX="1360.0" layoutY="391.0" mnemonicParsing="false" onAction="#contactsUpdate" prefHeight="27.0" prefWidth="55.0" styleClass="update-btn" text="Update" />
+                        <Button fx:id="contactsAdd" layoutX="1443.0" layoutY="391.0" mnemonicParsing="false" onAction="#addContacts" prefHeight="27.0" prefWidth="54.0" styleClass="add-btn" text="Add" />
+                        <Line endX="345.0" layoutX="1167.0" layoutY="349.0" startX="-43.0" />
+                        <Label layoutX="105.0" layoutY="26.0" text="Contacts">
+                           <font>
+                              <Font name="System Bold" size="25.0" />
+                           </font>
+                        </Label>
+                        <Line endX="364.0" layoutX="1151.0" layoutY="79.0" startX="-1136.0" />
+                        <FontAwesomeIcon glyphName="PHONE" layoutX="47.0" layoutY="61.0" size="4em" />
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
             <AnchorPane fx:id="settingsForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
@@ -665,7 +711,88 @@
                   <String fx:value="white-bg" />
                </styleClass>
                <children>
-                  <Button layoutX="139.0" layoutY="112.0" mnemonicParsing="false" text="settingsForm" />
+                  <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="469.0" prefWidth="750.0">
+                     <styleClass>
+                        <String fx:value="gray-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <Label layoutX="18.0" layoutY="14.0" text="Change User Name">
+                           <font>
+                              <Font name="System Bold" size="22.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="144.0" layoutY="83.0" text="Current User Name :">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="changeUserName_current1" focusTraversable="false" layoutX="331.0" layoutY="83.0" prefHeight="25.0" prefWidth="276.0" styleClass="textfield" />
+                        <Label layoutX="144.0" layoutY="145.0" text="Current User Name :">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="changeUserName_current2" focusTraversable="false" layoutX="331.0" layoutY="145.0" prefHeight="25.0" prefWidth="276.0" styleClass="textfield" />
+                        <Label layoutX="144.0" layoutY="232.0" text="New User Name :">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="changeUserName_new1" focusTraversable="false" layoutX="331.0" layoutY="232.0" prefHeight="25.0" prefWidth="276.0" styleClass="textfield" />
+                        <Label layoutX="144.0" layoutY="294.0" text="New User Name :">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="changeUserName_new2" focusTraversable="false" layoutX="331.0" layoutY="294.0" prefHeight="25.0" prefWidth="276.0" styleClass="textfield" />
+                        <Button fx:id="changeUserName_change" layoutX="539.0" layoutY="405.0" mnemonicParsing="false" onAction="#changeUsername" styleClass="OK-btn" text="Change" />
+                        <Button fx:id="changeUserName_clear" layoutX="443.0" layoutY="405.0" mnemonicParsing="false" onAction="#changeUserName_clear" styleClass="clear-btn" text="Clear" />
+                        <FontAwesomeIcon glyphName="USER" layoutX="699.0" layoutY="44.0" size="3em" text="" />
+                        <Line endX="620.0" layoutX="115.0" layoutY="58.0" startX="-100.0" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="801.0" layoutY="14.0" prefHeight="471.0" prefWidth="750.0">
+                     <styleClass>
+                        <String fx:value="gray-bg" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                     <children>
+                        <Label layoutX="18.0" layoutY="14.0" text="Change Password ">
+                           <font>
+                              <Font name="System Bold" size="22.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="144.0" layoutY="83.0" text="Current Password :">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="144.0" layoutY="145.0" text="Current Password :">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="144.0" layoutY="232.0" text="New Password :">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="144.0" layoutY="294.0" text="New Password :">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="changePassword_change" layoutX="539.0" layoutY="405.0" mnemonicParsing="false" onAction="#changePassword" styleClass="OK-btn" text="Change" />
+                        <Button fx:id="changePassword_clear" layoutX="443.0" layoutY="405.0" mnemonicParsing="false" onAction="#changePassword_clear" styleClass="clear-btn" text="Clear" />
+                        <Line endX="620.0" layoutX="115.0" layoutY="58.0" startX="-100.0" />
+                        <FontAwesomeIcon glyphName="KEY" layoutX="685.0" layoutY="42.0" size="3em" />
+                        <PasswordField fx:id="changePassword_current1" focusTraversable="false" layoutX="331.0" layoutY="83.0" prefHeight="25.0" prefWidth="276.0" styleClass="textfield" />
+                        <PasswordField fx:id="changePassword_current2" focusTraversable="false" layoutX="331.0" layoutY="145.0" prefHeight="25.0" prefWidth="276.0" styleClass="textfield" />
+                        <PasswordField fx:id="changePassword_new1" focusTraversable="false" layoutX="331.0" layoutY="232.0" prefHeight="25.0" prefWidth="276.0" styleClass="textfield" />
+                        <PasswordField fx:id="changePassword_new2" focusTraversable="false" layoutX="331.0" layoutY="294.0" prefHeight="25.0" prefWidth="276.0" styleClass="textfield" />
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
             <AnchorPane fx:id="billForm_accessory" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
@@ -803,7 +930,7 @@
                   </AnchorPane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="billForm_repair" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css">
+            <AnchorPane fx:id="billForm_repair" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
