@@ -57,7 +57,7 @@ public class systemLogin {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("system.fxml"));
                     Parent root = loader.load();
 
-                    // Get the controller associated with the FXML file
+                    //Get the controller associated with the FXML file
                     system controller = loader.getController();
                     controller.setConnect(connect); // Pass the connection
 
@@ -67,6 +67,7 @@ public class systemLogin {
                     controller.dashBoard_sale();
                     controller.dashBoard_profit();
                     controller.getLastFiveDaysRevenueAndProfit();
+                    controller.getLastTwelveMonthsRevenueAndProfit();
 
                     Stage stage = new Stage();
                     Scene scene = new Scene(root);
@@ -75,6 +76,7 @@ public class systemLogin {
                     stage.getIcons().add(image);
 
                     stage.setScene(scene);
+                    stage.setTitle("J Mobile");
                     stage.show();
                 }
                 else {

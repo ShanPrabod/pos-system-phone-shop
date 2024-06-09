@@ -201,7 +201,7 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="656.0" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane fx:id="dashBoardForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
+            <AnchorPane fx:id="dashBoardForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
                </padding>
@@ -632,7 +632,7 @@
                   </AnchorPane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="reportForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css">
+            <AnchorPane fx:id="reportForm" layoutX="11.0" layoutY="1.0" prefHeight="986.0" prefWidth="1576.0" stylesheets="@dashboarddesign.css" visible="false">
                <padding>
                   <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
                </padding>
@@ -786,19 +786,27 @@
                         <String fx:value="shadow" />
                      </styleClass>
                      <children>
-                        <TableView fx:id="repairHistoryTable" focusTraversable="false" layoutX="933.0" layoutY="69.0" prefHeight="260.0" prefWidth="584.0">
+                        <TableView fx:id="repairHistoryTable" focusTraversable="false" layoutX="949.0" layoutY="66.0" prefHeight="260.0" prefWidth="584.0">
                            <columns>
                               <TableColumn fx:id="repairHistoryTable_date" prefWidth="168.0" text="Date" />
                               <TableColumn fx:id="repairHistoryTable_revenue" prefWidth="204.0" text="Revenue" />
                               <TableColumn fx:id="repairHistoryTable_profit" prefWidth="210.0" text="Profit" />
                            </columns>
                         </TableView>
-                        <Label layoutX="998.0" layoutY="17.0" text="Repair History">
+                        <Label layoutX="1014.0" layoutY="14.0" text="Repair History">
                            <font>
                               <Font name="System Bold Italic" size="18.0" />
                            </font>
                         </Label>
-                        <FontAwesomeIcon glyphName="WRENCH" layoutX="950.0" layoutY="43.0" size="2.8em" />
+                        <FontAwesomeIcon glyphName="WRENCH" layoutX="966.0" layoutY="40.0" size="2.8em" />
+                        <StackedBarChart fx:id="stackedBarChart2" layoutX="14.0" layoutY="7.0" prefHeight="324.0" prefWidth="911.0" title="Income In Last 12 Months">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </StackedBarChart>
                      </children>
                   </AnchorPane>
                </children>
